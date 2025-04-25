@@ -39,28 +39,27 @@ export default function RootLayout() {
             headerStyle: {
               height: 100, // Provide more space for header
             },
-            headerLargeTitle: true,
+            headerLargeTitle: false,
             headerShadowVisible: false,
           }}
         >
           <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen 
             name="worker-registration" 
             options={{ 
-              headerShown: true,
+              headerShown: false,
               headerTitle: "Worker Registration", 
               headerTitleStyle: { 
                 fontSize: 20,
               },
-              headerBackTitleVisible: false,
+              headerBackTitleVisible: true,
             }} 
           />
           <Stack.Screen name="worker-success" options={{ headerShown: false }} />
           <Stack.Screen 
             name="available-workers" 
             options={{ 
-              headerShown: true, 
+              headerShown: false, 
               headerTitle: "Available Workers", 
               headerTitleStyle: { 
                 fontSize: 20,
