@@ -62,7 +62,14 @@ export default function WorkerRegistrationScreen() {
     try {
       const success = await registerWorker(workerData);
       if (success) {
-        router.push('/worker-success');
+        // Redirect based on availability status
+        if (available) {
+          // If available, send to waiting screen
+          router.push('/worker-waiting');
+        } else {
+          // If not available today, just show success screen
+          router.push('/worker-success');
+        }
       }
     } finally {
       setIsSubmitting(false);

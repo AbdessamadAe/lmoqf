@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { saveWorkerProfile, setWorkerAvailable } from '@/services/storageService';
 
 // Types for worker registration
 export interface WorkerProfile {
@@ -25,6 +26,14 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<boolean
     //   body: JSON.stringify(workerData)
     // });
     // return response.ok;
+    
+    // Save the worker profile to local storage
+    await saveWorkerProfile(workerData);
+    
+    // If the worker is available, set them as active/waiting
+    if (workerData.available) {
+      await setWorkerAvailable(workerData.phone);
+    }
     
     console.log('Worker registered:', workerData);
     return true;
