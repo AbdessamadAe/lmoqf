@@ -8,6 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { fetchSkills } from './services/dataService';
 import { registerWorker, validateWorkerData, WorkerProfile } from './services/workerService';
+import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -19,7 +21,8 @@ export default function WorkerRegistrationScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const inputBackground = useThemeColor({ light: '#f0f0f0', dark: '#2a2a2a' }, 'background');
+  const inputBackground = useThemeColor({ light: '#f5f5f7', dark: '#1e1e1e' }, 'background');
+  const cardBackground = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   
   // Load skills from our data service
@@ -74,42 +77,54 @@ export default function WorkerRegistrationScreen() {
                   headerShown: true,
                   headerTitleStyle: {
                     fontSize: 20,
+                    fontWeight: '600',
                   },
                 }} />
         <ScrollView 
           showsVerticalScrollIndicator={false} 
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.topSpacing} />
-          <ThemedText style={styles.title}>Worker Profile</ThemedText>
-          <ThemedText style={styles.subtitle}>Enter your details to find work</ThemedText>
+          <View style={styles.header}>
+            <WorkerRegistrationIllustration />
+            <ThemedText style={styles.title}>Create Your Worker Profile</ThemedText>
+            <ThemedText style={styles.subtitle}>Complete your details to be discoverable by employers</ThemedText>
+          </View>
           
-          <View style={styles.form}>
+          <View style={styles.formCard}>
             <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Full Name</ThemedText>
+              <View style={styles.labelContainer}>
+                <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>Full Name</ThemedText>
+              </View>
               <TextInput 
                 style={[styles.input, { backgroundColor: inputBackground }]}
                 value={name}
                 onChangeText={setName}
-                placeholder="Your full name"
+                placeholder="Enter your name"
                 placeholderTextColor="#999"
               />
             </View>
             
             <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Phone Number</ThemedText>
+              <View style={styles.labelContainer}>
+                <Ionicons name="call-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>Phone Number</ThemedText>
+              </View>
               <TextInput 
                 style={[styles.input, { backgroundColor: inputBackground }]}
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="Your contact number"
+                placeholder="Enter your phone number"
                 keyboardType="phone-pad"
                 placeholderTextColor="#999"
               />
             </View>
             
             <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Location/City</ThemedText>
+              <View style={styles.labelContainer}>
+                <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>Location/City</ThemedText>
+              </View>
               <TextInput 
                 style={[styles.input, { backgroundColor: inputBackground }]}
                 value={location}
@@ -120,9 +135,15 @@ export default function WorkerRegistrationScreen() {
             </View>
             
             <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Select Your Main Skill</ThemedText>
+              <View style={styles.labelContainer}>
+                <Ionicons name="construct-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>Select Your Main Skill</ThemedText>
+              </View>
               {isLoading ? (
-                <ActivityIndicator size="small" color={primaryColor} />
+                <View style={styles.skillsLoading}>
+                  <ActivityIndicator size="small" color={primaryColor} />
+                  <ThemedText style={styles.loadingText}>Loading available skills...</ThemedText>
+                </View>
               ) : (
                 <View style={styles.skillsGrid}>
                   {skills.map(skill => (
@@ -131,7 +152,9 @@ export default function WorkerRegistrationScreen() {
                       style={[
                         styles.skillButton,
                         { 
-                          backgroundColor: skill === selectedSkill ? primaryColor : inputBackground
+                          backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
+                          borderWidth: skill === selectedSkill ? 0 : 1,
+                          borderColor: 'rgba(0,0,0,0.05)'
                         }
                       ]}
                       onPress={() => setSelectedSkill(skill)}
@@ -151,7 +174,10 @@ export default function WorkerRegistrationScreen() {
             </View>
             
             <View style={styles.availabilityContainer}>
-              <ThemedText style={styles.label}>Available Today?</ThemedText>
+              <View style={styles.availabilityLeft}>
+                <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>Available Today?</ThemedText>
+              </View>
               <Switch
                 value={available}
                 onValueChange={setAvailable}
@@ -174,9 +200,16 @@ export default function WorkerRegistrationScreen() {
             {isSubmitting ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
+              <>
+                <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
+                <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.submitIcon} />
+              </>
             )}
           </TouchableOpacity>
+          
+          <ThemedText style={styles.policyNote}>
+            By submitting, you agree to our terms and privacy policy
+          </ThemedText>
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
@@ -189,39 +222,67 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
   },
   scrollContent: {
+    padding: 20,
     paddingBottom: 40,
   },
-  topSpacing: {
-    height: 20, // Add space between header and content
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 30,
     opacity: 0.7,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
-  form: {
-    gap: 20,
+  formCard: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 2,
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  labelIcon: {
+    marginRight: 6,
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
     fontWeight: '500',
   },
   input: {
-    padding: 15,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     fontSize: 16,
+  },
+  skillsLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginLeft: 8,
+    fontSize: 14,
+    opacity: 0.7,
   },
   skillsGrid: {
     flexDirection: 'row',
@@ -231,8 +292,8 @@ const styles = StyleSheet.create({
   skillButton: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 12,
+    marginBottom: 8,
   },
   skillText: {
     fontSize: 14,
@@ -242,17 +303,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 10,
-    marginBottom: 20,
+    paddingVertical: 12,
+  },
+  availabilityLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   submitButton: {
-    padding: 16,
-    borderRadius: 10,
+    padding: 18,
+    borderRadius: 16,
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
-    minHeight: 56,
+    minHeight: 60,
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   disabledButton: {
     opacity: 0.7,
@@ -261,5 +324,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  submitIcon: {
+    marginLeft: 8,
+  },
+  policyNote: {
+    textAlign: 'center',
+    fontSize: 13,
+    opacity: 0.5,
+    marginTop: 16,
   },
 });
