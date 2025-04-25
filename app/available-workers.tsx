@@ -1,188 +1,192 @@
-import React, { useState } from 'react';
-import { StyleSheet, FlatList, TouchableOpacity, View, Linking, TextInput, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ScrollView, View, TouchableOpacity, Image, ActivityIndicator, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Mock data for available workers
-const MOCK_WORKERS = [
-  { id: '1', name: 'Ahmed Mohammed', skill: 'Construction', location: 'Rabat', phone: '+212655555555', rating: 4.8 },
-  { id: '2', name: 'Fatima Zahra', skill: 'Cleaning', location: 'Casablanca', phone: '+212666666666', rating: 4.5 },
-  { id: '3', name: 'Karim Alaoui', skill: 'Plumbing', location: 'Marrakech', phone: '+212677777777', rating: 4.9 },
-  { id: '4', name: 'Nadia Ben', skill: 'Painting', location: 'Agadir', phone: '+212688888888', rating: 4.7 },
-  { id: '5', name: 'Omar Raji', skill: 'Electrical', location: 'Tangier', phone: '+212699999999', rating: 4.6 },
-  { id: '6', name: 'Leila Amrani', skill: 'Gardening', location: 'Fez', phone: '+212611111111', rating: 4.4 },
-  { id: '7', name: 'Youssef Benani', skill: 'Moving', location: 'Rabat', phone: '+212622222222', rating: 4.2 },
-  { id: '8', name: 'Samira Tazi', skill: 'General Labor', location: 'Casablanca', phone: '+212633333333', rating: 4.3 },
-  { id: '9', name: 'Hassan El Fassi', skill: 'Carpentry', location: 'Marrakech', phone: '+212644444444', rating: 4.7 },
-  { id: '10', name: 'Amal Wahbi', skill: 'Plumbing', location: 'Tangier', phone: '+212655555556', rating: 4.8 },
-];
-
-const LOCATIONS = ['All Cities', 'Rabat', 'Casablanca', 'Marrakech', 'Tangier', 'Fez', 'Agadir'];
-const SKILLS = ['All Skills', 'Construction', 'Plumbing', 'Electrical', 'Carpentry', 'Painting', 'Gardening', 'Moving', 'Cleaning', 'General Labor'];
+import { fetchAvailableWorkers, Worker, fetchSkills } from './services/dataService';
 
 export default function AvailableWorkersScreen() {
-  const [locationFilter, setLocationFilter] = useState('All Cities');
-  const [skillFilter, setSkillFilter] = useState('All Skills');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [selectedSkill, setSelectedSkill] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   
-  const cardBackground = useThemeColor({ light: '#fff', dark: '#1c1c1e' }, 'background');
-  const inputBackground = useThemeColor({ light: '#f0f0f0', dark: '#2a2a2a' }, 'background');
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
-  const borderColor = useThemeColor({ light: '#e5e5e5', dark: '#333' }, 'border');
+  const secondaryBackground = useThemeColor({ light: '#f0f0f0', dark: '#2a2a2a' }, 'background');
+  const cardBackground = useThemeColor({ light: '#ffffff', dark: '#1c1c1e' }, 'card');
   
-  // Filter workers based on selected filters
-  const filteredWorkers = MOCK_WORKERS.filter(worker => {
-    // Apply location filter
-    if (locationFilter !== 'All Cities' && worker.location !== locationFilter) {
-      return false;
-    }
-    
-    // Apply skill filter
-    if (skillFilter !== 'All Skills' && worker.skill !== skillFilter) {
-      return false;
-    }
-    
-    // Apply search query filter (if any)
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase();
-      return worker.name.toLowerCase().includes(query) || 
-             worker.skill.toLowerCase().includes(query) ||
-             worker.location.toLowerCase().includes(query);
-    }
-    
-    return true;
-  });
+  useEffect(() => {
+    loadData();
+  }, []);
   
-  const handleCallWorker = (phoneNumber) => {
-    Linking.openURL(`tel:${phoneNumber}`);
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [workersData, skillsData] = await Promise.all([
+        fetchAvailableWorkers(),
+        fetchSkills(),
+      ]);
+      
+      setWorkers(workersData);
+      setSkills(skillsData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const renderWorkerCard = ({ item }) => (
-    <View style={[styles.card, { backgroundColor: cardBackground, borderColor }]}>
-      <View style={styles.cardHeader}>
-        <ThemedText style={styles.workerName}>{item.name}</ThemedText>
-        <View style={styles.ratingContainer}>
-          <Ionicons name="star" size={14} color="#FFD700" />
-          <ThemedText style={styles.rating}>{item.rating}</ThemedText>
-        </View>
-      </View>
-      
-      <View style={styles.cardDetails}>
-        <View style={styles.detailRow}>
-          <Ionicons name="briefcase-outline" size={16} color={primaryColor} />
-          <ThemedText style={styles.detailText}>{item.skill}</ThemedText>
-        </View>
-        
-        <View style={styles.detailRow}>
-          <Ionicons name="location-outline" size={16} color={primaryColor} />
-          <ThemedText style={styles.detailText}>{item.location}</ThemedText>
-        </View>
-      </View>
-      
-      <TouchableOpacity 
-        style={[styles.callButton, { backgroundColor: primaryColor }]}
-        onPress={() => handleCallWorker(item.phone)}
-      >
-        <Ionicons name="call-outline" size={16} color="#fff" />
-        <ThemedText style={styles.callButtonText}>Call to Hire</ThemedText>
-      </TouchableOpacity>
-    </View>
-  );
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+  
+  const handleSkillFilter = (skill: string) => {
+    // Toggle skill filter
+    setSelectedSkill(selectedSkill === skill ? '' : skill);
+  };
+  
+  // Filter workers based on selected skill
+  const filteredWorkers = selectedSkill 
+    ? workers.filter(worker => worker.skill === selectedSkill)
+    : workers;
+  
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={primaryColor} />
+        <ThemedText style={styles.loadingText}>Loading available workers...</ThemedText>
+      </ThemedView>
+    );
+  }
   
   return (
     <SafeAreaView edges={['bottom']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
-        <Stack.Screen options={{ 
-          headerTitle: 'Available Workers',
-          headerShown: true,
-          headerTitleStyle: {
-            fontSize: 20,
-          },
-        }} />
+        <Stack.Screen 
+          options={{ 
+            headerTitle: 'Available Workers',
+            headerShown: true,
+            headerTitleStyle: {
+              fontSize: 20,
+            },
+          }} 
+        />
         
-        <View style={styles.topSpacing} />
-        
-        <View style={styles.filtersContainer}>
-          <View style={[styles.searchContainer, { backgroundColor: inputBackground }]}>
-            <Ionicons name="search-outline" size={18} color="#999" />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search workers..."
-              placeholderTextColor="#999"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={handleRefresh}
+              colors={[primaryColor]}
             />
-          </View>
+          }
+        >
+          <View style={styles.topSpacing} />
           
-          <ScrollableFilters 
-            title="Location"
-            options={LOCATIONS} 
-            selectedOption={locationFilter}
-            onSelectOption={setLocationFilter}
-            primaryColor={primaryColor}
-          />
+          {/* Filter by skills */}
+          <ThemedText style={styles.sectionTitle}>Filter by skill</ThemedText>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.skillsContainer}
+          >
+            {skills.map(skill => (
+              <TouchableOpacity
+                key={skill}
+                style={[
+                  styles.skillButton,
+                  { backgroundColor: skill === selectedSkill ? primaryColor : secondaryBackground }
+                ]}
+                onPress={() => handleSkillFilter(skill)}
+              >
+                <ThemedText 
+                  style={[
+                    styles.skillText,
+                    { color: skill === selectedSkill ? '#fff' : undefined }
+                  ]}
+                >
+                  {skill}
+                </ThemedText>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
           
-          <ScrollableFilters 
-            title="Skill"
-            options={SKILLS} 
-            selectedOption={skillFilter}
-            onSelectOption={setSkillFilter}
-            primaryColor={primaryColor}
-          />
-        </View>
-        
-        {filteredWorkers.length === 0 ? (
-          <View style={styles.noResultsContainer}>
-            <Ionicons name="search-outline" size={60} color={primaryColor} />
-            <ThemedText style={styles.noResultsText}>
-              No workers found matching your filters
-            </ThemedText>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredWorkers}
-            renderItem={renderWorkerCard}
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.workersList}
-          />
-        )}
+          {/* Worker Cards */}
+          <ThemedText style={styles.sectionTitle}>
+            {filteredWorkers.length} Workers Available
+          </ThemedText>
+          
+          {filteredWorkers.length === 0 ? (
+            <ThemedView style={styles.emptyState}>
+              <ThemedText style={styles.emptyStateText}>No workers available{selectedSkill ? ` with ${selectedSkill} skills` : ''}</ThemedText>
+            </ThemedView>
+          ) : (
+            <View style={styles.workersContainer}>
+              {filteredWorkers.map((worker) => (
+                <View 
+                  key={worker.id} 
+                  style={[styles.workerCard, { backgroundColor: cardBackground }]}
+                >
+                  <View style={styles.workerHeader}>
+                    <View style={styles.avatarContainer}>
+                      <View style={[styles.avatar, { backgroundColor: primaryColor }]}>
+                        <ThemedText style={styles.avatarText}>
+                          {worker.name.charAt(0)}
+                        </ThemedText>
+                      </View>
+                    </View>
+                    <View style={styles.workerInfo}>
+                      <ThemedText style={styles.workerName}>{worker.name}</ThemedText>
+                      <View style={styles.ratingContainer}>
+                        <Image 
+                          source={require('@/assets/images/icon.png')} 
+                          style={styles.starIcon}
+                          resizeMode="contain" 
+                        />
+                        <ThemedText style={styles.ratingText}>
+                          {worker.rating} ({worker.ratingCount})
+                        </ThemedText>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.workerDetails}>
+                    <View style={styles.detailItem}>
+                      <ThemedText style={styles.detailLabel}>Skill</ThemedText>
+                      <ThemedText style={styles.detailValue}>{worker.skill}</ThemedText>
+                    </View>
+                    
+                    <View style={styles.detailItem}>
+                      <ThemedText style={styles.detailLabel}>Location</ThemedText>
+                      <ThemedText style={styles.detailValue}>{worker.location}</ThemedText>
+                    </View>
+                    
+                    <View style={styles.detailItem}>
+                      <ThemedText style={styles.detailLabel}>Rate</ThemedText>
+                      <ThemedText style={styles.detailValue}>${worker.hourlyRate}/hr</ThemedText>
+                    </View>
+                  </View>
+                  
+                  <TouchableOpacity
+                    style={[styles.hireButton, { backgroundColor: primaryColor }]}
+                    onPress={() => {/* Will implement hiring flow later */}}
+                  >
+                    <ThemedText style={styles.hireButtonText}>Hire Now</ThemedText>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
+        </ScrollView>
       </ThemedView>
     </SafeAreaView>
-  );
-}
-
-// Horizontal scrollable filter component
-function ScrollableFilters({ title, options, selectedOption, onSelectOption, primaryColor }) {
-  return (
-    <View style={styles.filterSection}>
-      <ThemedText style={styles.filterTitle}>{title}:</ThemedText>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScroll}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.filterChip,
-              { backgroundColor: option === selectedOption ? primaryColor : 'transparent' }
-            ]}
-            onPress={() => onSelectOption(option)}
-          >
-            <ThemedText 
-              style={[
-                styles.filterChipText,
-                { color: option === selectedOption ? '#fff' : undefined }
-              ]}
-            >
-              {option}
-            </ThemedText>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
   );
 }
 
@@ -192,110 +196,127 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
   topSpacing: {
-    height: 15, // Add space between header and content
+    height: 10,
   },
-  filtersContainer: {
-    marginBottom: 16,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  searchInput: {
+  loadingContainer: {
     flex: 1,
-    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
     fontSize: 16,
   },
-  filterSection: {
-    marginBottom: 12,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    marginTop: 8,
   },
-  filterTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  filtersScroll: {
-    paddingRight: 16,
+  skillsContainer: {
+    paddingBottom: 8,
     gap: 8,
   },
-  filterChip: {
+  skillButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
   },
-  filterChipText: {
+  skillText: {
     fontSize: 14,
     fontWeight: '500',
   },
-  workersList: {
-    paddingBottom: 20,
+  workersContainer: {
+    gap: 16,
   },
-  card: {
+  workerCard: {
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    borderWidth: 1,
   },
-  cardHeader: {
+  workerHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginBottom: 16,
     alignItems: 'center',
-    marginBottom: 12,
+  },
+  avatarContainer: {
+    marginRight: 12,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  workerInfo: {
+    flex: 1,
   },
   workerName: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  rating: {
-    marginLeft: 4,
+  starIcon: {
+    width: 14,
+    height: 14,
+    marginRight: 4,
+  },
+  ratingText: {
+    fontSize: 14,
+  },
+  workerDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    flexWrap: 'wrap',
+  },
+  detailItem: {
+    minWidth: '30%',
+  },
+  detailLabel: {
+    fontSize: 12,
+    opacity: 0.7,
+    marginBottom: 2,
+  },
+  detailValue: {
+    fontSize: 14,
     fontWeight: '500',
   },
-  cardDetails: {
-    marginBottom: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
+  hireButton: {
+    padding: 12,
+    borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 8,
   },
-  detailText: {
-    marginLeft: 8,
+  hireButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
     fontSize: 15,
   },
-  callButton: {
-    flexDirection: 'row',
+  emptyState: {
+    padding: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 8,
   },
-  callButtonText: {
-    marginLeft: 8,
+  emptyStateText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  noResultsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noResultsText: {
-    marginTop: 16,
-    fontSize: 18,
+    opacity: 0.7,
     textAlign: 'center',
   },
 });

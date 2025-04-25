@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
-
-const SKILLS = [
-  'Construction', 'Plumbing', 'Electrical', 'Carpentry', 
-  'Painting', 'Gardening', 'Moving', 'Cleaning',
-  'General Labor', 'Other'
-];
+import { fetchSkills } from './services/dataService';
+import { registerWorker, validateWorkerData, WorkerProfile } from './services/workerService';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -19,14 +15,55 @@ export default function WorkerRegistrationScreen() {
   const [location, setLocation] = useState('');
   const [selectedSkill, setSelectedSkill] = useState('');
   const [available, setAvailable] = useState(true);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const inputBackground = useThemeColor({ light: '#f0f0f0', dark: '#2a2a2a' }, 'background');
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   
-  const handleSubmit = () => {
-    // This would normally save to Supabase or your backend
-    // For now, we'll just show success and navigate back
-    router.push('/worker-success');
+  // Load skills from our data service
+  useEffect(() => {
+    const loadSkills = async () => {
+      setIsLoading(true);
+      try {
+        const skillsData = await fetchSkills();
+        setSkills(skillsData);
+      } catch (error) {
+        console.error('Error loading skills:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSkills();
+  }, []);
+  
+  const handleSubmit = async () => {
+    const workerData: WorkerProfile = {
+      name,
+      phone,
+      location,
+      skill: selectedSkill,
+      available
+    };
+
+    // Validate worker data
+    const validation = validateWorkerData(workerData);
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const success = await registerWorker(workerData);
+      if (success) {
+        router.push('/worker-success');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -84,29 +121,33 @@ export default function WorkerRegistrationScreen() {
             
             <View style={styles.inputContainer}>
               <ThemedText style={styles.label}>Select Your Main Skill</ThemedText>
-              <View style={styles.skillsGrid}>
-                {SKILLS.map(skill => (
-                  <TouchableOpacity
-                    key={skill}
-                    style={[
-                      styles.skillButton,
-                      { 
-                        backgroundColor: skill === selectedSkill ? primaryColor : inputBackground
-                      }
-                    ]}
-                    onPress={() => setSelectedSkill(skill)}
-                  >
-                    <ThemedText 
+              {isLoading ? (
+                <ActivityIndicator size="small" color={primaryColor} />
+              ) : (
+                <View style={styles.skillsGrid}>
+                  {skills.map(skill => (
+                    <TouchableOpacity
+                      key={skill}
                       style={[
-                        styles.skillText, 
-                        { color: skill === selectedSkill ? '#fff' : undefined }
+                        styles.skillButton,
+                        { 
+                          backgroundColor: skill === selectedSkill ? primaryColor : inputBackground
+                        }
                       ]}
+                      onPress={() => setSelectedSkill(skill)}
                     >
-                      {skill}
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                      <ThemedText 
+                        style={[
+                          styles.skillText, 
+                          { color: skill === selectedSkill ? '#fff' : undefined }
+                        ]}
+                      >
+                        {skill}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
             
             <View style={styles.availabilityContainer}>
@@ -122,10 +163,19 @@ export default function WorkerRegistrationScreen() {
           </View>
           
           <TouchableOpacity
-            style={[styles.submitButton, { backgroundColor: primaryColor }]}
+            style={[
+              styles.submitButton, 
+              { backgroundColor: primaryColor },
+              isSubmitting && styles.disabledButton
+            ]}
             onPress={handleSubmit}
+            disabled={isSubmitting}
           >
-            <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
+            )}
           </TouchableOpacity>
         </ScrollView>
       </ThemedView>
@@ -201,6 +251,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 40,
+    minHeight: 56,
+    justifyContent: 'center',
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
   submitText: {
     fontSize: 18,
