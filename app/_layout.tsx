@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
+import { useUserRole } from './context/UserRoleContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { LanguageProvider } from '@/app/i18n/LanguageContext';
 import { UserRoleProvider } from '@/app/context/UserRoleContext';
@@ -34,13 +35,17 @@ export default function RootLayout() {
     return null;
   }
 
+  const { isWorker, isHirer } = useUserRole();
+  const homeUrl = isWorker ? '/(worker-tabs)' : isHirer ? '/(hirer-tabs)' : 'onboarding';
+
+
   return (
     <SafeAreaProvider>
       <LanguageProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <UserRoleProvider>
             <Stack 
-              initialRouteName="(tabs)"
+              initialRouteName={`${homeUrl}`}
               screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: colorScheme === 'dark' ? '#111827' : '#fff' },

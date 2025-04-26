@@ -96,7 +96,8 @@ export default function TabsLayout() {
       )}
       
       {/* The Profile tab is more relevant to workers but accessible to both */}
-      <Tabs.Screen
+      {isWorker && (
+        <Tabs.Screen
         name="profile"
         options={{
           title: isWorker ? i18n.t('profile') : "My Account",
@@ -105,6 +106,7 @@ export default function TabsLayout() {
           ),
         }}
       />
+      )}
       
       {/* Settings is accessible to all users */}
       <Tabs.Screen
