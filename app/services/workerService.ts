@@ -14,6 +14,28 @@ export interface WorkerProfile {
 }
 
 /**
+ * Check if a phone number already exists in the workers table
+ */
+export const checkPhoneExists = async (phone: string): Promise<boolean> => {
+  try {
+    const { data, error, count } = await supabase
+      .from('workers')
+      .select('*', { count: 'exact', head: true })
+      .eq('phone', phone);
+      
+    if (error) {
+      console.error('Error checking phone existence:', error);
+      return false;
+    }
+    
+    return count !== null && count > 0;
+  } catch (error) {
+    console.error('Error checking if phone exists:', error);
+    return false;
+  }
+};
+
+/**
  * Register a new worker using Supabase
  */
 export const registerWorker = async (workerData: WorkerProfile): Promise<boolean> => {
@@ -22,6 +44,16 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<boolean
     const validation = validateWorkerData(workerData);
     if (!validation.valid) {
       Alert.alert('Validation Error', validation.message || 'Please complete all required fields');
+      return false;
+    }
+    
+    // Check if phone number already exists
+    const phoneExists = await checkPhoneExists(workerData.phone);
+    if (phoneExists) {
+      Alert.alert(
+        'Phone Number Already Registered',
+        'This phone number is already registered in our system. Please use a different phone number or contact support if you need to update your existing profile.'
+      );
       return false;
     }
     
