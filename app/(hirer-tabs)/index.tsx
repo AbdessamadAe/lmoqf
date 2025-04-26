@@ -16,8 +16,6 @@ import { HelloWave } from '@/components/HelloWave';
 import { useUserRole } from '@/app/context/UserRoleContext';
 
 export default function HomeScreen() {
-  const [profile, setProfile] = useState<any>(null);
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
   const [workersCount, setWorkersCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const theme = useTheme();
@@ -48,16 +46,6 @@ export default function HomeScreen() {
 
   const loadData = async () => {
     try {
-      // Load worker profile for worker role
-      if (isWorker) {
-        const workerData = await getWorkerProfile();
-        setProfile(workerData);
-        
-        // Check if worker is available
-        const workerIsAvailable = await isWorkerAvailable();
-        setIsAvailable(workerIsAvailable);
-      }
-      
       // Get available workers count (relevant for both roles)
       const workers = await fetchAvailableWorkers();
       setWorkersCount(workers.length);
@@ -72,17 +60,11 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
-  const handleRegisterAsWorker = () => {
-    router.push('/worker-registration');
-  };
 
   const handleFindWorkers = () => {
     router.push('/workers');
   };
 
-  const handleGoToWaiting = () => {
-    router.push('/worker-waiting');
-  };
 
   return (
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
@@ -133,94 +115,6 @@ export default function HomeScreen() {
             Quick Actions
           </ThemedText>
           <View style={styles.actionsRow}>
-            {/* Worker-specific Actions */}
-            {isWorker && (
-              <>
-                {!profile && (
-                  <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                    <Ionicons name="person-add-outline" size={24} color={theme.colors.primary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      Register as a Worker
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Create your profile to find work
-                    </ThemedText>
-                    <Button 
-                      title="Register" 
-                      onPress={handleRegisterAsWorker} 
-                      size="sm"
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-
-                {profile && !isAvailable && (
-                  <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                    <Ionicons name="time-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      Start Working
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Make yourself available
-                    </ThemedText>
-                    <Button 
-                      title="Go Online" 
-                      onPress={handleGoToWaiting} 
-                      size="sm"
-                      variant="primary"
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-
-                {isAvailable && (
-                  <Card style={[styles.actionCard, { flex: 1, borderColor: theme.colors.tertiary, borderWidth: 1 }]} variant="outlined">
-                    <Ionicons name="checkmark-circle-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      You're Available
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Employers can see your profile
-                    </ThemedText>
-                    <Button 
-                      title="View Status" 
-                      onPress={handleGoToWaiting} 
-                      size="sm"
-                      variant="outline" 
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-              </>
-            )}
-
-            {/* Hirer-specific Actions */}
-            {isHirer && (
-              <>
                 <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
                   <Ionicons name="people-outline" size={24} color={theme.colors.secondary} style={styles.actionIcon} />
                   <ThemedText style={[styles.actionTitle, { 
@@ -245,8 +139,6 @@ export default function HomeScreen() {
                     icon="arrow-forward"
                   />
                 </Card>
-              </>
-            )}
           </View>
         </View>
 

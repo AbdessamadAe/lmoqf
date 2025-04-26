@@ -83,7 +83,6 @@ export default function TabsLayout() {
       />
       
       {/* The Workers tab is only accessible to hirers */}
-      {isHirer && (
         <Tabs.Screen
           name="workers"
           options={{
@@ -93,7 +92,6 @@ export default function TabsLayout() {
             ),
           }}
         />
-      )}
       
       {/* Settings is accessible to all users */}
       <Tabs.Screen

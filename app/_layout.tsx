@@ -80,14 +80,13 @@ export default function RootLayout() {
                 name="worker-registration" 
                 options={{ 
                   headerShown: true,
-                  headerTitle: "Register as a Worker", 
+                  headerTitle: "Register as a Worker",
+                  headerBackTitleVisible: true, // Allow back title to be visible
+                  gestureEnabled: true,
                   headerTitleStyle: { 
                     fontSize: 20,
                     fontWeight: '600',
-                  },
-                  headerBackTitleVisible: false,
-                  // Disable back gesture to prevent issues
-                  gestureEnabled: false,
+                  }
                 }} 
               />
               

@@ -83,7 +83,7 @@ export default function TabsLayout() {
       />
       
       {/* The Profile tab is more relevant to workers but accessible to both */}
-      {isWorker && (
+      
         <Tabs.Screen
         name="profile"
         options={{
@@ -93,7 +93,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-      )}
       
       {/* Settings is accessible to all users */}
       <Tabs.Screen
