@@ -30,7 +30,7 @@ export default function OnboardingScreen() {
       if (role === 'worker') {
         router.navigate('/worker-registration');
       } else {
-        router.navigate('/(tabs)');
+        router.navigate('/(tabs)/workers');
       }
     } catch (error) {
       console.error('Error setting user role:', error);

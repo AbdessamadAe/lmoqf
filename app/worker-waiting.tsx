@@ -128,13 +128,6 @@ export default function WorkerWaitingScreen() {
           </ThemedText>
           
           <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
-            <View style={styles.infoRow}>
-              <Ionicons name="time-outline" size={22} color={primaryColor} style={styles.infoIcon} />
-              <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>Waiting Time</ThemedText>
-                <ThemedText style={styles.infoValue}>{formatWaitingTime(waitingTime)}</ThemedText>
-              </View>
-            </View>
             
             <View style={styles.infoRow}>
               <Ionicons name="person-outline" size={22} color={primaryColor} style={styles.infoIcon} />
@@ -160,14 +153,6 @@ export default function WorkerWaitingScreen() {
               </View>
             </View>
           </View>
-          
-          <TouchableOpacity
-            style={[styles.shareButton, { backgroundColor: primaryColor }]}
-            onPress={handleShare}
-          >
-            <Ionicons name="share-social-outline" size={20} color="#fff" style={styles.buttonIcon} />
-            <ThemedText style={styles.shareButtonText}>Share Contact Info</ThemedText>
-          </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.cancelButton, { borderColor: dangerColor }]}
@@ -286,7 +271,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     borderWidth: 1,
-    marginTop: 8,
   },
   cancelButtonText: {
     fontSize: 16,

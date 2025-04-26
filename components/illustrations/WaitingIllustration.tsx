@@ -92,15 +92,15 @@ export const WaitingIllustration = () => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 220,
+    height: 210,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
   illustrationContainer: {
     position: 'relative',
-    width: 200,
-    height: 200,
+    width: 120,
+    height: 120,
     alignItems: 'center',
     justifyContent: 'center',
   },
