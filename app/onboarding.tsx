@@ -26,11 +26,11 @@ export default function OnboardingScreen() {
       // Set the user role in the context
       await setUserRole(role);
       
-      // If worker, navigate to registration page; if hirer, go to tabs
+      // If worker, navigate to registration page; if hirer, go to hirer tabs
       if (role === 'worker') {
-        router.navigate('/worker-registration');
+        router.replace('/worker-registration');
       } else {
-        router.navigate('/(tabs)/workers');
+        router.replace('/(hirer-tabs)');
       }
     } catch (error) {
       console.error('Error setting user role:', error);

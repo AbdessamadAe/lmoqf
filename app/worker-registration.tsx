@@ -65,10 +65,10 @@ export default function WorkerRegistrationScreen() {
         // Redirect based on availability status
         if (available) {
           // If available, send to waiting screen
-          router.push('/worker-waiting');
+          router.replace('/worker-waiting');
         } else {
-          // If not available today, just show success screen
-          router.push('/worker-success');
+          // If not available today, navigate to profile screen
+          router.replace('/(worker-tabs)/profile');
         }
       }
     } finally {
@@ -236,12 +236,13 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 8,
+    marginTop: 12,
     textAlign: 'center',
   },
   subtitle: {

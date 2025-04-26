@@ -99,7 +99,8 @@ export default function WorkerWaitingScreen() {
   const handleFinishWaiting = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     await setWorkerUnavailable();
-    router.replace('/onboarding');
+    // Navigate to profile screen instead of onboarding
+    router.replace('/(worker-tabs)/profile');
   };
 
   if (!profile) {
@@ -175,6 +176,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingTop: 0,
   },
   loadingContainer: {
     flex: 1,
@@ -184,13 +186,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 20,
   },
   statusHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
   },
   statusIndicator: {
     width: 10,
@@ -206,6 +207,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 8,
+    marginTop: 8,
     textAlign: 'center',
   },
   subtitle: {
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     borderRadius: 16,
-    marginBottom: 24,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,

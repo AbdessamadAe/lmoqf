@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -59,8 +60,8 @@ export default function SettingsScreen() {
                 '@lmoqf:worker_available',
                 '@lmoqf:waiting_start_time'
               ]);
-              // In a real app, you'd redirect to the login screen
-              Alert.alert("Logged out successfully");
+              // Redirect to onboarding screen
+              router.replace('/onboarding');
             } catch (error) {
               console.error('Error during logout:', error);
             }

@@ -35,17 +35,13 @@ export default function RootLayout() {
     return null;
   }
 
-  const { isWorker, isHirer } = useUserRole();
-  const homeUrl = isWorker ? '/(worker-tabs)' : isHirer ? '/(hirer-tabs)' : 'onboarding';
-
-
   return (
     <SafeAreaProvider>
       <LanguageProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <UserRoleProvider>
             <Stack 
-              initialRouteName={`${homeUrl}`}
+              initialRouteName="onboarding"
               screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: colorScheme === 'dark' ? '#111827' : '#fff' },
@@ -61,14 +57,25 @@ export default function RootLayout() {
                   gestureEnabled: false,
                 }} 
               />
+              
               <Stack.Screen 
-                name="(tabs)" 
+                name="(worker-tabs)" 
                 options={{ 
                   headerShown: false,
                   // Prevent going back to onboarding
                   gestureEnabled: false,
                 }} 
               />
+              
+              <Stack.Screen 
+                name="(hirer-tabs)" 
+                options={{ 
+                  headerShown: false,
+                  // Prevent going back to onboarding
+                  gestureEnabled: false,
+                }} 
+              />
+              
               <Stack.Screen 
                 name="worker-registration" 
                 options={{ 
@@ -79,24 +86,21 @@ export default function RootLayout() {
                     fontWeight: '600',
                   },
                   headerBackTitleVisible: false,
-                }} 
-              />
-              <Stack.Screen 
-                name="worker-success" 
-                options={{ 
-                  headerShown: false,
-                  // Prevent going back after success
+                  // Disable back gesture to prevent issues
                   gestureEnabled: false,
                 }} 
               />
+              
               <Stack.Screen 
                 name="worker-waiting" 
                 options={{ 
-                  headerShown: false,
-                  // Prevent going back during waiting state
-                  gestureEnabled: false,
+                  headerShown: true,
+                  headerTitle: '', 
+                  headerBackTitleVisible: true, // Allow back title to be visible
+                  gestureEnabled: true,
                 }} 
               />
+              
               <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

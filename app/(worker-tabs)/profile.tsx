@@ -96,7 +96,11 @@ export default function ProfileScreen() {
       );
     } else {
       // If currently unavailable, go to waiting screen to become available
-      router.push('/worker-waiting');
+      router.push({
+        pathname: '/worker-waiting',
+        // Using replace option to prevent going back
+        params: { replace: true }
+      });
     }
   };
 

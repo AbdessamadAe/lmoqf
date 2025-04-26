@@ -82,19 +82,6 @@ export default function TabsLayout() {
         }}
       />
       
-      {/* The Workers tab is only accessible to hirers */}
-      {isHirer && (
-        <Tabs.Screen
-          name="workers"
-          options={{
-            title: i18n.t('workers'),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
-      
       {/* The Profile tab is more relevant to workers but accessible to both */}
       {isWorker && (
         <Tabs.Screen

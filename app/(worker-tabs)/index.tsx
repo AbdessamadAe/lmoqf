@@ -217,66 +217,7 @@ export default function HomeScreen() {
                 )}
               </>
             )}
-
-            {/* Hirer-specific Actions */}
-            {isHirer && (
-              <>
-                <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                  <Ionicons name="people-outline" size={24} color={theme.colors.secondary} style={styles.actionIcon} />
-                  <ThemedText style={[styles.actionTitle, { 
-                    color: theme.colors.textPrimary,
-                    fontWeight: theme.fontWeights.semiBold,
-                    fontSize: theme.fontSizes.md
-                  }]}>
-                    Find Workers
-                  </ThemedText>
-                  <ThemedText style={[styles.actionDescription, {
-                    color: theme.colors.textSecondary,
-                    fontSize: theme.fontSizes.sm,
-                    marginBottom: theme.spacing.sm
-                  }]}>
-                    {workersCount} workers available
-                  </ThemedText>
-                  <Button 
-                    title="Browse" 
-                    onPress={handleFindWorkers} 
-                    variant="secondary" 
-                    size="sm"
-                    icon="arrow-forward"
-                  />
-                </Card>
-              </>
-            )}
           </View>
-        </View>
-
-        {/* Featured Categories Section */}
-        <View style={styles.featuredSection}>
-          <ThemedText style={[styles.sectionTitle, { 
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.lg,
-            fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
-          }]}>
-            Featured Categories
-          </ThemedText>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContainer}
-          >
-            {['Construction', 'Plumbing', 'Electrical', 'Carpentry', 'Painting'].map((category) => (
-              <Card key={category} style={styles.categoryCard} variant="elevated" padding="small">
-                <ThemedText style={{ 
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.medium,
-                  fontSize: theme.fontSizes.md
-                }}>
-                  {category}
-                </ThemedText>
-              </Card>
-            ))}
-          </ScrollView>
         </View>
 
         {/* Role-specific Benefits Section */}
