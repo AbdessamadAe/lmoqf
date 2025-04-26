@@ -2,6 +2,7 @@ import { Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import 'react-native-get-random-values'; // Required for crypto functions
 import { v4 as uuidv4 } from 'uuid';
+import { saveWorkerProfile, setWorkerAvailable } from '@/services/storageService';
 
 // Worker profile interface
 export interface WorkerProfile {
@@ -38,13 +39,13 @@ export const checkPhoneExists = async (phone: string): Promise<boolean> => {
 /**
  * Register a new worker using Supabase
  */
-export const registerWorker = async (workerData: WorkerProfile): Promise<boolean> => {
+export const registerWorker = async (workerData: WorkerProfile): Promise<{ success: boolean, profile?: WorkerProfile }> => {
   try {
     // Validate worker data
     const validation = validateWorkerData(workerData);
     if (!validation.valid) {
       Alert.alert('Validation Error', validation.message || 'Please complete all required fields');
-      return false;
+      return { success: false };
     }
     
     // Check if phone number already exists
@@ -54,7 +55,7 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<boolean
         'Phone Number Already Registered',
         'This phone number is already registered in our system. Please use a different phone number or contact support if you need to update your existing profile.'
       );
-      return false;
+      return { success: false };
     }
     
     // Add some default values for fields that would normally be set on the backend
@@ -64,31 +65,19 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<boolean
       available: workerData.available
     };
     
-    // Insert the worker profile into Supabase workers table
-    const { error: profileError } = await supabase
-      .from('workers')
-      .upsert(augmentedWorkerData);
-      
-    if (profileError) throw profileError;
+    // Insert the worker profile into Supabase workers table and AsyncStorage
+    await saveWorkerProfile(augmentedWorkerData);
     
-    // If worker is available, set their availability status in the worker_availability table
+    // If worker is available, set their availability status
     if (workerData.available) {
-      const { error: availabilityError } = await supabase
-        .from('worker_availability')
-        .upsert({
-          phone_number: workerData.phone,
-          is_available: true,
-          available_since: new Date().toISOString()
-        });
-        
-      if (availabilityError) throw availabilityError;
+      await setWorkerAvailable(workerData.phone);
     }
     
-    return true;
+    return { success: true, profile: augmentedWorkerData };
   } catch (error) {
     console.error('Error registering worker:', error);
     Alert.alert('Registration Error', 'Could not complete registration. Please try again.');
-    return false;
+    return { success: false };
   }
 };
 
@@ -97,15 +86,15 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<boolean
  */
 export const validateWorkerData = (data: Partial<WorkerProfile>): { valid: boolean; message?: string } => {
   if (!data.name || data.name.trim() === '') {
-    return { valid: false, message: 'Name is required' };
+    return { valid: false, message: 'Please enter your name' };
   }
   
   if (!data.phone || data.phone.trim() === '') {
-    return { valid: false, message: 'Phone number is required' };
+    return { valid: false, message: 'Please enter your phone number' };
   }
   
   if (!data.location || data.location.trim() === '') {
-    return { valid: false, message: 'Location is required' };
+    return { valid: false, message: 'Please enter your location' };
   }
   
   if (!data.skill || data.skill.trim() === '') {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -14,15 +14,25 @@ export default function WorkerWaitingScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [waitingTime, setWaitingTime] = useState<number>(0);
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
   const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
+  const params = useLocalSearchParams<{ newRegistration?: string }>();
 
   // Load profile and start timer
   useEffect(() => {
     const loadProfileData = async () => {
       try {
+        setIsLoading(true);
+        
+        // Small delay for AsyncStorage to be fully updated
+        if (params.newRegistration === 'true') {
+          // Add a small delay to ensure AsyncStorage is updated
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        
         const profileData = await getWorkerProfile();
         setProfile(profileData);
         
@@ -32,8 +42,11 @@ export default function WorkerWaitingScreen() {
           setWaitingTime(duration);
         }
       } catch (error) {
+        console.error('Failed to load profile data:', error);
         Alert.alert('Error', 'Failed to load profile data');
         router.replace('/(worker-tabs)');
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -58,7 +71,7 @@ export default function WorkerWaitingScreen() {
       clearInterval(timer);
       subscription.remove();
     };
-  }, []);
+  }, [params.newRegistration]);
   
   // Handle app coming to foreground
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
@@ -132,6 +145,10 @@ export default function WorkerWaitingScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <View style={styles.content}>
+          {/* Back Button */}
+          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/worker-registration')}>
+            <Ionicons name="arrow-back" size={24} color={primaryColor} />
+          </TouchableOpacity>
           {/* Status Header */}
           <View style={styles.statusHeader}>
             <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
@@ -203,6 +220,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1,
   },
   statusHeader: {
     flexDirection: 'row',

@@ -10,6 +10,7 @@ import { fetchSkills } from './services/dataService';
 import { registerWorker, validateWorkerData, WorkerProfile } from './services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -60,15 +61,34 @@ export default function WorkerRegistrationScreen() {
 
     setIsSubmitting(true);
     try {
-      const success = await registerWorker(workerData);
-      if (success) {
-        // Redirect based on availability status
-        if (available) {
-          // If available, send to waiting screen
-          router.replace('/worker-waiting');
-        } else {
-          // If not available today, navigate to profile screen
-          router.replace('/(worker-tabs)/profile');
+      const result = await registerWorker(workerData);
+      if (result.success && result.profile) {
+        // Ensure profile is fully saved in AsyncStorage before navigating
+        try {
+          // Double-check AsyncStorage has the profile data
+          const profileJson = JSON.stringify(result.profile);
+          await AsyncStorage.setItem('@lmoqf:worker_profile', profileJson);
+          
+          console.log('Profile saved to AsyncStorage before navigation');
+          
+          // Redirect based on availability status
+          if (available) {
+            // If available, send to waiting screen
+            router.replace({
+              pathname: '/worker-waiting',
+              params: { directFromRegistration: 'true' }
+            });
+          } else {
+            // If not available today, navigate to profile screen
+            router.replace({
+              pathname: '/(worker-tabs)/profile',
+              params: { directFromRegistration: 'true' }
+            });
+          }
+        } catch (storageError) {
+          console.error('Error saving profile to AsyncStorage:', storageError);
+          // Still attempt to navigate even if storage failed
+          router.replace(available ? '/worker-waiting' : '/(worker-tabs)/profile');
         }
       }
     } finally {
@@ -91,6 +111,11 @@ export default function WorkerRegistrationScreen() {
           showsVerticalScrollIndicator={false} 
           contentContainerStyle={styles.scrollContent}
         >
+          {/* Back Button */}
+          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/onboarding')}>
+            <Ionicons name="arrow-back" size={24} color={primaryColor} />
+          </TouchableOpacity>
+          
           <View style={styles.header}>
             <WorkerRegistrationIllustration />
             <ThemedText style={styles.title}>Create Your Worker Profile</ThemedText>
@@ -341,5 +366,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     opacity: 0.5,
     marginTop: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1,
   },
 });

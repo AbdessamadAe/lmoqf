@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, router } from 'expo-router';
+import { useNavigation, router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -13,13 +13,16 @@ import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { Share } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const theme = useTheme();
   const navigation = useNavigation();
-
+  const params = useLocalSearchParams<{ newRegistration?: string }>();
+  
   // Set the header title
   useEffect(() => {
     navigation.setOptions({
@@ -40,17 +43,30 @@ export default function ProfileScreen() {
   // Load profile data
   useEffect(() => {
     loadProfileData();
-  }, []);
+  }, [params.newRegistration]);
   
   const loadProfileData = async () => {
+    setIsLoading(true);
     try {
-      const profileData = await getWorkerProfile();
-      setProfile(profileData);
+      // Small delay for AsyncStorage to be fully updated
+      if (params.newRegistration === 'true') {
+        // Add a small delay to ensure AsyncStorage is updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
       
-      const availabilityStatus = await isWorkerAvailable();
-      setIsAvailable(availabilityStatus);
+      const profileData = await getWorkerProfile();
+      
+      if (profileData) {
+        setProfile(profileData);
+        
+        const availabilityStatus = await isWorkerAvailable();
+        setIsAvailable(availabilityStatus);
+      }
     } catch (error) {
+      console.error('Failed to load profile data:', error);
       Alert.alert('Error', 'Failed to load profile data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
