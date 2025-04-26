@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { I18nManager, Platform } from 'react-native';
-import * as Localization from 'react-native-localize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n, { setLanguage } from './i18n';
 
@@ -39,17 +38,28 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
           
           if (Platform.OS === 'web') {
             // For web, use the browser's language
-            deviceLanguage = navigator?.language?.split('-')[0] || 'en';
+            try {
+              deviceLanguage = navigator?.language?.split('-')[0] || 'en';
+            } catch (error) {
+              console.warn('Could not detect browser language:', error);
+            }
           } else {
             // For native platforms
-            const locales = Localization.getLocales();
-            deviceLanguage = locales?.[0]?.languageCode || 'en';
+            try {
+              const reactNativeLocalize = require('react-native-localize');
+              const locales = reactNativeLocalize.getLocales();
+              deviceLanguage = locales?.[0]?.languageCode || 'en';
+            } catch (error) {
+              console.warn('Could not detect device language:', error);
+            }
           }
           
           changeLanguage(deviceLanguage);
         }
       } catch (error) {
         console.error("Failed to load language preference:", error);
+        // Ensure we have a fallback
+        changeLanguage('en');
       }
     };
     
@@ -65,8 +75,12 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
     if (isNewLangRTL !== isRTL) {
       // Configure RTL for the app
       if (Platform.OS !== 'web') {
-        // I18nManager.forceRTL only works on native platforms
-        I18nManager.forceRTL(isNewLangRTL);
+        try {
+          // I18nManager.forceRTL only works on native platforms
+          I18nManager.forceRTL(isNewLangRTL);
+        } catch (error) {
+          console.warn('Could not change RTL setting:', error);
+        }
       }
       setIsRTL(isNewLangRTL);
     }
@@ -78,7 +92,9 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
     setLocale(language);
     
     // Save preference
-    AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language).catch(error => {
+      console.warn('Could not save language preference:', error);
+    });
   };
 
   return (

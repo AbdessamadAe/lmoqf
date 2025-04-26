@@ -111,7 +111,7 @@ export default function WorkerWaitingScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <View style={styles.content}>
           {/* Status Header */}

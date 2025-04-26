@@ -77,7 +77,7 @@ export default function WorkerRegistrationScreen() {
   };
   
   return (
-    <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <Stack.Screen options={{ 
                   headerTitle: 'Register as a Worker',

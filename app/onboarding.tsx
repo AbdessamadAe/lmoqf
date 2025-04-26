@@ -10,23 +10,35 @@ import { Ionicons } from '@expo/vector-icons';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import i18n from '@/app/i18n/i18n';
 import { useLanguage } from '@/app/i18n/LanguageContext';
+import { useUserRole } from './context/UserRoleContext';
+
+export type UserRole = 'worker' | 'hirer';
 
 export default function OnboardingScreen() {
   const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background');
   const tintColor = useThemeColor({ light: '#4F46E5', dark: '#6366F1' }, 'text');
   const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
   const { isRTL } = useLanguage();
+  const { setUserRole } = useUserRole();
   
-  const handleWorkerSelect = () => {
-    router.push('/worker-registration');
-  };
-  
-  const handleHirerSelect = () => {
-    router.push('/available-workers');
+  const handleRoleSelect = async (role: UserRole) => {
+    try {
+      // Set the user role in the context
+      await setUserRole(role);
+      
+      // If worker, navigate to registration page; if hirer, go to tabs
+      if (role === 'worker') {
+        router.navigate('/worker-registration');
+      } else {
+        router.navigate('/(tabs)');
+      }
+    } catch (error) {
+      console.error('Error setting user role:', error);
+    }
   };
   
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <View style={styles.header}>
           <ThemedText style={styles.title}>{i18n.t('onboarding.title')}</ThemedText>
@@ -38,7 +50,7 @@ export default function OnboardingScreen() {
         <View style={styles.optionsContainer}>
           <TouchableOpacity
             style={[styles.optionButton, { backgroundColor: cardBackground }]}
-            onPress={handleWorkerSelect}
+            onPress={() => handleRoleSelect('worker')}
             activeOpacity={0.8}
           >
             <View style={[styles.iconContainer, { backgroundColor: 'rgba(79, 70, 229, 0.1)' }]}>
@@ -58,7 +70,7 @@ export default function OnboardingScreen() {
           
           <TouchableOpacity 
             style={[styles.optionButton, { backgroundColor: cardBackground }]}
-            onPress={handleHirerSelect}
+            onPress={() => handleRoleSelect('hirer')}
             activeOpacity={0.8}
           >
             <View style={[styles.iconContainer, { backgroundColor: 'rgba(251, 113, 133, 0.1)' }]}>
@@ -91,15 +103,14 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 24,
     justifyContent: 'space-between',
   },
   header: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 60,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 12,
     textAlign: 'center',

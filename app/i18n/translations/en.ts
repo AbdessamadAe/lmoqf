@@ -9,6 +9,12 @@ export const en = {
   loading: "Loading...",
   refresh: "Refresh",
   
+  // Navigation
+  home: "Home",
+  workers: "Workers",
+  profile: "Profile",
+  settings: "Settings",
+  
   // Onboarding Screen
   onboarding: {
     title: "Lmoqf",

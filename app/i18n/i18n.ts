@@ -1,9 +1,7 @@
 import { I18n } from 'i18n-js';
-import * as Localization from 'react-native-localize';
 import { Platform } from 'react-native';
 import { en } from './translations/en';
 import { ar } from './translations/ar';
-import { Navigator } from 'expo-router';
 
 // Create i18n instance
 const i18n = new I18n({
@@ -19,13 +17,26 @@ i18n.enableFallback = true;
 // Handle web environment separately since react-native-localize uses native APIs
 if (Platform.OS === 'web') {
   // For web, use the browser's language
-  const browserLang = 'en';
-  i18n.locale = browserLang in i18n.translations ? browserLang : 'en';
+  try {
+    const browserLang = navigator.language.split('-')[0];
+    i18n.locale = browserLang in i18n.translations ? browserLang : 'en';
+  } catch (error) {
+    console.warn('Could not detect browser language, defaulting to English:', error);
+    i18n.locale = 'en';
+  }
 } else {
-  // For native platforms, use react-native-localize
-  const locales = Localization.getLocales();
-  if (Array.isArray(locales) && locales.length > 0) {
-    i18n.locale = locales[0].languageCode;
+  // For native platforms, try to use react-native-localize
+  try {
+    const reactNativeLocalize = require('react-native-localize');
+    const locales = reactNativeLocalize.getLocales();
+    if (Array.isArray(locales) && locales.length > 0) {
+      i18n.locale = locales[0].languageCode;
+    } else {
+      i18n.locale = 'en';
+    }
+  } catch (error) {
+    console.warn('Could not detect device language, defaulting to English:', error);
+    i18n.locale = 'en';
   }
 }
 

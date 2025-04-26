@@ -9,6 +9,12 @@ export const ar = {
   loading: "جاري التحميل...",
   refresh: "تحديث",
   
+  // Navigation
+  home: "الرئيسية",
+  workers: "العمال",
+  profile: "الملف الشخصي",
+  settings: "الإعدادات",
+  
   // Onboarding Screen
   onboarding: {
     title: "لمواقف",
