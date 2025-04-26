@@ -1,8 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Keys for storage
-const WORKER_PROFILE_KEY = '@lmoqf:worker_profile';
-const WORKER_AVAILABILITY_KEY = '@lmoqf:worker_availability';
+import { supabase } from '../app/lib/supabase';
 
 // Types
 export type WorkerAvailability = {
@@ -14,7 +10,14 @@ export type WorkerAvailability = {
 // Save worker profile data
 export const saveWorkerProfile = async (profileData: any): Promise<void> => {
   try {
-    await AsyncStorage.setItem(WORKER_PROFILE_KEY, JSON.stringify(profileData));
+    const { error } = await supabase
+      .from('workers')
+      .upsert({ 
+        id: profileData.id,
+        ...profileData 
+      });
+      
+    if (error) throw error;
   } catch (error) {
     console.error('Error saving worker profile:', error);
     throw error;
@@ -24,10 +27,16 @@ export const saveWorkerProfile = async (profileData: any): Promise<void> => {
 // Get worker profile data
 export const getWorkerProfile = async (): Promise<any | null> => {
   try {
-    const jsonValue = await AsyncStorage.getItem(WORKER_PROFILE_KEY);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
+    const { data, error } = await supabase
+      .from('workers')
+      .select('*')
+      .single();
+      
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 is the "no rows returned" error
+    
+    return data;
   } catch (error) {
-    console.error('Error retrieving worker profile:', error);
+    console.error('Error getting worker profile:', error);
     throw error;
   }
 };
@@ -40,7 +49,16 @@ export const setWorkerAvailable = async (phoneNumber: string): Promise<void> => 
       availableSince: new Date().toISOString(),
       phoneNumber
     };
-    await AsyncStorage.setItem(WORKER_AVAILABILITY_KEY, JSON.stringify(availabilityData));
+    
+    const { error } = await supabase
+      .from('worker_availability')
+      .upsert({ 
+        phone_number: phoneNumber,
+        is_available: true,
+        available_since: new Date().toISOString()
+      });
+      
+    if (error) throw error;
   } catch (error) {
     console.error('Error setting worker availability:', error);
     throw error;
@@ -50,9 +68,21 @@ export const setWorkerAvailable = async (phoneNumber: string): Promise<void> => 
 // Set worker as unavailable
 export const setWorkerUnavailable = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(WORKER_AVAILABILITY_KEY);
+    const { data: worker } = await supabase
+      .from('workers')
+      .select('phone')
+      .single();
+      
+    if (worker && worker.phone) {
+      const { error } = await supabase
+        .from('worker_availability')
+        .update({ is_available: false })
+        .eq('phone_number', worker.phone);
+        
+      if (error) throw error;
+    }
   } catch (error) {
-    console.error('Error removing worker availability:', error);
+    console.error('Error setting worker as unavailable:', error);
     throw error;
   }
 };
@@ -60,10 +90,28 @@ export const setWorkerUnavailable = async (): Promise<void> => {
 // Get worker availability status
 export const getWorkerAvailability = async (): Promise<WorkerAvailability | null> => {
   try {
-    const jsonValue = await AsyncStorage.getItem(WORKER_AVAILABILITY_KEY);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
+    const { data: worker } = await supabase
+      .from('workers')
+      .select('phone')
+      .single();
+      
+    if (!worker) return null;
+    
+    const { data, error } = await supabase
+      .from('worker_availability')
+      .select('*')
+      .eq('phone_number', worker.phone)
+      .single();
+      
+    if (error && error.code !== 'PGRST116') throw error;
+    
+    return data ? {
+      isAvailable: data.is_available,
+      availableSince: data.available_since,
+      phoneNumber: data.phone_number
+    } : null;
   } catch (error) {
-    console.error('Error retrieving worker availability:', error);
+    console.error('Error getting worker availability:', error);
     throw error;
   }
 };
@@ -72,16 +120,4 @@ export const getWorkerAvailability = async (): Promise<WorkerAvailability | null
 export const isWorkerAvailable = async (): Promise<boolean> => {
   const availability = await getWorkerAvailability();
   return availability !== null && availability.isAvailable;
-};
-
-// Calculate how long the worker has been waiting
-export const getWaitingDuration = async (): Promise<number | null> => {
-  const availability = await getWorkerAvailability();
-  if (!availability) return null;
-  
-  const availableSince = new Date(availability.availableSince).getTime();
-  const now = new Date().getTime();
-  
-  // Return duration in minutes
-  return Math.floor((now - availableSince) / (1000 * 60));
 };

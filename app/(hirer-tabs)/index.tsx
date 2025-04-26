@@ -81,29 +81,6 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <View style={styles.welcomeHeader}>
-            <HelloWave />
-            <ThemedText style={[styles.welcomeText, { 
-              color: theme.colors.textPrimary,
-              fontSize: theme.fontSizes.xl,
-              fontWeight: theme.fontWeights.bold 
-            }]}>
-              {profile ? profile.name : i18n.t('onboarding.title')}
-            </ThemedText>
-          </View>
-          <ThemedText style={[styles.welcomeSubtitle, { 
-            color: theme.colors.textSecondary,
-            fontSize: theme.fontSizes.md 
-          }]}>
-            {isHirer 
-              ? i18n.t('onboarding.hirerDescription')
-              : i18n.t('onboarding.subtitle')
-            }
-          </ThemedText>
-        </View>
-
         {/* Quick Actions - Role Specific */}
         <View style={styles.actionsSection}>
           <ThemedText style={[styles.sectionTitle, { 

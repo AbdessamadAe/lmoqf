@@ -50,12 +50,11 @@ export default function ProfileScreen() {
       const availabilityStatus = await isWorkerAvailable();
       setIsAvailable(availabilityStatus);
     } catch (error) {
-      console.error('Error loading profile data:', error);
+      Alert.alert('Error', 'Failed to load profile data');
     }
   };
 
   const handleProfileEdit = () => {
-    // In a complete app, this would navigate to edit profile
     router.push('/worker-registration');
   };
 
@@ -69,7 +68,7 @@ export default function ProfileScreen() {
         message: `Check out my worker profile on Lmoqf: ${profile.name} - ${profile.skill} - Contact: ${profile.phone}`,
       });
     } catch (error) {
-      console.error('Error sharing profile:', error);
+      Alert.alert('Error', 'Could not share your profile');
     }
   };
 
@@ -80,34 +79,31 @@ export default function ProfileScreen() {
         "Confirm Status Change",
         "Are you sure you want to make yourself unavailable for work?",
         [
+          { text: "Cancel", style: "cancel" },
           {
-            text: "Cancel",
-            style: "cancel"
-          },
-          {
-            text: "Yes, I'm Unavailable",
+            text: "Confirm", 
             onPress: async () => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              await setWorkerUnavailable();
-              setIsAvailable(false);
+              try {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                await setWorkerUnavailable();
+                setIsAvailable(false);
+              } catch (error) {
+                Alert.alert('Error', 'Could not update availability status');
+              }
             }
           }
         ]
       );
     } else {
       // If currently unavailable, go to waiting screen to become available
-      router.push({
-        pathname: '/worker-waiting',
-        // Using replace option to prevent going back
-        params: { replace: true }
-      });
+      router.push('/worker-waiting');
     }
   };
 
-  // If no profile exists
+  // If no profile exists, show empty state
   if (!profile) {
     return (
-        <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
+      <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
         <ThemedView style={styles.noProfileContainer}>
           <View style={styles.emptyStateIcon}>

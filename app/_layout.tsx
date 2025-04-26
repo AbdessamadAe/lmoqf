@@ -81,6 +81,7 @@ export default function RootLayout() {
                 options={{ 
                   headerShown: true,
                   headerTitle: "Register as a Worker",
+                  headerBackTitle: 'Back',
                   headerBackTitleVisible: true, // Allow back title to be visible
                   gestureEnabled: true,
                   headerTitleStyle: { 

@@ -1,31 +1,30 @@
 /**
  * Service for fetching various data needed by the app
  */
+import { supabase } from '../lib/supabase';
 
 // Worker type definition
 export interface Worker {
   id: string;
   name: string;
-  skill: string;
+  phone: string;
   location: string;
-  rating: number;
-  ratingCount: number;
-  hourlyRate: number;
-  available: boolean;
+  skill: string;
+  available?: boolean;
 }
 
 /**
- * Fetch skills list from mock data
+ * Fetch skills list from Supabase
  */
 export const fetchSkills = async (): Promise<string[]> => {
   try {
-    // In a real app, this would be an API call
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    const { data, error } = await supabase
+      .from('skills')
+      .select('name');
+      
+    if (error) throw error;
     
-    // Import mock data
-    const mockData = require('../lib/mockData.json');
-    return mockData.skills || [];
+    return data ? data.map(skill => skill.name) : [];
   } catch (error) {
     console.error('Error fetching skills:', error);
     return [];
@@ -37,11 +36,20 @@ export const fetchSkills = async (): Promise<string[]> => {
  */
 export const fetchWorkers = async (): Promise<Worker[]> => {
   try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const { data, error } = await supabase
+      .from('workers')
+      .select(`
+        id,
+        name,
+        phone,
+        location,
+        skill,
+        available
+      `);
+      
+    if (error) throw error;
     
-    const workersData = require('../lib/workers.json');
-    return workersData.workers || [];
+    return data || [];
   } catch (error) {
     console.error('Error fetching workers:', error);
     return [];
@@ -54,13 +62,26 @@ export const fetchWorkers = async (): Promise<Worker[]> => {
  */
 export const fetchAvailableWorkers = async (onlyAvailable = true): Promise<Worker[]> => {
   try {
-    const workers = await fetchWorkers();
+    const query = supabase
+      .from('workers')
+      .select(`
+        id,
+        name,
+        phone,
+        location,
+        skill,
+        available
+      `);
     
     if (onlyAvailable) {
-      return workers.filter(worker => worker.available);
+      query.eq('available', true);
     }
     
-    return workers;
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    
+    return data || [];
   } catch (error) {
     console.error('Error fetching available workers:', error);
     return [];
@@ -73,8 +94,22 @@ export const fetchAvailableWorkers = async (onlyAvailable = true): Promise<Worke
  */
 export const fetchWorkerById = async (workerId: string): Promise<Worker | null> => {
   try {
-    const workers = await fetchWorkers();
-    return workers.find(worker => worker.id === workerId) || null;
+    const { data, error } = await supabase
+      .from('workers')
+      .select(`
+        id,
+        name,
+        phone,
+        location,
+        skill,
+        available
+      `)
+      .eq('id', workerId)
+      .single();
+      
+    if (error && error.code !== 'PGRST116') throw error;
+    
+    return data;
   } catch (error) {
     console.error('Error fetching worker by ID:', error);
     return null;
@@ -87,13 +122,27 @@ export const fetchWorkerById = async (workerId: string): Promise<Worker | null> 
  */
 export const searchWorkersBySkill = async (skill: string): Promise<Worker[]> => {
   try {
-    const workers = await fetchWorkers();
+    const query = supabase
+      .from('workers')
+      .select(`
+        id,
+        name,
+        phone,
+        location,
+        skill,
+        available
+      `);
     
-    if (!skill) return workers;
+    if (skill) {
+      // Case insensitive search
+      query.ilike('skill', `%${skill}%`);
+    }
     
-    return workers.filter(worker => 
-      worker.skill.toLowerCase() === skill.toLowerCase()
-    );
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    
+    return data || [];
   } catch (error) {
     console.error('Error searching workers by skill:', error);
     return [];

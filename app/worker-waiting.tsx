@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -22,13 +22,18 @@ export default function WorkerWaitingScreen() {
   // Load profile and start timer
   useEffect(() => {
     const loadProfileData = async () => {
-      const profileData = await getWorkerProfile();
-      setProfile(profileData);
-      
-      // Get initial waiting time
-      const duration = await getWaitingDuration();
-      if (duration !== null) {
-        setWaitingTime(duration);
+      try {
+        const profileData = await getWorkerProfile();
+        setProfile(profileData);
+        
+        // Get initial waiting time
+        const duration = await getWaitingDuration();
+        if (duration !== null) {
+          setWaitingTime(duration);
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load profile data');
+        router.replace('/(worker-tabs)');
       }
     };
     
@@ -36,9 +41,13 @@ export default function WorkerWaitingScreen() {
     
     // Set up interval to update waiting time
     const timer = setInterval(async () => {
-      const duration = await getWaitingDuration();
-      if (duration !== null) {
-        setWaitingTime(duration);
+      try {
+        const duration = await getWaitingDuration();
+        if (duration !== null) {
+          setWaitingTime(duration);
+        }
+      } catch (error) {
+        // Silent fail for timer updates
       }
     }, 60000); // Update every minute
     
@@ -55,15 +64,19 @@ export default function WorkerWaitingScreen() {
   const handleAppStateChange = async (nextAppState: AppStateStatus) => {
     if (appState.match(/inactive|background/) && nextAppState === 'active') {
       // App has come to the foreground
-      const duration = await getWaitingDuration();
-      if (duration !== null) {
-        setWaitingTime(duration);
-      }
-      
-      // Check if worker is still available (in case storage was cleared elsewhere)
-      const availability = await getWorkerAvailability();
-      if (!availability) {
-        router.replace('/onboarding');
+      try {
+        const duration = await getWaitingDuration();
+        if (duration !== null) {
+          setWaitingTime(duration);
+        }
+        
+        // Check if worker is still available (in case storage was cleared elsewhere)
+        const availability = await getWorkerAvailability();
+        if (!availability) {
+          router.replace('/(worker-tabs)');
+        }
+      } catch (error) {
+        // Silent fail for app state changes
       }
     }
     setAppState(nextAppState);
@@ -91,16 +104,20 @@ export default function WorkerWaitingScreen() {
         message: `I'm available for work today! Contact me at: ${profile.phone} - ${profile.name} (${profile.skill})`,
       });
     } catch (error) {
-      console.error('Error sharing:', error);
+      Alert.alert('Error', 'Could not share your information');
     }
   };
 
-  // Become unavailable and go back to onboarding
+  // Become unavailable and go back to profile
   const handleFinishWaiting = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await setWorkerUnavailable();
-    // Navigate to profile screen instead of onboarding
-    router.replace('/(worker-tabs)/profile');
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await setWorkerUnavailable();
+      // Navigate to profile screen instead of onboarding
+      router.replace('/(worker-tabs)/profile');
+    } catch (error) {
+      Alert.alert('Error', 'Could not update your availability status');
+    }
   };
 
   if (!profile) {

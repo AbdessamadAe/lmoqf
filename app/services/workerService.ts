@@ -1,8 +1,11 @@
 import { Alert } from 'react-native';
-import { saveWorkerProfile, setWorkerAvailable } from '@/services/storageService';
+import { supabase } from '../lib/supabase';
+import 'react-native-get-random-values'; // Required for crypto functions
+import { v4 as uuidv4 } from 'uuid';
 
-// Types for worker registration
+// Worker profile interface
 export interface WorkerProfile {
+  id?: string;  // Generated on backend
   name: string;
   phone: string;
   location: string;
@@ -11,31 +14,44 @@ export interface WorkerProfile {
 }
 
 /**
- * Register a new worker
- * This would typically call an API endpoint in a real app
+ * Register a new worker using Supabase
  */
 export const registerWorker = async (workerData: WorkerProfile): Promise<boolean> => {
   try {
-    // Simulate API call with a delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In a real app, this would be an API call:
-    // const response = await fetch('api/workers', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(workerData)
-    // });
-    // return response.ok;
-    
-    // Save the worker profile to local storage
-    await saveWorkerProfile(workerData);
-    
-    // If the worker is available, set them as active/waiting
-    if (workerData.available) {
-      await setWorkerAvailable(workerData.phone);
+    // Validate worker data
+    const validation = validateWorkerData(workerData);
+    if (!validation.valid) {
+      Alert.alert('Validation Error', validation.message || 'Please complete all required fields');
+      return false;
     }
     
-    console.log('Worker registered:', workerData);
+    // Add some default values for fields that would normally be set on the backend
+    const augmentedWorkerData: WorkerProfile = {
+      ...workerData,
+      id: workerData.id || uuidv4(), // Generate proper UUID
+      available: workerData.available
+    };
+    
+    // Insert the worker profile into Supabase workers table
+    const { error: profileError } = await supabase
+      .from('workers')
+      .upsert(augmentedWorkerData);
+      
+    if (profileError) throw profileError;
+    
+    // If worker is available, set their availability status in the worker_availability table
+    if (workerData.available) {
+      const { error: availabilityError } = await supabase
+        .from('worker_availability')
+        .upsert({
+          phone_number: workerData.phone,
+          is_available: true,
+          available_since: new Date().toISOString()
+        });
+        
+      if (availabilityError) throw availabilityError;
+    }
+    
     return true;
   } catch (error) {
     console.error('Error registering worker:', error);
