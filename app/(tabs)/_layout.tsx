@@ -42,6 +42,7 @@ export default function TabsLayout() {
           height: 60,
           paddingBottom: 8,
           ...(Platform.OS === 'ios' && {
+            height: 80,
             position: 'absolute',
             bottom: 0,
             left: 0,
