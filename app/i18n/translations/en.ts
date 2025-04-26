@@ -1,0 +1,88 @@
+export const en = {
+  // Common
+  appName: "Lmoqf",
+  submit: "Submit",
+  cancel: "Cancel",
+  next: "Next",
+  back: "Back",
+  done: "Done",
+  loading: "Loading...",
+  refresh: "Refresh",
+  
+  // Onboarding Screen
+  onboarding: {
+    title: "Lmoqf",
+    subtitle: "Connect workers and employers seamlessly",
+    workerButton: "I'm a Worker",
+    workerDescription: "Find work opportunities near you",
+    hirerButton: "I'm Hiring",
+    hirerDescription: "Find available workers nearby",
+    footer: "Find the perfect match today"
+  },
+
+  // Worker Registration
+  workerRegistration: {
+    headerTitle: "Register as a Worker",
+    title: "Create Your Worker Profile",
+    subtitle: "Complete your details to be discoverable by employers",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Enter your name",
+    phoneNumber: "Phone Number",
+    phoneNumberPlaceholder: "Enter your phone number",
+    location: "Location/City",
+    locationPlaceholder: "Where you're available to work",
+    selectSkill: "Select Your Main Skill",
+    loadingSkills: "Loading available skills...",
+    availableToday: "Available Today?",
+    submitProfile: "Submit Profile",
+    privacyPolicy: "By submitting, you agree to our terms and privacy policy"
+  },
+  
+  // Worker Success
+  workerSuccess: {
+    title: "Profile Submitted!",
+    message: "Your worker profile has been successfully created. Employers can now discover you and reach out for work opportunities.",
+    visibilityInfo: "Your profile is now visible to employers",
+    notificationInfo: "You'll be notified when someone wants to hire you",
+    editInfo: "You can edit your profile anytime",
+    viewProfile: "View Profile",
+    goHome: "Go to Home"
+  },
+  
+  // Worker Waiting
+  workerWaiting: {
+    statusText: "You are available for work",
+    title: "Waiting for calls",
+    subtitle: "Employers can see your profile and may call you soon",
+    waitingTime: "Waiting Time",
+    yourName: "Your Name",
+    contactNumber: "Contact Number",
+    skill: "Skill",
+    shareButton: "Share Contact Info",
+    shareMessage: "I'm available for work today! Contact me at: {{phone}} - {{name}} ({{skill}})",
+    noLongerAvailable: "I'm No Longer Available"
+  },
+  
+  // Available Workers
+  availableWorkers: {
+    headerTitle: "Available Workers",
+    title: "Find the right worker",
+    subtitle: "Browse through our collection of skilled professionals",
+    filterBySkill: "Filter by skill",
+    availableWorkers: "Available Workers",
+    noWorkersFound: "No workers found",
+    noWorkersSkill: "No workers with {{skill}} skills are currently available",
+    noWorkersArea: "No workers are currently available in your area",
+    contactWorker: "Contact Worker",
+    hourlyRate: "Hourly Rate",
+    location: "Location"
+  },
+  
+  // Validation
+  validation: {
+    nameRequired: "Name is required",
+    phoneRequired: "Phone number is required",
+    locationRequired: "Location is required",
+    skillRequired: "Please select a skill"
+  }
+};

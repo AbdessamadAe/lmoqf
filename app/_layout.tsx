@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { LanguageProvider } from '@/app/i18n/LanguageContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,47 +31,49 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack 
-          initialRouteName="onboarding"
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colorScheme === 'dark' ? '#000' : '#fff' },
-            headerStyle: {
-              height: 100, // Provide more space for header
-            },
-            headerLargeTitle: false,
-            headerShadowVisible: false,
-          }}
-        >
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen 
-            name="worker-registration" 
-            options={{ 
+      <LanguageProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack 
+            initialRouteName="onboarding"
+            screenOptions={{
               headerShown: false,
-              headerTitle: "Worker Registration", 
-              headerTitleStyle: { 
-                fontSize: 20,
+              contentStyle: { backgroundColor: colorScheme === 'dark' ? '#000' : '#fff' },
+              headerStyle: {
+                height: 100, // Provide more space for header
               },
-              headerBackTitleVisible: true,
-            }} 
-          />
-          <Stack.Screen name="worker-success" options={{ headerShown: false }} />
-          <Stack.Screen 
-            name="available-workers" 
-            options={{ 
-              headerShown: false, 
-              headerTitle: "Available Workers", 
-              headerTitleStyle: { 
-                fontSize: 20,
-              },
-              headerBackTitleVisible: false,
-            }} 
-          />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      </ThemeProvider>
+              headerLargeTitle: false,
+              headerShadowVisible: false,
+            }}
+          >
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="worker-registration" 
+              options={{ 
+                headerShown: false,
+                headerTitle: "Worker Registration", 
+                headerTitleStyle: { 
+                  fontSize: 20,
+                },
+                headerBackTitleVisible: true,
+              }} 
+            />
+            <Stack.Screen name="worker-success" options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="available-workers" 
+              options={{ 
+                headerShown: false, 
+                headerTitle: "Available Workers", 
+                headerTitleStyle: { 
+                  fontSize: 20,
+                },
+                headerBackTitleVisible: false,
+              }} 
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        </ThemeProvider>
+      </LanguageProvider>
     </SafeAreaProvider>
   );
 }
