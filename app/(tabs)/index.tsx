@@ -290,57 +290,6 @@ export default function HomeScreen() {
             Why Use Lmoqf?
           </ThemedText>
           <Card style={styles.benefitCard} variant="outlined">
-            {isWorker ? (
-              // Worker-specific benefits
-              <>
-                <View style={styles.benefitItem}>
-                  <Ionicons name="checkmark-circle" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Quick Job Access
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Connect with local employers instantly
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <View style={styles.benefitItem}>
-                  <Ionicons name="cash" size={24} color={theme.colors.tertiary} style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Set Your Rates
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Choose your own hourly rate for services
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <View style={styles.benefitItem}>
-                  <Ionicons name="star" size={24} color="#FFC107" style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Build Your Reputation
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Get reviewed and grow your client base
-                    </ThemedText>
-                  </View>
-                </View>
-              </>
-            ) : (
-              // Hirer-specific benefits
-              <>
                 <View style={styles.benefitItem}>
                   <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
                   <View style={styles.benefitContent}>
@@ -352,21 +301,6 @@ export default function HomeScreen() {
                     </ThemedText>
                     <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
                       Access a pool of qualified local workers
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <View style={styles.benefitItem}>
-                  <Ionicons name="shield-checkmark" size={24} color={theme.colors.tertiary} style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Verified Workers
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      All workers are reviewed for quality and reliability
                     </ThemedText>
                   </View>
                 </View>
@@ -385,8 +319,6 @@ export default function HomeScreen() {
                     </ThemedText>
                   </View>
                 </View>
-              </>
-            )}
           </Card>
         </View>
       </ScrollView>
@@ -450,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   benefitsSection: {
-    marginBottom: 24,
+    marginBottom: 84,
   },
   benefitCard: {
     padding: 0,
