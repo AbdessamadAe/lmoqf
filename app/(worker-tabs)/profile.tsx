@@ -8,7 +8,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Card } from '@/app/components/Card';
 import { Button } from '@/app/components/Button';
 import { useTheme } from '@/app/theme/useTheme';
-import { getWorkerProfile, isWorkerAvailable, setWorkerUnavailable } from '@/services/storageService';
+import { getWorkerProfile, isWorkerAvailable, setWorkerUnavailable, setWorkerAvailable } from '@/services/storageService';
 import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
@@ -111,8 +111,14 @@ export default function ProfileScreen() {
         ]
       );
     } else {
-      // If currently unavailable, go to waiting screen to become available
-      router.push('/worker-waiting');
+      // If currently unavailable, set them as available
+      try {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await setWorkerAvailable(profile.phone);
+        setIsAvailable(true);
+      } catch (error) {
+        Alert.alert('Error', 'Could not update availability status');
+      }
     }
   };
 

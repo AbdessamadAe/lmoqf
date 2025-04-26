@@ -145,10 +145,6 @@ export default function WorkerWaitingScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <View style={styles.content}>
-          {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/worker-registration')}>
-            <Ionicons name="arrow-back" size={24} color={primaryColor} />
-          </TouchableOpacity>
           {/* Status Header */}
           <View style={styles.statusHeader}>
             <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />

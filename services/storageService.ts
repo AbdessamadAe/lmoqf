@@ -40,14 +40,10 @@ export const getWorkerProfile = async (phone?: string): Promise<any | null> => {
     // First try to get from AsyncStorage as it's faster and more reliable
     const localProfileString = await AsyncStorage.getItem(WORKER_PROFILE_KEY);
     const localProfile = localProfileString ? JSON.parse(localProfileString) : null;
-    
-    // If we have a specific phone to search for and it doesn't match the stored profile
-    if (phone && localProfile && localProfile.phone !== phone) {
-      localProfile = null;
-    }
+    console.log('Retrieved profile from AsyncStorage:', localProfile);
     
     // If we have local profile and no specific phone was requested, return it immediately
-    if (localProfile && !phone) {
+    if (localProfile) {
       console.log('Retrieved profile from AsyncStorage:', localProfile.name);
       return localProfile;
     }
@@ -102,14 +98,14 @@ export const setWorkerAvailable = async (phoneNumber: string): Promise<void> => 
       phoneNumber
     };
     
-    // Save to Supabase
+    // Update availability in Supabase
     const { error } = await supabase
       .from('worker_availability')
-      .upsert({ 
-        phone_number: phoneNumber,
-        is_available: true,
-        available_since: new Date().toISOString()
-      });
+      .update({ 
+      is_available: true,
+      available_since: new Date().toISOString()
+      })
+      .eq('phone_number', phoneNumber);
       
     if (error) throw error;
     
