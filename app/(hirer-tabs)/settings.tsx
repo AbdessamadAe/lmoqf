@@ -103,7 +103,7 @@ export default function SettingsScreen() {
       i18n.t('settings.logoutConfirmMessage'),
       [
         {
-          text: i18n.t('common.cancel'),
+          text: i18n.t('cancel'),
           style: "cancel"
         },
         {

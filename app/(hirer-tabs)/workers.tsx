@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator } from 'react-native';
+import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,6 +14,12 @@ import { EmptyStateIllustration } from '@/components/illustrations/EmptyStateIll
 import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import { useUserRole } from '@/app/context/UserRoleContext';
+
+// Update the Worker interface if needed
+// If this is already defined elsewhere, this change should be made there instead
+interface ExtendedWorker extends Worker {
+  phone?: string;
+}
 
 export default function WorkersScreen() {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -91,9 +97,37 @@ export default function WorkersScreen() {
     return matchesSkill && matchesSearch;
   });
 
-  const handleContactWorker = (worker: Worker) => {
-    // This would typically open a chat or call interface
-    alert(`Contacting ${worker.name} - This feature will be implemented in a future update.`);
+  const handleCallWorker = (worker: ExtendedWorker) => {
+    const phone = worker.phone || '';
+    
+    if (!phone) {
+      Alert.alert(
+        "Phone Number Unavailable", 
+        `${worker.name}'s phone number is not available.`
+      );
+      return;
+    }
+    
+    const phoneUrl = `tel:${phone}`;
+    
+    Linking.canOpenURL(phoneUrl)
+      .then(supported => {
+        if (supported) {
+          return Linking.openURL(phoneUrl);
+        } else {
+          Alert.alert(
+            "Call Not Supported", 
+            "Your device doesn't support making phone calls from the app."
+          );
+        }
+      })
+      .catch(error => {
+        console.error('Error making call:', error);
+        Alert.alert(
+          "Call Error", 
+          "There was an error trying to make the call. Please try again."
+        );
+      });
   };
   
   if (isLoading) {
@@ -249,13 +283,19 @@ export default function WorkersScreen() {
                       ${worker.hourlyRate}/hr
                     </ThemedText>
                   </View>
+                  <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
+                    <Ionicons name="call-outline" size={14} color={theme.colors.secondary} />
+                    <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
+                      {worker.phone ? worker.phone : 'No phone number'}
+                    </ThemedText>
+                  </View>
                 </View>
                 
                 <Button
-                  title="Contact Worker"
+                  title="Call Worker"
                   variant="primary"
-                  icon="chatbox-outline"
-                  onPress={() => handleContactWorker(worker)}
+                  icon="call-outline"
+                  onPress={() => handleCallWorker(worker)}
                   style={{ marginTop: theme.spacing.md }}
                 />
               </Card>

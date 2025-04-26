@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack } from 'expo-router';
 import { fetchSkills } from './services/dataService';
 import { registerWorker, validateWorkerData, WorkerProfile } from './services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
@@ -99,22 +98,10 @@ export default function WorkerRegistrationScreen() {
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
-        <Stack.Screen options={{ 
-                  headerTitle: 'Register as a Worker',
-                  headerShown: true,
-                  headerTitleStyle: {
-                    fontSize: 20,
-                    fontWeight: '600',
-                  },
-                }} />
         <ScrollView 
           showsVerticalScrollIndicator={false} 
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={() => router.push('/onboarding')}>
-            <Ionicons name="arrow-back" size={24} color={primaryColor} />
-          </TouchableOpacity>
           
           <View style={styles.header}>
             <WorkerRegistrationIllustration />
