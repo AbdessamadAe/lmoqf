@@ -28,6 +28,11 @@ export default function TabsLayout() {
     return <Redirect href="/onboarding" />;
   }
   
+  // Get translations as strings instead of objects
+  const homeLabel = String(i18n.t('home'));
+  const workersLabel = String(i18n.t('workers'));
+  const settingsLabel = String( i18n.t('settingsTitle'));
+  
   return (
     <Tabs
       screenOptions={{
@@ -75,7 +80,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: i18n.t('home'),
+          title: homeLabel,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -83,21 +88,21 @@ export default function TabsLayout() {
       />
       
       {/* The Workers tab is only accessible to hirers */}
-        <Tabs.Screen
-          name="workers"
-          options={{
-            title: i18n.t('workers'),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people" size={size} color={color} />
-            ),
-          }}
-        />
+      <Tabs.Screen
+        name="workers"
+        options={{
+          title: workersLabel,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
       
       {/* Settings is accessible to all users */}
       <Tabs.Screen
         name="settings"
         options={{
-          title: i18n.t('settings'),
+          title: settingsLabel,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),

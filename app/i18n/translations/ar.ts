@@ -13,7 +13,7 @@ export const ar = {
   home: "الرئيسية",
   workers: "العمال",
   profile: "الملف الشخصي",
-  settings: "الإعدادات",
+  settingsTitle: "الإعدادات",
   
   // Onboarding Screen
   onboarding: {
@@ -90,5 +90,28 @@ export const ar = {
     phoneRequired: "رقم الهاتف مطلوب",
     locationRequired: "الموقع مطلوب",
     skillRequired: "يرجى اختيار مهارة"
+  },
+  
+  // Settings
+  settings: {
+    language: "اللغة",
+    appLanguage: "اللغة",
+    notifications: "الإشعارات",
+    pushNotifications: "إشعارات الدفع",
+    notificationsDescription: "استلام تنبيهات حول فرص العمل الجديدة",
+    support: "الدعم",
+    contactSupport: "تواصل مع الدعم",
+    contactSupportDescription: "الحصول على مساعدة مع أية مشاكل",
+    privacyPolicy: "سياسة الخصوصية",
+    termsOfService: "شروط الخدمة",
+    account: "الحساب",
+    logout: "تسجيل الخروج",
+    logoutDescription: "تسجيل الخروج من حسابك",
+    logoutConfirmTitle: "تسجيل الخروج؟",
+    logoutConfirmMessage: "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    logoutButton: "تسجيل الخروج",
+    appearance: "المظهر",
+    darkMode: "الوضع الداكن",
+    darkModeDescription: "التبديل بين المظهر الفاتح والداكن"
   }
 };

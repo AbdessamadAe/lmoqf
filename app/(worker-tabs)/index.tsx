@@ -52,12 +52,12 @@ export default function HomeScreen() {
       if (isWorker) {
         const workerData = await getWorkerProfile();
         setProfile(workerData);
-        
+
         // Check if worker is available
         const workerIsAvailable = await isWorkerAvailable();
         setIsAvailable(workerIsAvailable);
       }
-      
+
       // Get available workers count (relevant for both roles)
       const workers = await fetchAvailableWorkers();
       setWorkersCount(workers.length);
@@ -87,7 +87,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -103,19 +103,19 @@ export default function HomeScreen() {
         <View style={styles.welcomeSection}>
           <View style={styles.welcomeHeader}>
             <HelloWave />
-            <ThemedText style={[styles.welcomeText, { 
+            <ThemedText style={[styles.welcomeText, {
               color: theme.colors.textPrimary,
               fontSize: theme.fontSizes.xl,
-              fontWeight: theme.fontWeights.bold 
+              fontWeight: theme.fontWeights.bold
             }]}>
               {profile ? profile.name : i18n.t('onboarding.title')}
             </ThemedText>
           </View>
-          <ThemedText style={[styles.welcomeSubtitle, { 
+          <ThemedText style={[styles.welcomeSubtitle, {
             color: theme.colors.textSecondary,
-            fontSize: theme.fontSizes.md 
+            fontSize: theme.fontSizes.md
           }]}>
-            {isHirer 
+            {isHirer
               ? i18n.t('onboarding.hirerDescription')
               : i18n.t('onboarding.subtitle')
             }
@@ -124,142 +124,111 @@ export default function HomeScreen() {
 
         {/* Quick Actions - Role Specific */}
         <View style={styles.actionsSection}>
-          <ThemedText style={[styles.sectionTitle, { 
+          <ThemedText style={[styles.sectionTitle, {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
+            marginBottom: theme.spacing.md
           }]}>
             Quick Actions
           </ThemedText>
           <View style={styles.actionsRow}>
             {/* Worker-specific Actions */}
-            {isWorker && (
-              <>
-                {!profile && (
-                  <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                    <Ionicons name="person-add-outline" size={24} color={theme.colors.primary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      Register as a Worker
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Create your profile to find work
-                    </ThemedText>
-                    <Button 
-                      title="Register" 
-                      onPress={handleRegisterAsWorker} 
-                      size="sm"
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-
-                {profile && !isAvailable && (
-                  <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                    <Ionicons name="time-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      Start Working
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Make yourself available
-                    </ThemedText>
-                    <Button 
-                      title="Go Online" 
-                      onPress={handleGoToWaiting} 
-                      size="sm"
-                      variant="primary"
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-
-                {isAvailable && (
-                  <Card style={[styles.actionCard, { flex: 1, borderColor: theme.colors.tertiary, borderWidth: 1 }]} variant="outlined">
-                    <Ionicons name="checkmark-circle-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                    <ThemedText style={[styles.actionTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold,
-                      fontSize: theme.fontSizes.md
-                    }]}>
-                      You're Available
-                    </ThemedText>
-                    <ThemedText style={[styles.actionDescription, {
-                      color: theme.colors.textSecondary,
-                      fontSize: theme.fontSizes.sm,
-                      marginBottom: theme.spacing.sm
-                    }]}>
-                      Employers can see your profile
-                    </ThemedText>
-                    <Button 
-                      title="View Status" 
-                      onPress={handleGoToWaiting} 
-                      size="sm"
-                      variant="outline" 
-                      icon="arrow-forward"
-                    />
-                  </Card>
-                )}
-              </>
+            {profile && !isAvailable && (
+              <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
+                <Ionicons name="time-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
+                <ThemedText style={[styles.actionTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold,
+                  fontSize: theme.fontSizes.md
+                }]}>
+                  Start Working
+                </ThemedText>
+                <ThemedText style={[styles.actionDescription, {
+                  color: theme.colors.textSecondary,
+                  fontSize: theme.fontSizes.sm,
+                  marginBottom: theme.spacing.sm
+                }]}>
+                  Make yourself available
+                </ThemedText>
+                <Button
+                  title="Go Online"
+                  onPress={handleGoToWaiting}
+                  size="sm"
+                  variant="primary"
+                  icon="arrow-forward"
+                />
+              </Card>
+            )}
+            {isAvailable && (
+              <Card style={[styles.actionCard, { flex: 1, borderColor: theme.colors.tertiary, borderWidth: 1 }]} variant="outlined">
+                <Ionicons name="checkmark-circle-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
+                <ThemedText style={[styles.actionTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold,
+                  fontSize: theme.fontSizes.md
+                }]}>
+                  You're Available
+                </ThemedText>
+                <ThemedText style={[styles.actionDescription, {
+                  color: theme.colors.textSecondary,
+                  fontSize: theme.fontSizes.sm,
+                  marginBottom: theme.spacing.sm
+                }]}>
+                  Employers can see your profile
+                </ThemedText>
+                <Button
+                  title="View Status"
+                  onPress={handleGoToWaiting}
+                  size="sm"
+                  variant="outline"
+                  icon="arrow-forward"
+                />
+              </Card>
             )}
           </View>
         </View>
 
         {/* Role-specific Benefits Section */}
         <View style={styles.benefitsSection}>
-          <ThemedText style={[styles.sectionTitle, { 
+          <ThemedText style={[styles.sectionTitle, {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
+            marginBottom: theme.spacing.md
           }]}>
             Why Use Lmoqf?
           </ThemedText>
           <Card style={styles.benefitCard} variant="outlined">
-                <View style={styles.benefitItem}>
-                  <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Find Skilled Workers
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Access a pool of qualified local workers
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <View style={styles.benefitItem}>
-                  <Ionicons name="timer" size={24} color="#FFC107" style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      Quick Hiring
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Find available workers in your area today
-                    </ThemedText>
-                  </View>
-                </View>
+            <View style={styles.benefitItem}>
+              <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
+              <View style={styles.benefitContent}>
+                <ThemedText style={[styles.benefitTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold
+                }]}>
+                  Find Skilled Workers
+                </ThemedText>
+                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
+                  Access a pool of qualified local workers
+                </ThemedText>
+              </View>
+            </View>
+
+            <View style={styles.benefitItem}>
+              <Ionicons name="timer" size={24} color="#FFC107" style={styles.benefitIcon} />
+              <View style={styles.benefitContent}>
+                <ThemedText style={[styles.benefitTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold
+                }]}>
+                  Quick Hiring
+                </ThemedText>
+                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
+                  Find available workers in your area today
+                </ThemedText>
+              </View>
+            </View>
           </Card>
         </View>
       </ScrollView>

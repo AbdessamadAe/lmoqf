@@ -82,7 +82,7 @@ export default function SettingsScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerTitle: i18n.t('settings'),
+      headerTitle: i18n.t('settingsTitle'),
       headerStyle: {
         backgroundColor: theme.colors.background,
       },
@@ -180,35 +180,6 @@ export default function SettingsScreen() {
           </Card>
         </View>
         
-        {/* Notifications */}
-        <View style={styles.section}>
-          <ThemedText style={[styles.sectionTitle, { 
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.md,
-            fontWeight: theme.fontWeights.semiBold
-          }]}>
-            {i18n.t('settings.notifications')}
-          </ThemedText>
-          
-          <Card style={styles.card} variant="elevated">
-            <SettingsItem 
-              icon="notifications"
-              title={i18n.t('settings.pushNotifications')}
-              description={i18n.t('settings.notificationsDescription')}
-              iconColor={theme.colors.secondary}
-              isLast={true}
-              rightElement={
-                <Switch 
-                  value={true}
-                  onValueChange={() => {}}
-                  thumbColor={theme.colors.white}
-                  trackColor={{ false: '#ccc', true: theme.colors.primary }}
-                  ios_backgroundColor="#ccc"
-                />
-              }
-            />
-          </Card>
-        </View>
         
         {/* Support */}
         <View style={styles.section}>

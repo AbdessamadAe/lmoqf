@@ -13,7 +13,7 @@ export const en = {
   home: "Home",
   workers: "Workers",
   profile: "Profile",
-  settings: "Settings",
+  settingsTitle: "Settings",
   
   // Onboarding Screen
   onboarding: {
@@ -42,17 +42,6 @@ export const en = {
     availableToday: "Available Today?",
     submitProfile: "Submit Profile",
     privacyPolicy: "By submitting, you agree to our terms and privacy policy"
-  },
-  
-  // Worker Success
-  workerSuccess: {
-    title: "Profile Submitted!",
-    message: "Your worker profile has been successfully created. Employers can now discover you and reach out for work opportunities.",
-    visibilityInfo: "Your profile is now visible to employers",
-    notificationInfo: "You'll be notified when someone wants to hire you",
-    editInfo: "You can edit your profile anytime",
-    viewProfile: "View Profile",
-    goHome: "Go to Home"
   },
   
   // Worker Waiting
@@ -90,5 +79,28 @@ export const en = {
     phoneRequired: "Phone number is required",
     locationRequired: "Location is required",
     skillRequired: "Please select a skill"
+  },
+  
+  // Settings
+  settings: {
+    language: "Language",
+    appLanguage: "Lang",
+    notifications: "Notifications",
+    pushNotifications: "Push Notifications",
+    notificationsDescription: "Receive alerts about new job opportunities",
+    support: "Support",
+    contactSupport: "Contact Support",
+    contactSupportDescription: "Get help with any issues",
+    privacyPolicy: "Privacy Policy",
+    termsOfService: "Terms of Service",
+    account: "Account",
+    logout: "Log out",
+    logoutDescription: "Sign out from your account",
+    logoutConfirmTitle: "Log out?",
+    logoutConfirmMessage: "Are you sure you want to log out?",
+    logoutButton: "Log out",
+    appearance: "Appearance",
+    darkMode: "Dark Mode",
+    darkModeDescription: "Switch between light and dark theme"
   }
 };
