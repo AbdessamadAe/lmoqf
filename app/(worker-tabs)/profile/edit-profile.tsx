@@ -5,11 +5,11 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { fetchSkills } from '../services/hirerService';
-import { getWorkerProfile, registerWorker, validateWorkerData } from '../services/workerService';
+import { fetchSkills } from '../../services/hirerService';
+import { getWorkerProfile, registerWorker, validateWorkerData } from '../../services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
-import { Worker } from '../types';
+import { Worker } from '../../types';
 
 export default function EditProfileScreen() {
   const [name, setName] = useState('');
