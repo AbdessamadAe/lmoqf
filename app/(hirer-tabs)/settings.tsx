@@ -11,11 +11,11 @@ import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useLanguage } from '@/app/i18n/LanguageContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
 import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import { logoutWorker } from '@/app/services/workerService';
 
 // Settings item component
 const SettingsItem = ({ 
@@ -110,12 +110,7 @@ export default function SettingsScreen() {
           text: i18n.t('settings.logoutButton'),
           onPress: async () => {
             try {
-              // Clear all user data
-              await AsyncStorage.multiRemove([
-                '@lmoqf:worker_profile',
-                '@lmoqf:worker_available',
-                '@lmoqf:waiting_start_time'
-              ]);
+              await logoutWorker();
               // Redirect to onboarding screen
               router.replace('/onboarding');
             } catch (error) {

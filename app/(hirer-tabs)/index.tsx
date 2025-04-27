@@ -10,8 +10,8 @@ import { Card } from '@/app/components/Card';
 import { Button } from '@/app/components/Button';
 import { useTheme } from '@/app/theme/useTheme';
 import i18n from '@/app/i18n/i18n';
-import { fetchAvailableWorkers } from '../services/dataService';
-import { getWorkerProfile, isWorkerAvailable } from '@/services/storageService';
+import { fetchAvailableWorkers } from '../services/hirerService';
+import { getWorkerProfile, isWorkerAvailable } from '@/app/services/workerService';
 import { HelloWave } from '@/components/HelloWave';
 import { useUserRole } from '@/app/context/UserRoleContext';
 

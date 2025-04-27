@@ -8,12 +8,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { Card } from '@/app/components/Card';
 import { Button } from '@/app/components/Button';
 import { useTheme } from '@/app/theme/useTheme';
-import { getWorkerProfile, isWorkerAvailable, setWorkerUnavailable, setWorkerAvailable } from '@/services/storageService';
+import { getWorkerProfile, isWorkerAvailable, setWorkerUnavailable, setWorkerAvailable } from '@/app/services/workerService';
 import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { Share } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<any>(null);
@@ -47,13 +46,7 @@ export default function ProfileScreen() {
   
   const loadProfileData = async () => {
     setIsLoading(true);
-    try {
-      // Small delay for AsyncStorage to be fully updated
-      if (params.newRegistration === 'true') {
-        // Add a small delay to ensure AsyncStorage is updated
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      
+    try {      
       const profileData = await getWorkerProfile();
       
       if (profileData) {
@@ -278,19 +271,6 @@ export default function ProfileScreen() {
             onPress={handleShareProfile}
             style={{ marginTop: theme.spacing.lg }}
           />
-        </Card>
-        
-        {/* Additional Actions */}
-        <Card style={styles.actionsCard} variant={isAvailable ? "elevated" : "flat"}>
-          {isAvailable && (
-            <Button
-              title="View Waiting Status"
-              variant="primary"
-              icon="time-outline"
-              onPress={() => router.push('/worker-waiting')}
-              style={{ marginBottom: theme.spacing.md }}
-            />
-          )}
         </Card>
         
       </ScrollView>

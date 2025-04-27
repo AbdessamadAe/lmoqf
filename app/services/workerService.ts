@@ -2,24 +2,180 @@ import { Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import 'react-native-get-random-values'; // Required for crypto functions
 import { v4 as uuidv4 } from 'uuid';
-import { saveWorkerProfile, setWorkerAvailable } from '@/services/storageService';
+import { Worker } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { WORKER_PHONE_KEY } from '@/constants/localStorage';
 
-// Worker profile interface
-export interface WorkerProfile {
-  id?: string;  // Generated on backend
-  name: string;
-  phone: string;
-  location: string;
-  skill: string;
-  available: boolean;
-}
+
+// Worker profile interface should use Worker from dataService
+export type WorkerProfile = Worker;
+
+// Types
+export type WorkerAvailability = {
+  isAvailable: boolean;
+  availableSince: string; // ISO date string
+  phoneNumber: string;
+};
+
+// Save worker profile data to Supabase - consolidating with workerService.registerWorker
+export const saveWorkerProfile = async (profileData: Worker): Promise<void> => {
+  try {
+    const { error } = await supabase
+      .from('workers')
+      .upsert({
+        id: profileData.id,
+        ...profileData
+      });
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error saving worker profile:', error);
+    throw error;
+  }
+};
+
+// Get worker profile data from Supabase
+export const getWorkerProfile = async (): Promise<Worker | null> => {
+  try {
+
+    const query = supabase.from('workers').select('*').eq('phone', WORKER_PHONE_KEY);
+
+    const { data, error } = await query.single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    return data || null;
+  } catch (error) {
+    console.error('Error getting worker profile:', error);
+    return null;
+  }
+};
+
+// Set worker as available in Supabase
+export const setWorkerAvailable = async (): Promise<void> => {
+  try {
+    const phoneNumber = await AsyncStorage.getItem(WORKER_PHONE_KEY);
+    // Use upsert instead of separate check and update/insert
+    const { error } = await supabase
+      .from('worker_availability')
+      .upsert({
+        phone_number: phoneNumber,
+        is_available: true,
+        available_since: new Date().toISOString()
+      });
+
+    if (error) throw error;
+
+    // Also update the main worker record
+    await supabase
+      .from('workers')
+      .update({ available: true })
+      .eq('phone', phoneNumber);
+  } catch (error) {
+    console.error('Error setting worker availability:', error);
+    throw error;
+  }
+};
+
+// Set worker as unavailable in Supabase
+export const setWorkerUnavailable = async (): Promise<void> => {
+  try {
+    const phoneNumber = await AsyncStorage.getItem(WORKER_PHONE_KEY);
+    // Use upsert instead of separate check and update/insert
+    const { error } = await supabase
+      .from('worker_availability')
+      .upsert({
+        phone_number: phoneNumber,
+        is_available: false,
+        available_since: new Date().toISOString()
+      });
+
+    if (error) throw error;
+
+    // Also update the main worker record
+    await supabase
+      .from('workers')
+      .update({ available: false })
+      .eq('phone', phoneNumber);
+  } catch (error) {
+    console.error('Error setting worker availability:', error);
+    throw error;
+  }
+};
+
+// Get worker availability status from Supabase
+export const getWorkerAvailability = async (): Promise<WorkerAvailability | null> => {
+  try {
+    const phoneNumber = await AsyncStorage.getItem(WORKER_PHONE_KEY);
+    if (!phoneNumber) {
+      throw new Error('No phone number found for the worker');
+    }
+
+    const { data, error } = await supabase
+      .from('worker_availability')
+      .select('*')
+      .eq('phone_number', phoneNumber)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw error;
+    }
+
+    if (data) {
+      return {
+        isAvailable: data.is_available,
+        availableSince: data.available_since,
+        phoneNumber: data.phone_number
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error getting worker availability:', error);
+    return null;
+  }
+};
+
+// Check if worker is currently available
+export const isWorkerAvailable = async (): Promise<boolean> => {
+  const availability = await getWorkerAvailability();
+  return availability !== null && availability.isAvailable;
+};
+
+/**
+ * Logs out the worker and clears all locally stored data
+ */
+export const logoutWorker = async (): Promise<void> => {
+  try {
+    // Before clearing data, delete worker
+    try {
+      await supabase.from('worker_availability').delete().eq('phone_number', WORKER_PHONE_KEY);
+      await supabase.from('workers').delete().eq('phone', WORKER_PHONE_KEY);
+    } catch (error) {
+      console.error('Error deleting worker during logout:', error);
+      // Continue with logout process even if this fails
+    }
+    
+    // Clear all AsyncStorage data
+    await AsyncStorage.clear();
+    
+    console.log('Worker logged out successfully, all local storage cleared');
+  } catch (error) {
+    console.error('Error during logout:', error);
+    throw error;
+  }
+};
+
+
 
 /**
  * Check if a phone number already exists in the workers table
  */
 export const checkPhoneExists = async (phone: string): Promise<boolean> => {
   try {
-    const { data, error, count } = await supabase
+    const { count, error } = await supabase
       .from('workers')
       .select('*', { count: 'exact', head: true })
       .eq('phone', phone);
@@ -62,11 +218,17 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<{ succe
     const augmentedWorkerData: WorkerProfile = {
       ...workerData,
       id: workerData.id || uuidv4(), // Generate proper UUID
-      available: workerData.available
     };
     
-    // Insert the worker profile into Supabase workers table and AsyncStorage
-    await saveWorkerProfile(augmentedWorkerData);
+    // Insert the worker profile into Supabase workers table
+    const { error } = await supabase
+      .from('workers')
+      .insert([augmentedWorkerData]);
+      
+    if (error) throw error;
+
+    //store user phone number in AsyncStorage
+    await AsyncStorage.setItem(WORKER_PHONE_KEY, workerData.phone);
     
     // If worker is available, set their availability status
     if (workerData.available) {

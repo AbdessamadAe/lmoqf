@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/app/theme/useTheme';
-import { fetchAvailableWorkers, Worker, fetchSkills } from '../services/dataService';
+import { fetchAvailableWorkers, Worker, fetchSkills } from '../services/hirerService';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { InputField } from '../components/InputField';

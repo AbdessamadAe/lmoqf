@@ -1,319 +1,306 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useNavigation } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
-
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { Card } from '@/app/components/Card';
-import { Button } from '@/app/components/Button';
-import { useTheme } from '@/app/theme/useTheme';
-import i18n from '@/app/i18n/i18n';
-import { fetchAvailableWorkers } from '../services/dataService';
-import { getWorkerProfile, isWorkerAvailable } from '@/services/storageService';
-import { HelloWave } from '@/components/HelloWave';
-import { useUserRole } from '@/app/context/UserRoleContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { WaitingIllustration } from '@/components/illustrations/WaitingIllustration';
+import { Ionicons } from '@expo/vector-icons';
+import { getWorkerAvailability, getWorkerProfile, setWorkerUnavailable, getWaitingDuration } from '@/app/services/workerService';
+import * as Haptics from 'expo-haptics';
 
-export default function HomeScreen() {
+export default function WorkerWaitingScreen() {
   const [profile, setProfile] = useState<any>(null);
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
-  const [workersCount, setWorkersCount] = useState<number>(0);
-  const [refreshing, setRefreshing] = useState(false);
-  const theme = useTheme();
-  const navigation = useNavigation();
-  const { userRole, isWorker, isHirer } = useUserRole();
+  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
+  const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
+  const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
+  const params = useLocalSearchParams<{ newRegistration?: string }>();
 
-  // Set the header title
+  // Load profile
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerTitle: i18n.t('appName'),
-      headerStyle: {
-        backgroundColor: theme.colors.background,
-      },
-      headerTitleStyle: {
-        color: theme.colors.textPrimary,
-        fontSize: theme.fontSizes.xl,
-        fontWeight: theme.fontWeights.bold,
-      },
-      headerShadowVisible: false,
-    });
-  }, [navigation, theme]);
+    const loadProfileData = async () => {
+      try {
+        setIsLoading(true);
+        
+        const profileData = await getWorkerProfile();
+        console.log('Profile data:', profileData);
+        setProfile(profileData);
 
-  // Load user data
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      // Load worker profile for worker role
-      if (isWorker) {
-        const workerData = await getWorkerProfile();
-        setProfile(workerData);
-
-        // Check if worker is available
-        const workerIsAvailable = await isWorkerAvailable();
-        setIsAvailable(workerIsAvailable);
+      } catch (error) {
+        console.error('Failed to load profile data:', error);
+        Alert.alert('Error', 'Failed to load profile data');
+        router.replace('/(worker-tabs)');
+      } finally {
+        setIsLoading(false);
       }
+    };
+    
+    loadProfileData();
+    
+    // Set up interval to update waiting time
+    const timer = setInterval(async () => {
+      try {
+        const duration = await getWaitingDuration();
+        if (duration !== null) {
+          setWaitingTime(duration);
+        }
+      } catch (error) {
+        // Silent fail for timer updates
+      }
+    }, 60000); // Update every minute
+    
+    // App state change handler to refresh when app comes to foreground
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+    return () => {
+      clearInterval(timer);
+      subscription.remove();
+    };
+  }, [params.newRegistration]);
+  
+  // Handle app coming to foreground
+  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+    if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      // App has come to the foreground
+      try {
+        const duration = await getWaitingDuration();
+        if (duration !== null) {
+          setWaitingTime(duration);
+        }
+        
+        // Check if worker is still available (in case storage was cleared elsewhere)
+        const availability = await getWorkerAvailability();
+        if (!availability) {
+          router.replace('/(worker-tabs)');
+        }
+      } catch (error) {
+        // Silent fail for app state changes
+      }
+    }
+    setAppState(nextAppState);
+  };
 
-      // Get available workers count (relevant for both roles)
-      const workers = await fetchAvailableWorkers();
-      setWorkersCount(workers.length);
-    } catch (error) {
-      console.error('Error loading data:', error);
+  // Format waiting time into hours and minutes
+  const formatWaitingTime = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+    } else {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return `${hours} hour${hours !== 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
-    setRefreshing(false);
+  // Share contact info
+  const handleShare = async () => {
+    if (!profile) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    try {
+      await Share.share({
+        message: `I'm available for work today! Contact me at: ${profile.phone} - ${profile.name} (${profile.skill})`,
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Could not share your information');
+    }
   };
 
-  const handleRegisterAsWorker = () => {
-    router.push('/worker-registration');
+  // Become unavailable and go back to profile
+  const handleFinishWaiting = async () => {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await setWorkerUnavailable();
+      // Navigate to profile screen instead of onboarding
+      router.replace('/(worker-tabs)/profile');
+    } catch (error) {
+      Alert.alert('Error', 'Could not update your availability status');
+    }
   };
 
-  const handleFindWorkers = () => {
-    router.push('/workers');
-  };
-
-  const handleGoToWaiting = () => {
-    router.push('/worker-waiting');
-  };
+  if (!profile) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Loading...</ThemedText>
+      </ThemedView>
+    );
+  }
 
   return (
-    <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
-      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[theme.colors.primary]}
-            tintColor={theme.colors.primary}
-          />
-        }
-      >
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <View style={styles.welcomeHeader}>
-            <HelloWave />
-            <ThemedText style={[styles.welcomeText, {
-              color: theme.colors.textPrimary,
-              fontSize: theme.fontSizes.xl,
-              fontWeight: theme.fontWeights.bold
-            }]}>
-              {profile ? profile.name : i18n.t('onboarding.title')}
+    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <ThemedView style={styles.container}>
+        <View style={styles.content}>
+          {/* Status Header */}
+          <View style={styles.statusHeader}>
+            <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
+            <ThemedText style={styles.statusText}>You are available for work</ThemedText>
+          </View>
+          
+          <WaitingIllustration />
+          
+          <ThemedText style={styles.title}>Waiting for calls</ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Employers can see your profile and may call you soon
+          </ThemedText>
+          
+          <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
+            
+            <View style={styles.infoRow}>
+              <Ionicons name="person-outline" size={22} color={primaryColor} style={styles.infoIcon} />
+              <View style={styles.infoContent}>
+                <ThemedText style={styles.infoLabel}>Your Name</ThemedText>
+                <ThemedText style={styles.infoValue}>{profile.name}</ThemedText>
+              </View>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Ionicons name="call-outline" size={22} color={primaryColor} style={styles.infoIcon} />
+              <View style={styles.infoContent}>
+                <ThemedText style={styles.infoLabel}>Contact Number</ThemedText>
+                <ThemedText style={styles.infoValue}>{profile.phone}</ThemedText>
+              </View>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Ionicons name="construct-outline" size={22} color={primaryColor} style={styles.infoIcon} />
+              <View style={styles.infoContent}>
+                <ThemedText style={styles.infoLabel}>Skill</ThemedText>
+                <ThemedText style={styles.infoValue}>{profile.skill}</ThemedText>
+              </View>
+            </View>
+          </View>
+          
+          <TouchableOpacity
+            style={[styles.cancelButton, { borderColor: dangerColor }]}
+            onPress={handleFinishWaiting}
+          >
+            <ThemedText style={[styles.cancelButtonText, { color: dangerColor }]}>
+              I'm No Longer Available
             </ThemedText>
-          </View>
-          <ThemedText style={[styles.welcomeSubtitle, {
-            color: theme.colors.textSecondary,
-            fontSize: theme.fontSizes.md
-          }]}>
-            {isHirer
-              ? i18n.t('onboarding.hirerDescription')
-              : i18n.t('onboarding.subtitle')
-            }
-          </ThemedText>
+          </TouchableOpacity>
         </View>
-
-        {/* Quick Actions - Role Specific */}
-        <View style={styles.actionsSection}>
-          <ThemedText style={[styles.sectionTitle, {
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.lg,
-            fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md
-          }]}>
-            Quick Actions
-          </ThemedText>
-          <View style={styles.actionsRow}>
-            {/* Worker-specific Actions */}
-            {profile && !isAvailable && (
-              <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                <Ionicons name="time-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                <ThemedText style={[styles.actionTitle, {
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold,
-                  fontSize: theme.fontSizes.md
-                }]}>
-                  Start Working
-                </ThemedText>
-                <ThemedText style={[styles.actionDescription, {
-                  color: theme.colors.textSecondary,
-                  fontSize: theme.fontSizes.sm,
-                  marginBottom: theme.spacing.sm
-                }]}>
-                  Make yourself available
-                </ThemedText>
-                <Button
-                  title="Go Online"
-                  onPress={handleGoToWaiting}
-                  size="sm"
-                  variant="primary"
-                  icon="arrow-forward"
-                />
-              </Card>
-            )}
-            {isAvailable && (
-              <Card style={[styles.actionCard, { flex: 1, borderColor: theme.colors.tertiary, borderWidth: 1 }]} variant="outlined">
-                <Ionicons name="checkmark-circle-outline" size={24} color={theme.colors.tertiary} style={styles.actionIcon} />
-                <ThemedText style={[styles.actionTitle, {
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold,
-                  fontSize: theme.fontSizes.md
-                }]}>
-                  You're Available
-                </ThemedText>
-                <ThemedText style={[styles.actionDescription, {
-                  color: theme.colors.textSecondary,
-                  fontSize: theme.fontSizes.sm,
-                  marginBottom: theme.spacing.sm
-                }]}>
-                  Employers can see your profile
-                </ThemedText>
-                <Button
-                  title="View Status"
-                  onPress={handleGoToWaiting}
-                  size="sm"
-                  variant="outline"
-                  icon="arrow-forward"
-                />
-              </Card>
-            )}
-          </View>
-        </View>
-
-        {/* Role-specific Benefits Section */}
-        <View style={styles.benefitsSection}>
-          <ThemedText style={[styles.sectionTitle, {
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.lg,
-            fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md
-          }]}>
-            Why Use Lmoqf?
-          </ThemedText>
-          <Card style={styles.benefitCard} variant="outlined">
-            <View style={styles.benefitItem}>
-              <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
-              <View style={styles.benefitContent}>
-                <ThemedText style={[styles.benefitTitle, {
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold
-                }]}>
-                  Find Skilled Workers
-                </ThemedText>
-                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                  Access a pool of qualified local workers
-                </ThemedText>
-              </View>
-            </View>
-
-            <View style={styles.benefitItem}>
-              <Ionicons name="timer" size={24} color="#FFC107" style={styles.benefitIcon} />
-              <View style={styles.benefitContent}>
-                <ThemedText style={[styles.benefitTitle, {
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold
-                }]}>
-                  Quick Hiring
-                </ThemedText>
-                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                  Find available workers in your area today
-                </ThemedText>
-              </View>
-            </View>
-          </Card>
-        </View>
-      </ScrollView>
+      </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    padding: 16,
-  },
-  welcomeSection: {
-    marginTop: 8,
-    marginBottom: 24,
-  },
-  welcomeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  welcomeText: {
-    marginLeft: 8,
-  },
-  welcomeSubtitle: {
-    marginLeft: 36,
-  },
-  actionsSection: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    marginBottom: 16,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionCard: {
-    padding: 16,
-    alignItems: 'flex-start',
-  },
-  actionIcon: {
-    marginBottom: 12,
-  },
-  actionTitle: {
-    marginBottom: 4,
-  },
-  actionDescription: {
-    marginBottom: 16,
-  },
-  featuredSection: {
-    marginBottom: 24,
-  },
-  categoriesContainer: {
-    paddingRight: 16,
-    gap: 8,
-  },
-  categoryCard: {
-    padding: 12,
-    minWidth: 24,
-    maxWidth: 160,
-    alignItems: 'center',
-  },
-  benefitsSection: {
-    marginBottom: 84,
-  },
-  benefitCard: {
-    padding: 0,
-  },
-  benefitItem: {
-    flexDirection: 'row',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
-  },
-  benefitIcon: {
-    marginRight: 16,
-  },
-  benefitContent: {
+  safeArea: {
     flex: 1,
   },
-  benefitTitle: {
-    marginBottom: 4,
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 35,
   },
-  benefitDescription: {
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    zIndex: 1,
+  },
+  statusHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 0,
+  },
+  statusIndicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  statusText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    opacity: 0.7,
+    marginBottom: 24,
+    maxWidth: '90%',
+  },
+  infoCard: {
+    width: '100%',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  infoIcon: {
+    marginRight: 12,
+    width: 24,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
     fontSize: 14,
-    lineHeight: 20,
+    opacity: 0.7,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  shareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    width: '100%',
+    marginBottom: 12,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  shareButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  cancelButton: {
+    paddingVertical: 16,
+    borderRadius: 12,
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
