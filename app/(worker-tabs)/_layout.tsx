@@ -40,11 +40,11 @@ export default function WorkerTabsLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.isDark ? theme.colors.textSecondary : '#6B7280',
+        tabBarInactiveTintColor: theme.isDark ? theme.colors.textSecondary : theme.colors.textSecondary,
         headerShown: false,
         tabBarShowLabel: true,
         tabBarStyle: {
-          backgroundColor: theme.isDark ? 'rgba(17, 24, 39, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: theme.isDark ? `${theme.colors.background}CC` : `${theme.colors.background}CC`, // CC = 80% opacity
           borderTopWidth: 0.5,
           borderTopColor: theme.colors.border,
           height: 60,

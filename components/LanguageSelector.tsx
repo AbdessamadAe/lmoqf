@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLanguage } from '@/app/i18n/LanguageContext';
 import { ThemedText } from './ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 interface LanguageSelectorProps {
@@ -11,7 +11,8 @@ interface LanguageSelectorProps {
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
   const { locale, setLocale } = useLanguage();
-  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
+  const theme = useTheme();
+  const primaryColor = theme.colors.primary;
 
   const changeLanguage = (language: string) => {
     if (language === locale) return;
@@ -48,7 +49,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
           English
         </ThemedText>
         {locale === 'en' && (
-          <Ionicons name="checkmark" size={16} color="#fff" style={styles.checkIcon} />
+          <Ionicons name="checkmark" size={16} color={theme.colors.textPrimary === theme.colors.background ? theme.colors.textPrimary : theme.colors.background} style={styles.checkIcon} />
         )}
       </TouchableOpacity>
 
@@ -60,7 +61,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
           العربية
         </ThemedText>
         {locale === 'ar' && (
-          <Ionicons name="checkmark" size={16} color="#fff" style={styles.checkIcon} />
+          <Ionicons name="checkmark" size={16} color={theme.colors.textPrimary === theme.colors.background ? theme.colors.textPrimary : theme.colors.background} style={styles.checkIcon} />
         )}
       </TouchableOpacity>
     </View>
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeText: {
-    color: '#fff',
+    color: '#FFFFFF', // This will be overridden by the theme system
   },
   checkIcon: {
     marginLeft: 4,

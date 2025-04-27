@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View, Acti
 import { router, useNavigation } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from '../services/hirerService';
 import { registerWorker, validateWorkerData } from '../services/workerService';
@@ -22,9 +22,9 @@ export default function WorkerRegistrationScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
 
-  const inputBackground = useThemeColor({ light: '#f5f5f7', dark: '#1e1e1e' }, 'background');
-  const cardBackground = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
-  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
+  const theme = useTheme();
+  const inputBackground = theme.colors.inputBackground;
+  const primaryColor = theme.colors.primary;
 
   // Ensure header is properly configured
   useEffect(() => {
@@ -104,7 +104,7 @@ return (
       >
         {/* Manual back button for mobile devices that might not show the navigation header */}
         <TouchableOpacity 
-          style={styles.backButton} 
+          style={[styles.backButton, { backgroundColor: `${theme.colors.background}CC` }]} 
           onPress={handleBack}
           accessibilityLabel="Go back"
         >
@@ -117,7 +117,7 @@ return (
           <ThemedText style={styles.subtitle}>Complete your details to be discoverable by employers</ThemedText>
         </View>
 
-        <View style={styles.formCard}>
+        <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
           <View style={styles.inputContainer}>
             <View style={styles.labelContainer}>
               <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
@@ -128,7 +128,7 @@ return (
               value={name}
               onChangeText={setName}
               placeholder="Enter your name"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.colors.textSecondary}
             />
           </View>
 
@@ -143,7 +143,7 @@ return (
               onChangeText={setPhone}
               placeholder="Enter your phone number"
               keyboardType="phone-pad"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.colors.textSecondary}
             />
           </View>
 
@@ -157,7 +157,7 @@ return (
               value={location}
               onChangeText={setLocation}
               placeholder="Where you're available to work"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.colors.textSecondary}
             />
           </View>
 
@@ -181,7 +181,7 @@ return (
                       {
                         backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
                         borderWidth: skill === selectedSkill ? 0 : 1,
-                        borderColor: 'rgba(0,0,0,0.05)'
+                        borderColor: theme.colors.border
                       }
                     ]}
                     onPress={() => setSelectedSkill(skill)}
@@ -189,7 +189,7 @@ return (
                     <ThemedText
                       style={[
                         styles.skillText,
-                        { color: skill === selectedSkill ? '#fff' : undefined }
+                        { color: skill === selectedSkill ? theme.colors.background : undefined }
                       ]}
                     >
                       {skill}
@@ -208,9 +208,9 @@ return (
             <Switch
               value={available}
               onValueChange={setAvailable}
-              ios_backgroundColor="#ccc"
-              trackColor={{ false: '#767577', true: primaryColor }}
-              thumbColor="#f4f3f4"
+              ios_backgroundColor={theme.colors.border}
+              trackColor={{ false: theme.colors.border, true: primaryColor }}
+              thumbColor={theme.colors.background}
             />
           </View>
         </View>
@@ -225,11 +225,11 @@ return (
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={theme.colors.background} />
           ) : (
             <>
-              <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
-              <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.submitIcon} />
+              <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>Submit Profile</ThemedText>
+              <Ionicons name="arrow-forward" size={20} color={theme.colors.background} style={styles.submitIcon} />
             </>
           )}
         </TouchableOpacity>
@@ -372,7 +372,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

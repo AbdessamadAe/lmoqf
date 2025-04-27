@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    borderBottomColor: theme.colors.border,
   },
   benefitIcon: {
     marginRight: 16,

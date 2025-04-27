@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View, Text, Animated } from 'react-native
 import { router } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingIllustration } from '@/components/illustrations/OnboardingIllustration';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,9 +15,7 @@ import { useUserRole } from '../context/UserRoleContext';
 export type UserRole = 'worker' | 'hirer';
 
 export default function OnboardingScreen() {
-  const backgroundColor = useThemeColor({ light: '#fff', dark: '#000' }, 'background');
-  const tintColor = useThemeColor({ light: '#4F46E5', dark: '#6366F1' }, 'text');
-  const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
+  const theme = useTheme();
   const { isRTL } = useLanguage();
   const { setUserRole } = useUserRole();
   
@@ -49,12 +47,12 @@ export default function OnboardingScreen() {
         
         <View style={styles.optionsContainer}>
           <TouchableOpacity
-            style={[styles.optionButton, { backgroundColor: cardBackground }]}
+            style={[styles.optionButton, { backgroundColor: theme.colors.card }]}
             onPress={() => handleRoleSelect('worker')}
             activeOpacity={0.8}
           >
-            <View style={[styles.iconContainer, { backgroundColor: 'rgba(79, 70, 229, 0.1)' }]}>
-              <Ionicons name="construct-outline" size={28} color={tintColor} />
+            <View style={[styles.iconContainer, { backgroundColor: `${theme.colors.primary}1A` }]}>
+              <Ionicons name="construct-outline" size={28} color={theme.colors.primary} />
             </View>
             <View style={styles.optionContent}>
               <ThemedText style={styles.optionText}>{i18n.t('onboarding.workerButton')}</ThemedText>
@@ -63,18 +61,18 @@ export default function OnboardingScreen() {
             <Ionicons 
               name={isRTL ? "chevron-back" : "chevron-forward"} 
               size={20} 
-              color={tintColor} 
+              color={theme.colors.primary} 
               style={styles.arrowIcon} 
             />
           </TouchableOpacity>
           
           <TouchableOpacity 
-            style={[styles.optionButton, { backgroundColor: cardBackground }]}
+            style={[styles.optionButton, { backgroundColor: theme.colors.card }]}
             onPress={() => handleRoleSelect('hirer')}
             activeOpacity={0.8}
           >
-            <View style={[styles.iconContainer, { backgroundColor: 'rgba(251, 113, 133, 0.1)' }]}>
-              <Ionicons name="briefcase-outline" size={28} color="#F43F5E" />
+            <View style={[styles.iconContainer, { backgroundColor: `${theme.colors.secondary}1A` }]}>
+              <Ionicons name="briefcase-outline" size={28} color={theme.colors.secondary} />
             </View>
             <View style={styles.optionContent}>
               <ThemedText style={styles.optionText}>{i18n.t('onboarding.hirerButton')}</ThemedText>
@@ -83,7 +81,7 @@ export default function OnboardingScreen() {
             <Ionicons 
               name={isRTL ? "chevron-back" : "chevron-forward"} 
               size={20} 
-              color={tintColor} 
+              color={theme.colors.primary} 
               style={styles.arrowIcon} 
             />
           </TouchableOpacity>

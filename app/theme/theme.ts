@@ -37,39 +37,39 @@ export const fontWeights = {
 
 export const lightTheme = {
   colors: {
-    primary: '#2563eb',       // Blue
-    secondary: '#F43F5E',     // Pink
-    tertiary: '#10B981',      // Green
-    background: '#FFFFFF',
-    card: '#F9FAFB',
-    textPrimary: '#111827',
-    textSecondary: '#6B7280', 
-    border: '#E5E7EB',
-    notification: '#EF4444',  // Red for notifications/errors
-    success: '#10B981',       // Green for success states
-    warning: '#F59E0B',       // Amber for warnings
-    info: '#3B82F6',          // Blue for information
-    inputBackground: '#F3F4F6',
-    separator: 'rgba(0,0,0,0.05)',
+    primary: '#8B5A2B',       // Saddle Brown - rich walnut
+    secondary: '#A67C52',     // Camel - medium oak tone
+    tertiary: '#D2B48C',      // Tan - light maple
+    background: '#FFF8E1',    // Light cream - birch wood
+    card: '#F5E9D0',          // Eggshell - light ash wood
+    textPrimary: '#3E2723',   // Dark Brown - ebony wood
+    textSecondary: '#6D4C41', // Brown - rosewood
+    border: '#D7CCC8',        // Light taupe - weathered wood
+    notification: '#B71C1C',  // Dark red - redwood
+    success: '#33691E',       // Forest green - complementary to wood
+    warning: '#E65100',       // Burnt orange - cherry wood
+    info: '#8B5A2B',          // Saddle Brown - matches primary
+    inputBackground: '#F5E9D0', // Eggshell - light ash wood
+    separator: 'rgba(62,39,35,0.05)', // Dark Brown with transparency
   }
 };
 
 export const darkTheme = {
   colors: {
-    primary: '#3B82F6',
-    secondary: '#FB7185',
-    tertiary: '#34D399',
-    background: '#111827',
-    card: '#1F2937',
-    textPrimary: '#F9FAFB',
-    textSecondary: '#9CA3AF',
-    border: '#374151',
-    notification: '#F87171',
-    success: '#34D399',
-    warning: '#FBBF24',
-    info: '#60A5FA',
-    inputBackground: '#1F2937',
-    separator: 'rgba(255,255,255,0.1)',
+    primary: '#9C6F44',       // Golden oak - warmer for dark theme
+    secondary: '#7D5A4D',     // Hickory - medium-dark wood
+    tertiary: '#B78D5A',      // Golden amber - cedar wood
+    background: '#362A21',    // Dark umber - ebony/dark walnut
+    card: '#483C32',          // Taupe - dark oak
+    textPrimary: '#E6D7B8',   // Cream - bleached wood
+    textSecondary: '#C8B49D', // Khaki - aged pine
+    border: '#5D4037',        // Dark brown - mahogany
+    notification: '#C62828',  // Red - redwood with contrast for dark theme
+    success: '#558B2F',       // Olive - moss on wood
+    warning: '#FF8F00',       // Amber - pine resin
+    info: '#9C6F44',          // Golden oak - matches primary
+    inputBackground: '#483C32', // Taupe - dark oak
+    separator: 'rgba(230,215,184,0.1)', // Cream with transparency
   }
 };
 

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 export const WaitingIllustration = () => {
-  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
-  const secondaryColor = useThemeColor({ light: '#F43F5E', dark: '#FB7185' }, 'text');
-  const tertiaryColor = useThemeColor({ light: '#10B981', dark: '#34D399' }, 'text');
+  const theme = useTheme();
+  const primaryColor = theme.colors.primary;
+  const secondaryColor = theme.colors.secondary;
+  const tertiaryColor = theme.colors.tertiary;
   
   // For animated elements
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -56,7 +57,7 @@ export const WaitingIllustration = () => {
           style={[
             styles.phoneCircle, 
             { 
-              backgroundColor: 'rgba(37, 99, 235, 0.1)',
+              backgroundColor: `${primaryColor}1A`, // equivalent to rgba with 0.1 opacity
               transform: [{ scale: pulseAnim }]
             }
           ]}
@@ -71,7 +72,7 @@ export const WaitingIllustration = () => {
           style={[
             styles.orbit,
             {
-              borderColor: 'rgba(79, 70, 229, 0.2)',
+              borderColor: `${primaryColor}33`, // equivalent to rgba with 0.2 opacity
               transform: [{ rotate: spin }]
             }
           ]}

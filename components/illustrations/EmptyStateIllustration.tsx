@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 export const EmptyStateIllustration = () => {
-  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
-  const secondaryColor = useThemeColor({ light: '#F43F5E', dark: '#FB7185' }, 'text');
-  const backgroundColor = useThemeColor({ light: '#F3F4F6', dark: '#374151' }, 'background');
+  const theme = useTheme();
+  const primaryColor = theme.colors.primary;
+  const secondaryColor = theme.colors.secondary;
+  const backgroundColor = theme.colors.background;
   
   return (
     <View style={styles.container}>
-      <View style={[styles.circle, { backgroundColor: 'rgba(37, 99, 235, 0.1)' }]}>
+      <View style={[styles.circle, { backgroundColor: `${primaryColor}1A` }]}>
         <View style={styles.iconContainer}>
           <Ionicons name="search-outline" size={40} color={primaryColor} />
         </View>

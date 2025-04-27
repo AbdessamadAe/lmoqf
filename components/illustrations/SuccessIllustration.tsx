@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 
 export const SuccessIllustration = () => {
-  const primaryColor = useThemeColor({ light: '#10B981', dark: '#34D399' }, 'tint');
-  const secondaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'text');
-  const backgroundColor = useThemeColor({ light: '#F3F4F6', dark: '#374151' }, 'background');
+  const theme = useTheme();
+  const primaryColor = theme.colors.success;
+  const secondaryColor = theme.colors.primary;
+  const backgroundColor = theme.colors.background;
   
   // For animated checkmark
   const checkmarkScale = new Animated.Value(0);
@@ -43,8 +44,8 @@ export const SuccessIllustration = () => {
   
   return (
     <View style={styles.container}>
-      <View style={[styles.outerCircle, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
-        <View style={[styles.innerCircle, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
+      <View style={[styles.outerCircle, { backgroundColor: `${primaryColor}1A` }]}>
+        <View style={[styles.innerCircle, { backgroundColor: `${primaryColor}33` }]}>
           <Animated.View 
             style={[
               styles.checkmarkContainer, 
@@ -57,7 +58,7 @@ export const SuccessIllustration = () => {
               }
             ]}
           >
-            <Ionicons name="checkmark" size={40} color="#fff" />
+            <Ionicons name="checkmark" size={40} color={theme.colors.background} />
           </Animated.View>
         </View>
       </View>
@@ -65,8 +66,8 @@ export const SuccessIllustration = () => {
       {/* Decorative elements */}
       <View style={[styles.decorCircle1, { backgroundColor: secondaryColor }]} />
       <View style={[styles.decorCircle2, { backgroundColor: primaryColor }]} />
-      <View style={[styles.decorCircle3, { backgroundColor: 'rgba(16, 185, 129, 0.3)' }]} />
-      <View style={[styles.decorCircle4, { backgroundColor: 'rgba(37, 99, 235, 0.2)' }]} />
+      <View style={[styles.decorCircle3, { backgroundColor: `${primaryColor}4D` }]} />
+      <View style={[styles.decorCircle4, { backgroundColor: `${secondaryColor}33` }]} />
     </View>
   );
 };

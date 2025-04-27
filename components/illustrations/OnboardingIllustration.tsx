@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/app/theme/useTheme';
 
 export const OnboardingIllustration = () => {
-  const primaryColor = useThemeColor({ light: '#4F46E5', dark: '#6366F1' }, 'text');
-  const secondaryColor = useThemeColor({ light: '#FB7185', dark: '#F43F5E' }, 'text');
-  const tertiaryColor = useThemeColor({ light: '#34D399', dark: '#10B981' }, 'text');
-  const backgroundColor = useThemeColor({ light: '#F3F4F6', dark: '#374151' }, 'background');
+  const theme = useTheme();
+  const primaryColor = theme.colors.primary;
+  const secondaryColor = theme.colors.secondary;
+  const tertiaryColor = theme.colors.tertiary;
+  const backgroundColor = theme.colors.background;
   
   return (
     <View style={styles.container}>
