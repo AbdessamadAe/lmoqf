@@ -119,35 +119,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Featured Categories Section */}
-        <View style={styles.featuredSection}>
-          <ThemedText style={[styles.sectionTitle, { 
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.lg,
-            fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
-          }]}>
-            Featured Categories
-          </ThemedText>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesContainer}
-          >
-            {['Construction', 'Plumbing', 'Electrical', 'Carpentry', 'Painting'].map((category) => (
-              <Card key={category} style={styles.categoryCard} variant="elevated" padding="small">
-                <ThemedText style={{ 
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.medium,
-                  fontSize: theme.fontSizes.md
-                }}>
-                  {category}
-                </ThemedText>
-              </Card>
-            ))}
-          </ScrollView>
-        </View>
-
         {/* Role-specific Benefits Section */}
         <View style={styles.benefitsSection}>
           <ThemedText style={[styles.sectionTitle, { 

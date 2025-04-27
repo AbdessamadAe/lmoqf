@@ -17,6 +17,29 @@ export type WorkerAvailability = {
   phoneNumber: string;
 };
 
+
+export const getCalledWorkers = async (): Promise<Worker[]> => {
+  try {
+    const calledworkers = await AsyncStorage.getItem('lmoqf@:calledWorkers');
+    if (calledworkers) {
+      return JSON.parse(calledworkers);
+    }
+    return [];
+  } catch (error) {
+    console.error('Error getting called workers:', error);
+    return [];
+  }
+}
+
+
+export const setCalledWorkers = async (calledWorkers: Worker[]): Promise<void> => {
+  try {
+    await AsyncStorage.setItem('calledWorkers', JSON.stringify(updatedCalledWorkers));
+  } catch (error) {
+    console.error('Error setting called workers:', error);
+  }
+}
+
 // Save worker profile data to Supabase - consolidating with workerService.registerWorker
 export const saveWorkerProfile = async (profileData: Worker): Promise<void> => {
   try {

@@ -280,8 +280,6 @@ const styles = StyleSheet.create({
   },
   versionContainer: {
     alignItems: 'center',
-    marginTop: 16,
-    marginBottom: 24,
   },
   versionText: {
     fontSize: 12,

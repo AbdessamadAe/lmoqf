@@ -15,14 +15,20 @@ import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import { useUserRole } from '@/app/context/UserRoleContext';
 import { Worker } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCalledWorkers } from '../services/workerService';
 
 export default function WorkersScreen() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeFilter, setActiveFilter] = useState<'skills' | 'locations'>('skills');
+  const [calledWorkers, setCalledWorkers] = useState<Record<string, boolean>>({});
   const theme = useTheme();
   const navigation = useNavigation();
   const { isHirer, userRole } = useUserRole();
@@ -51,8 +57,29 @@ export default function WorkersScreen() {
 
   useEffect(() => {
     loadData();
+    // Load called workers from storage
+    loadCalledWorkers();
   }, []);
-  
+
+  const loadCalledWorkers = async () => {
+    try {
+      const savedCalledWorkers = await getCalledWorkers();
+      if (savedCalledWorkers) {
+        setCalledWorkers(savedCalledWorkers);
+      }
+    } catch (error) {
+      console.error('Error loading called workers:', error);
+    }
+  };
+
+  const saveCalledWorkers = async (updatedCalledWorkers: Record<string, boolean>) => {
+    try {
+      await setCalledWorkers(updatedCalledWorkers);
+    } catch (error) {
+      console.error('Error saving called workers:', error);
+    }
+  };
+
   const loadData = async () => {
     setIsLoading(true);
     try {
@@ -60,58 +87,101 @@ export default function WorkersScreen() {
         fetchAvailableWorkers(),
         fetchSkills(),
       ]);
-      
+
       setWorkers(workersData);
       setSkills(skillsData);
+
+      // Extract unique locations from workers data
+      const uniqueLocations = Array.from(new Set(workersData.map(worker => worker.location))).sort();
+      setLocations(uniqueLocations);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
   };
-  
+
   const handleSkillFilter = (skill: string) => {
     setSelectedSkill(selectedSkill === skill ? '' : skill);
   };
 
-  // Filter workers based on selected skill and search query
+  const handleLocationFilter = (location: string) => {
+    setSelectedLocation(selectedLocation === location ? '' : location);
+  };
+
+  const clearFilters = () => {
+    setSelectedSkill('');
+    setSelectedLocation('');
+    setSearchQuery('');
+  };
+
+  // const resetCalledWorkers = () => {
+  //   Alert.alert(
+  //     "Reset Called Workers",
+  //     "Are you sure you want to clear all called workers history?",
+  //     [
+  //       { text: "Cancel", style: "cancel" },
+  //       { 
+  //         text: "Reset", 
+  //         onPress: async () => {
+  //           const updatedCalledWorkers = {};
+  //           setCalledWorkers(updatedCalledWorkers);
+  //           await saveCalledWorkers(updatedCalledWorkers);
+  //         },
+  //         style: "destructive"
+  //       }
+  //     ]
+  //   );
+  // };
+
+  // Filter workers based on selected skill, location and search query
+
   const filteredWorkers = workers.filter(worker => {
     const matchesSkill = selectedSkill ? worker.skill === selectedSkill : true;
-    const matchesSearch = searchQuery 
-      ? worker.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        worker.skill.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        worker.location.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesLocation = selectedLocation ? worker.location === selectedLocation : true;
+    const matchesSearch = searchQuery
+      ? worker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      worker.skill.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      worker.location.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
-    
-    return matchesSkill && matchesSearch;
+
+    return matchesSkill && matchesLocation && matchesSearch;
   });
 
   const handleCallWorker = (worker: Worker) => {
     const phone = worker.phone || '';
-    
+
     if (!phone) {
       Alert.alert(
-        "Phone Number Unavailable", 
+        "Phone Number Unavailable",
         `${worker.name}'s phone number is not available.`
       );
       return;
     }
-    
+
     const phoneUrl = `tel:${phone}`;
-    
+
     Linking.canOpenURL(phoneUrl)
       .then(supported => {
         if (supported) {
+          // Mark worker as called
+          const updatedCalledWorkers = {
+            ...calledWorkers,
+            [worker.id]: true
+          };
+          setCalledWorkers(updatedCalledWorkers);
+          saveCalledWorkers(updatedCalledWorkers);
+
           return Linking.openURL(phoneUrl);
         } else {
           Alert.alert(
-            "Call Not Supported", 
+            "Call Not Supported",
             "Your device doesn't support making phone calls from the app."
           );
         }
@@ -119,12 +189,12 @@ export default function WorkersScreen() {
       .catch(error => {
         console.error('Error making call:', error);
         Alert.alert(
-          "Call Error", 
+          "Call Error",
           "There was an error trying to make the call. Please try again."
         );
       });
   };
-  
+
   if (isLoading) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -135,23 +205,23 @@ export default function WorkersScreen() {
       </ThemedView>
     );
   }
-  
+
   return (
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={handleRefresh}
             colors={[theme.colors.primary]}
             tintColor={theme.colors.primary}
           />
         }
       >
-        {/* Search and Filter */}
+        {/* Search */}
         <View style={styles.searchContainer}>
           <InputField
             placeholder="Search workers by name, skill, or location"
@@ -161,36 +231,130 @@ export default function WorkersScreen() {
             containerStyle={styles.searchInput}
           />
         </View>
-        
-        {/* Filter pills by skill */}
-        <ScrollView 
-          horizontal 
+
+        {/* Filter Tabs */}
+        <View style={styles.filterTabs}>
+          <Button
+            title="Skills"
+            variant={activeFilter === 'skills' ? 'primary' : 'outline'}
+            size="sm"
+            onPress={() => setActiveFilter('skills')}
+            fullWidth={false}
+            style={styles.filterTab}
+          />
+          <Button
+            title="Locations"
+            variant={activeFilter === 'locations' ? 'primary' : 'outline'}
+            size="sm"
+            onPress={() => setActiveFilter('locations')}
+            fullWidth={false}
+            style={styles.filterTab}
+          />
+        </View>
+
+        {/* Filter controls */}
+        <View style={styles.filterControlsContainer}>
+          {(selectedSkill || selectedLocation || searchQuery) && (
+            <Button
+              title="Clear Filters"
+              variant="text"
+              size="sm"
+              onPress={clearFilters}
+              icon="close-circle-outline"
+              fullWidth={false}
+              style={styles.clearButton}
+            />
+          )}
+        </View>
+
+        {/* Filter pills */}
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.pillsContainer}
         >
-          {skills.map(skill => (
-            <Button
-              key={skill}
-              title={skill}
-              variant={selectedSkill === skill ? 'primary' : 'outline'}
-              size="sm"
-              onPress={() => handleSkillFilter(skill)}
-              fullWidth={false}
-              style={styles.pillButton}
-            />
-          ))}
+          {activeFilter === 'skills' ? (
+            skills.map(skill => (
+              <Button
+                key={skill}
+                title={skill}
+                variant={selectedSkill === skill ? 'primary' : 'outline'}
+                size="sm"
+                onPress={() => handleSkillFilter(skill)}
+                fullWidth={false}
+                style={styles.pillButton}
+              />
+            ))
+          ) : (
+            locations.map(location => (
+              <Button
+                key={location}
+                title={location}
+                variant={selectedLocation === location ? 'primary' : 'outline'}
+                size="sm"
+                onPress={() => handleLocationFilter(location)}
+                fullWidth={false}
+                style={styles.pillButton}
+              />
+            ))
+          )}
         </ScrollView>
-        
+
+        {/* Active Filters Display */}
+        {(selectedSkill || selectedLocation) && (
+          <View style={styles.activeFiltersContainer}>
+            <ThemedText style={[styles.activeFiltersTitle, { color: theme.colors.textSecondary }]}>
+              Active filters:
+            </ThemedText>
+            <View style={styles.activeFiltersList}>
+              {selectedSkill && (
+                <View style={[styles.activeFilterChip, { backgroundColor: theme.colors.primary + '15' }]}>
+                  <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
+                  <ThemedText style={[styles.activeFilterText, { color: theme.colors.primary }]}>
+                    {selectedSkill}
+                  </ThemedText>
+                  <Ionicons
+                    name="close-circle"
+                    size={16}
+                    color={theme.colors.primary}
+                    onPress={() => setSelectedSkill('')}
+                    style={styles.removeFilterIcon}
+                  />
+                </View>
+              )}
+              {selectedLocation && (
+                <View style={[styles.activeFilterChip, { backgroundColor: theme.colors.secondary + '15' }]}>
+                  <Ionicons name="location-outline" size={14} color={theme.colors.secondary} />
+                  <ThemedText style={[styles.activeFilterText, { color: theme.colors.secondary }]}>
+                    {selectedLocation}
+                  </ThemedText>
+                  <Ionicons
+                    name="close-circle"
+                    size={16}
+                    color={theme.colors.secondary}
+                    onPress={() => setSelectedLocation('')}
+                    style={styles.removeFilterIcon}
+                  />
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
         {/* Results Heading */}
         <View style={styles.resultsHeader}>
-          <ThemedText style={[styles.resultsTitle, { 
+          <ThemedText style={[styles.resultsTitle, {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold
           }]}>
-            {selectedSkill ? 
-              `${selectedSkill} Workers` : 
-              `Available Workers`
+            {selectedSkill && selectedLocation ?
+              `${selectedSkill} Workers in ${selectedLocation}` :
+              selectedSkill ?
+                `${selectedSkill} Workers` :
+                selectedLocation ?
+                  `Workers in ${selectedLocation}` :
+                  `Available Workers`
             }
           </ThemedText>
           <View style={[styles.counterBadge, { backgroundColor: theme.colors.primary + '20' }]}>
@@ -199,31 +363,43 @@ export default function WorkersScreen() {
             </ThemedText>
           </View>
         </View>
-          
+
         {/* Worker Cards */}
         {filteredWorkers.length === 0 ? (
           <ThemedView style={styles.emptyState}>
             <EmptyStateIllustration />
-            <ThemedText style={[styles.emptyStateTitle, { 
+            <ThemedText style={[styles.emptyStateTitle, {
               color: theme.colors.textPrimary,
               fontSize: theme.fontSizes.xl,
               fontWeight: theme.fontWeights.semiBold
             }]}>
               No workers found
             </ThemedText>
-            <ThemedText style={[styles.emptyStateText, { 
+            <ThemedText style={[styles.emptyStateText, {
               color: theme.colors.textSecondary,
               fontSize: theme.fontSizes.md,
               textAlign: 'center',
               marginBottom: 24
             }]}>
-              {selectedSkill 
-                ? `No workers with ${selectedSkill} skills are currently available` 
-                : 'No workers match your search criteria'}
+              {selectedSkill && selectedLocation ?
+                `No ${selectedSkill} workers in ${selectedLocation} are currently available` :
+                selectedSkill ?
+                  `No workers with ${selectedSkill} skills are currently available` :
+                  selectedLocation ?
+                    `No workers in ${selectedLocation} are currently available` :
+                    'No workers match your search criteria'}
             </ThemedText>
             <Button
-              title="Refresh"
+              title="Clear Filters"
               variant="primary"
+              icon="refresh"
+              onPress={clearFilters}
+              fullWidth={false}
+              style={{ marginBottom: 16 }}
+            />
+            <Button
+              title="Refresh"
+              variant="outline"
               icon="refresh"
               onPress={handleRefresh}
               fullWidth={false}
@@ -231,70 +407,81 @@ export default function WorkersScreen() {
           </ThemedView>
         ) : (
           <View style={styles.workersContainer}>
-            {filteredWorkers.map((worker) => (
-              <Card key={worker.id} style={styles.workerCard} variant="elevated">
-                <View style={styles.cardHeader}>
-                  <View style={[styles.avatarContainer, { backgroundColor: theme.colors.primary + '15' }]}>
-                    <ThemedText style={[styles.avatarText, { color: theme.colors.primary }]}>
-                      {worker.name.charAt(0)}
-                    </ThemedText>
-                  </View>
-                  <View style={styles.headerContent}>
-                    <ThemedText style={[styles.workerName, { 
-                      color: theme.colors.textPrimary,
-                      fontSize: theme.fontSizes.lg,
-                      fontWeight: theme.fontWeights.semiBold
+            {filteredWorkers.map((worker) => {
+              const isCalled = calledWorkers[worker.id];
+              return (
+                <Card
+                  key={worker.id}
+                  style={[
+                    styles.workerCard,
+                    isCalled && styles.calledWorkerCard,
+                    { opacity: isCalled ? 0.8 : 1 }
+                  ]}
+                  variant="elevated"
+                >
+                  <View style={styles.cardHeader}>
+                    <View style={[styles.avatarContainer, {
+                      backgroundColor: theme.colors.primary + '15',
+                      opacity: isCalled ? 0.7 : 1
                     }]}>
-                      {worker.name}
-                    </ThemedText>
-                    <View style={styles.ratingContainer}>
-                      <Ionicons name="star" size={14} color="#FFC107" />
-                      <ThemedText style={[styles.ratingText, { 
-                        color: theme.colors.textSecondary,
-                        fontSize: theme.fontSizes.sm
-                      }]}>
-                        {worker.rating} ({worker.ratingCount} reviews)
+                      <ThemedText style={[styles.avatarText, { color: theme.colors.primary }]}>
+                        {worker.name.charAt(0)}
+                      </ThemedText>
+                    </View>
+                    <View style={styles.headerContent}>
+                      <View style={styles.nameContainer}>
+                        <ThemedText style={[styles.workerName, {
+                          color: theme.colors.textPrimary,
+                          fontSize: theme.fontSizes.lg,
+                          fontWeight: theme.fontWeights.semiBold
+                        }]}>
+                          {worker.name}
+                        </ThemedText>
+                        {isCalled && (
+                          <View style={styles.calledBadge}>
+                            <Ionicons name="checkmark-circle" size={16} color={theme.colors.success} />
+                            <ThemedText style={styles.calledText}>
+                              Called
+                            </ThemedText>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                    <Button
+                      icon="call-outline"
+                      variant={isCalled ? "outline" : "ghost"}
+                      size="sm"
+                      onPress={() => handleCallWorker(worker)}
+                      fullWidth={false}
+                      style={styles.callButton}
+                    />
+                  </View>
+
+                  <View style={[styles.tagsContainer, { gap: theme.spacing.sm }]}>
+                    <View style={[styles.tag, { backgroundColor: theme.colors.primary + '15' }]}>
+                      <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
+                      <ThemedText style={[styles.tagText, { color: theme.colors.primary }]}>
+                        {worker.skill}
+                      </ThemedText>
+                    </View>
+                    <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
+                      <Ionicons name="location-outline" size={14} color={theme.colors.secondary} />
+                      <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
+                        {worker.location}
                       </ThemedText>
                     </View>
                   </View>
-                </View>
-                
-                <View style={[styles.tagsContainer, { gap: theme.spacing.sm }]}>
-                  <View style={[styles.tag, { backgroundColor: theme.colors.primary + '15' }]}>
-                    <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
-                    <ThemedText style={[styles.tagText, { color: theme.colors.primary }]}>
-                      {worker.skill}
-                    </ThemedText>
-                  </View>
-                  <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
-                    <Ionicons name="location-outline" size={14} color={theme.colors.secondary} />
-                    <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
-                      {worker.location}
-                    </ThemedText>
-                  </View>
-                  <View style={[styles.tag, { backgroundColor: theme.colors.tertiary + '15' }]}>
-                    <Ionicons name="cash-outline" size={14} color={theme.colors.tertiary} />
-                    <ThemedText style={[styles.tagText, { color: theme.colors.tertiary }]}>
-                      ${worker.hourlyRate}/hr
-                    </ThemedText>
-                  </View>
-                  <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
-                    <Ionicons name="call-outline" size={14} color={theme.colors.secondary} />
-                    <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
-                      {worker.phone ? worker.phone : 'No phone number'}
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <Button
-                  title="Call Worker"
-                  variant="primary"
-                  icon="call-outline"
-                  onPress={() => handleCallWorker(worker)}
-                  style={{ marginTop: theme.spacing.md }}
-                />
-              </Card>
-            ))}
+
+                  <Button
+                    title={isCalled ? "Call Again" : "Contact Worker"}
+                    variant={isCalled ? "outline" : "primary"}
+                    icon="call-outline"
+                    onPress={() => handleCallWorker(worker)}
+                    style={{ marginTop: theme.spacing.md }}
+                  />
+                </Card>
+              );
+            })}
           </View>
         )}
       </ScrollView>
@@ -319,6 +506,26 @@ const styles = StyleSheet.create({
   searchInput: {
     marginBottom: 8,
   },
+  filterTabs: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  filterTab: {
+    marginRight: 8,
+    flex: 1,
+    maxWidth: 120,
+  },
+  filterControlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 8,
+  },
+  clearButton: {
+    alignSelf: 'flex-end',
+  },
+  resetCallsButton: {
+    marginLeft: 'auto',
+  },
   pillsContainer: {
     flexDirection: 'row',
     paddingBottom: 8,
@@ -326,6 +533,34 @@ const styles = StyleSheet.create({
   pillButton: {
     marginRight: 8,
     marginBottom: 8,
+  },
+  activeFiltersContainer: {
+    marginVertical: 12,
+  },
+  activeFiltersTitle: {
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  activeFiltersList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  activeFilterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  activeFilterText: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginLeft: 4,
+  },
+  removeFilterIcon: {
+    marginLeft: 4,
   },
   resultsHeader: {
     flexDirection: 'row',
@@ -351,9 +586,14 @@ const styles = StyleSheet.create({
   workerCard: {
     padding: 16,
   },
+  calledWorkerCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50', // Success green color
+  },
   cardHeader: {
     flexDirection: 'row',
     marginBottom: 16,
+    alignItems: 'center',
   },
   avatarContainer: {
     width: 50,
@@ -371,8 +611,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
   workerName: {
     marginBottom: 4,
+    marginRight: 8,
+  },
+  calledBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4CAF5015', // Light green background
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+  },
+  calledText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#4CAF50', // Success green color
+    marginLeft: 2,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -380,6 +640,9 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     marginLeft: 4,
+  },
+  callButton: {
+    marginLeft: 8,
   },
   tagsContainer: {
     flexDirection: 'row',
