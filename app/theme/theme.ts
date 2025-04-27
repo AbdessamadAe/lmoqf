@@ -37,39 +37,39 @@ export const fontWeights = {
 
 export const lightTheme = {
   colors: {
-    primary: '#8B5A2B',       // Saddle Brown - rich walnut
-    secondary: '#A67C52',     // Camel - medium oak tone
-    tertiary: '#D2B48C',      // Tan - light maple
-    background: '#FFF8E1',    // Light cream - birch wood
-    card: '#F5E9D0',          // Eggshell - light ash wood
-    textPrimary: '#3E2723',   // Dark Brown - ebony wood
-    textSecondary: '#6D4C41', // Brown - rosewood
-    border: '#D7CCC8',        // Light taupe - weathered wood
-    notification: '#B71C1C',  // Dark red - redwood
-    success: '#33691E',       // Forest green - complementary to wood
-    warning: '#E65100',       // Burnt orange - cherry wood
-    info: '#8B5A2B',          // Saddle Brown - matches primary
-    inputBackground: '#F5E9D0', // Eggshell - light ash wood
-    separator: 'rgba(62,39,35,0.05)', // Dark Brown with transparency
+    primary: '#3E7CB1',       // Soft blue - professional, trustworthy
+    secondary: '#81A4CD',     // Light blue - complementary softer tone
+    tertiary: '#5D9CEC',      // Bright blue - accent for important elements
+    background: '#F8FAFC',    // Off-white - clean, professional look
+    card: '#FFFFFF',          // Pure white - for content cards
+    textPrimary: '#2C3E50',   // Dark slate - primary text
+    textSecondary: '#7F8C8D', // Medium gray - secondary text
+    border: '#E2E8F0',        // Light gray - subtle borders
+    notification: '#E74C3C',  // Soft red - notifications
+    success: '#2ECC71',       // Soft green - success messages
+    warning: '#F39C12',       // Soft orange - warnings
+    info: '#3498DB',          // Medium blue - info messages
+    inputBackground: '#F5F7FA', // Light gray - form inputs
+    separator: 'rgba(44,62,80,0.05)', // Dark slate with transparency
   }
 };
 
 export const darkTheme = {
   colors: {
-    primary: '#9C6F44',       // Golden oak - warmer for dark theme
-    secondary: '#7D5A4D',     // Hickory - medium-dark wood
-    tertiary: '#B78D5A',      // Golden amber - cedar wood
-    background: '#362A21',    // Dark umber - ebony/dark walnut
-    card: '#483C32',          // Taupe - dark oak
-    textPrimary: '#E6D7B8',   // Cream - bleached wood
-    textSecondary: '#C8B49D', // Khaki - aged pine
-    border: '#5D4037',        // Dark brown - mahogany
-    notification: '#C62828',  // Red - redwood with contrast for dark theme
-    success: '#558B2F',       // Olive - moss on wood
-    warning: '#FF8F00',       // Amber - pine resin
-    info: '#9C6F44',          // Golden oak - matches primary
-    inputBackground: '#483C32', // Taupe - dark oak
-    separator: 'rgba(230,215,184,0.1)', // Cream with transparency
+    primary: '#5D9CEC',       // Brighter blue - stands out in dark mode
+    secondary: '#4A6FA5',     // Medium blue - complementary tone
+    tertiary: '#81A4CD',      // Light blue - accent for important elements
+    background: '#1E293B',    // Dark blue-gray - professional dark background
+    card: '#2C3E50',          // Dark slate - for content cards
+    textPrimary: '#ECF0F1',   // Off-white - primary text
+    textSecondary: '#BDC3C7', // Light gray - secondary text
+    border: '#3E4C5E',        // Medium blue-gray - subtle borders
+    notification: '#E74C3C',  // Soft red - notifications
+    success: '#2ECC71',       // Soft green - success messages
+    warning: '#F39C12',       // Soft orange - warnings
+    info: '#3498DB',          // Medium blue - info messages
+    inputBackground: '#283747', // Slightly lighter than background
+    separator: 'rgba(236,240,241,0.1)', // Off-white with transparency
   }
 };
 
