@@ -10,6 +10,7 @@ import { getWorkerProfile, registerWorker, validateWorkerData } from '../../serv
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../../types';
+import i18n from '@/app/i18n/i18n';
 
 export default function EditProfileScreen() {
   const [name, setName] = useState('');
@@ -104,7 +105,7 @@ export default function EditProfileScreen() {
       }
     } catch (error) {
       console.error('Error during registration:', error);
-      Alert.alert('Registration Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert(i18n.t('editProfile.registrationError'));
     }
   };
 
@@ -117,21 +118,21 @@ return (
       >
         <View style={styles.header}>
           <WorkerRegistrationIllustration />
-          <ThemedText style={styles.title}>Edit Your Worker Profile</ThemedText>
-          <ThemedText style={styles.subtitle}>Complete your details to be discoverable by employers</ThemedText>
+          <ThemedText style={styles.title}>{i18n.t('editProfile.title')}</ThemedText>
+          <ThemedText style={styles.subtitle}>{i18n.t('editProfile.subtitle')}</ThemedText>
         </View>
 
         <View style={styles.formCard}>
           <View style={styles.inputContainer}>
             <View style={styles.labelContainer}>
               <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>Full Name</ThemedText>
+              <ThemedText style={styles.label}>{i18n.t('editProfile.fullName')}</ThemedText>
             </View>
             <TextInput
               style={[styles.input, { backgroundColor: inputBackground }]}
               value={name}
               onChangeText={setName}
-              placeholder="Enter your name"
+              placeholder={i18n.t('editProfile.fullNamePlaceholder')}
               placeholderTextColor="#999"
             />
           </View>
@@ -139,13 +140,13 @@ return (
           <View style={styles.inputContainer}>
             <View style={styles.labelContainer}>
               <Ionicons name="call-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>Phone Number</ThemedText>
+              <ThemedText style={styles.label}>{i18n.t('editProfile.phoneNumber')}</ThemedText>
             </View>
             <TextInput
               style={[styles.input, { backgroundColor: inputBackground }]}
               value={phone}
               onChangeText={setPhone}
-              placeholder="Enter your phone number"
+              placeholder={i18n.t('editProfile.phoneNumberPlaceholder')}
               keyboardType="phone-pad"
               placeholderTextColor="#999"
             />
@@ -154,13 +155,13 @@ return (
           <View style={styles.inputContainer}>
             <View style={styles.labelContainer}>
               <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>Location/City</ThemedText>
+              <ThemedText style={styles.label}>{i18n.t('editProfile.location')}</ThemedText>
             </View>
             <TextInput
               style={[styles.input, { backgroundColor: inputBackground }]}
               value={location}
               onChangeText={setLocation}
-              placeholder="Where you're available to work"
+              placeholder={i18n.t('editProfile.locationPlaceholder')}
               placeholderTextColor="#999"
             />
           </View>
@@ -168,12 +169,12 @@ return (
           <View style={styles.inputContainer}>
             <View style={styles.labelContainer}>
               <Ionicons name="construct-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>Select Your Main Skill</ThemedText>
+              <ThemedText style={styles.label}>{i18n.t('editProfile.selectSkill')}</ThemedText>
             </View>
             {isLoading ? (
               <View style={styles.skillsLoading}>
                 <ActivityIndicator size="small" color={primaryColor} />
-                <ThemedText style={styles.loadingText}>Loading available skills...</ThemedText>
+                <ThemedText style={styles.loadingText}>{i18n.t('editProfile.loadingSkills')}</ThemedText>
               </View>
             ) : (
               <View style={styles.skillsGrid}>
@@ -207,7 +208,7 @@ return (
           <View style={styles.availabilityContainer}>
             <View style={styles.availabilityLeft}>
               <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>Available Today?</ThemedText>
+              <ThemedText style={styles.label}>{i18n.t('editProfile.availableToday')}</ThemedText>
             </View>
           </View>
         </View>
@@ -225,14 +226,14 @@ return (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <>
-              <ThemedText style={styles.submitText}>Submit Profile</ThemedText>
+              <ThemedText style={styles.submitText}>{i18n.t('editProfile.submitProfile')}</ThemedText>
               <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.submitIcon} />
             </>
           )}
         </TouchableOpacity>
 
         <ThemedText style={styles.policyNote}>
-          By submitting, you agree to our terms and privacy policy
+          {i18n.t('editProfile.privacyPolicy')}
         </ThemedText>
       </ScrollView>
     </ThemedView>

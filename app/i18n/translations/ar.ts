@@ -1,6 +1,6 @@
 export const ar = {
   // Common
-  appName: "لمواقف",
+  appName: "لموقف",
   submit: "إرسال",
   cancel: "إلغاء",
   next: "التالي",
@@ -117,6 +117,43 @@ export const ar = {
     yourLocation: "موقعك",
     updateLocation: "تحديث الموقع",
     enterNewLocation: "أدخل موقعك الجديد"
-    
+  },
+  
+  // Worker Profile
+  workerProfile: {
+    editProfile: "تعديل الملف الشخصي",
+    createProfile: "إنشاء ملف تعريف العامل",
+    noProfileTitle: "لا يوجد ملف شخصي بعد",
+    noProfileDescription: "قم بإنشاء ملف تعريف العامل الخاص بك ليتم اكتشافك من قبل أصحاب العمل في منطقتك",
+    availabilityStatus: "حالة التوفر",
+    availableNow: "متاح الآن",
+    contactInformation: "معلومات الاتصال",
+    availabilityToggleEnabled: "أنت متاح حاليًا للعمل. يمكن لأصحاب العمل العثور عليك والاتصال بك.",
+    availabilityToggleDisabled: "أنت مُصنّف حاليًا كغير متاح. قم بتحديث حالتك عندما تكون جاهزًا للعمل.",
+    makeAvailable: "اجعلني متاحًا",
+    noLongerAvailable: "لم أعد متاحًا",
+    shareProfile: "مشاركة الملف الشخصي",
+    shareProfileMessage: "تحقق من ملف العامل الخاص بي على لمواقف: {{name}} - {{skill}} - للتواصل: {{phone}}",
+    statusChangeTitle: "تأكيد تغيير الحالة",
+    statusChangeMessage: "هل أنت متأكد أنك تريد جعل نفسك غير متاح للعمل؟"
+  },
+  
+  // Edit Profile
+  editProfile: {
+    title: "تعديل ملف العامل الشخصي",
+    subtitle: "أكمل بياناتك لتكون قابلاً للاكتشاف من قبل أصحاب العمل",
+    fullName: "الاسم الكامل",
+    fullNamePlaceholder: "أدخل اسمك",
+    phoneNumber: "رقم الهاتف",
+    phoneNumberPlaceholder: "أدخل رقم هاتفك",
+    location: "الموقع/المدينة",
+    locationPlaceholder: "أين أنت متاح للعمل",
+    selectSkill: "اختر مهارتك الرئيسية",
+    loadingSkills: "جاري تحميل المهارات المتاحة...",
+    availableToday: "متاح اليوم؟",
+    submitProfile: "إرسال الملف الشخصي",
+    privacyPolicy: "بالإرسال، أنت توافق على الشروط وسياسة الخصوصية",
+    error: "خطأ في تحميل الملف الشخصي",
+    registrationError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
   }
 };

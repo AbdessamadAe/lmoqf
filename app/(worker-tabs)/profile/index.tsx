@@ -56,7 +56,7 @@ export default function ProfileScreen() {
       }
     } catch (error) {
       console.error('Failed to load profile data:', error);
-      Alert.alert('Error', 'Failed to load profile data');
+      Alert.alert(i18n.t('editProfile.error'), i18n.t('editProfile.error'));
     } finally {
       setIsLoading(false);
     }
@@ -73,10 +73,14 @@ export default function ProfileScreen() {
     
     try {
       await Share.share({
-        message: `Check out my worker profile on Lmoqf: ${profile.name} - ${profile.skill} - Contact: ${profile.phone}`,
+        message: i18n.t('workerProfile.shareProfileMessage', {
+          name: profile.name,
+          skill: profile.skill,
+          phone: profile.phone
+        }),
       });
     } catch (error) {
-      Alert.alert('Error', 'Could not share your profile');
+      Alert.alert(i18n.t('cancel'), i18n.t('workerProfile.shareError', 'Could not share your profile'));
     }
   };
 
@@ -84,19 +88,19 @@ export default function ProfileScreen() {
     if (isAvailable) {
       // If currently available, ask for confirmation to become unavailable
       Alert.alert(
-        "Confirm Status Change",
-        "Are you sure you want to make yourself unavailable for work?",
+        i18n.t('workerProfile.statusChangeTitle'),
+        i18n.t('workerProfile.statusChangeMessage'),
         [
-          { text: "Cancel", style: "cancel" },
+          { text: i18n.t('cancel'), style: "cancel" },
           {
-            text: "Confirm", 
+            text: i18n.t('submit'), 
             onPress: async () => {
               try {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 await setWorkerUnavailable();
                 setIsAvailable(false);
               } catch (error) {
-                Alert.alert('Error', 'Could not update availability status');
+                Alert.alert(i18n.t('cancel'), i18n.t('workerProfile.availabilityError', 'Could not update availability status'));
               }
             }
           }
@@ -109,7 +113,7 @@ export default function ProfileScreen() {
         await setWorkerAvailable(profile.phone);
         setIsAvailable(true);
       } catch (error) {
-        Alert.alert('Error', 'Could not update availability status');
+        Alert.alert(i18n.t('cancel'), i18n.t('workerProfile.availabilityError', 'Could not update availability status'));
       }
     }
   };
@@ -129,7 +133,7 @@ export default function ProfileScreen() {
             fontSize: theme.fontSizes.xxl,
             fontWeight: theme.fontWeights.bold
           }]}>
-            No Profile Yet
+            {i18n.t('workerProfile.noProfileTitle')}
           </ThemedText>
           
           <ThemedText style={[styles.noProfileDesc, { 
@@ -138,11 +142,11 @@ export default function ProfileScreen() {
             marginBottom: 32,
             textAlign: 'center',
           }]}>
-            Create your worker profile to get discovered by employers in your area
+            {i18n.t('workerProfile.noProfileDescription')}
           </ThemedText>
           
           <Button
-            title="Create Worker Profile"
+            title={i18n.t('workerProfile.createProfile')}
             variant="primary"
             icon="person-add"
             onPress={() => router.push('/worker-registration')}
@@ -193,7 +197,7 @@ export default function ProfileScreen() {
                 <View style={styles.availabilityBadge}>
                   <View style={[styles.statusDot, { backgroundColor: theme.colors.tertiary }]} />
                   <ThemedText style={[styles.availabilityText, { color: theme.colors.tertiary }]}>
-                    Available Now
+                    {i18n.t('workerProfile.availableNow')}
                   </ThemedText>
                 </View>
               )}
@@ -216,7 +220,7 @@ export default function ProfileScreen() {
               fontSize: theme.fontSizes.md,
               fontWeight: theme.fontWeights.semiBold
             }]}>
-              Availability Status
+              {i18n.t('workerProfile.availabilityStatus')}
             </ThemedText>
             <View style={[styles.statusIndicator, { 
               backgroundColor: isAvailable ? theme.colors.tertiary : theme.colors.textSecondary 
@@ -225,13 +229,13 @@ export default function ProfileScreen() {
           
           <ThemedText style={[styles.statusDescription, { color: theme.colors.textSecondary }]}>
             {isAvailable 
-              ? "You're currently available for work. Employers can find and contact you."
-              : "You're currently marked as unavailable. Update your status when you're ready to work."
+              ? i18n.t('workerProfile.availabilityToggleEnabled')
+              : i18n.t('workerProfile.availabilityToggleDisabled')
             }
           </ThemedText>
           
           <Button
-            title={isAvailable ? "I'm No Longer Available" : "Make Me Available"}
+            title={isAvailable ? i18n.t('workerProfile.noLongerAvailable') : i18n.t('workerProfile.makeAvailable')}
             variant={isAvailable ? "outline" : "primary"}
             icon={isAvailable ? "close-circle" : "checkmark-circle"}
             onPress={toggleAvailability}
@@ -246,7 +250,7 @@ export default function ProfileScreen() {
             fontSize: theme.fontSizes.md,
             fontWeight: theme.fontWeights.semiBold
           }]}>
-            Contact Information
+            {i18n.t('workerProfile.contactInformation')}
           </ThemedText>
           
           <View style={styles.infoRow}>
@@ -264,7 +268,7 @@ export default function ProfileScreen() {
           </View>
           
           <Button
-            title="Share Contact Info"
+            title={i18n.t('workerProfile.shareProfile')}
             variant="outline"
             icon="share-social-outline"
             onPress={handleShareProfile}

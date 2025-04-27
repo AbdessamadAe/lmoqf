@@ -9,11 +9,13 @@ import { WaitingIllustration } from '@/components/illustrations/WaitingIllustrat
 import { Ionicons } from '@expo/vector-icons';
 import { getWorkerAvailability, getWorkerProfile, setWorkerUnavailable, getWaitingDuration } from '@/app/services/workerService';
 import * as Haptics from 'expo-haptics';
+import i18n from '@/app/i18n/i18n';
 
 export default function WorkerWaitingScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [waitingTime, setWaitingTime] = useState<number>(0);
   
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
@@ -32,7 +34,7 @@ export default function WorkerWaitingScreen() {
 
       } catch (error) {
         console.error('Failed to load profile data:', error);
-        Alert.alert('Error', 'Failed to load profile data');
+        Alert.alert(i18n.t('cancel'), 'Failed to load profile data');
         router.replace('/(worker-tabs)');
       } finally {
         setIsLoading(false);
@@ -87,11 +89,11 @@ export default function WorkerWaitingScreen() {
   // Format waiting time into hours and minutes
   const formatWaitingTime = (minutes: number): string => {
     if (minutes < 60) {
-      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      return `${minutes} ${minutes !== 1 ? i18n.t('workerWaiting.minutes', 'minutes') : i18n.t('workerWaiting.minute', 'minute')}`;
     } else {
       const hours = Math.floor(minutes / 60);
       const remainingMinutes = minutes % 60;
-      return `${hours} hour${hours !== 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+      return `${hours} ${hours !== 1 ? i18n.t('workerWaiting.hours', 'hours') : i18n.t('workerWaiting.hour', 'hour')} ${remainingMinutes} ${remainingMinutes !== 1 ? i18n.t('workerWaiting.minutes', 'minutes') : i18n.t('workerWaiting.minute', 'minute')}`;
     }
   };
 
@@ -103,10 +105,14 @@ export default function WorkerWaitingScreen() {
     
     try {
       await Share.share({
-        message: `I'm available for work today! Contact me at: ${profile.phone} - ${profile.name} (${profile.skill})`,
+        message: i18n.t('workerWaiting.shareMessage', {
+          phone: profile.phone,
+          name: profile.name,
+          skill: profile.skill
+        }),
       });
     } catch (error) {
-      Alert.alert('Error', 'Could not share your information');
+      Alert.alert(i18n.t('cancel'), 'Could not share your information');
     }
   };
 
@@ -118,14 +124,14 @@ export default function WorkerWaitingScreen() {
       // Navigate to profile screen instead of onboarding
       router.replace('/(worker-tabs)/profile');
     } catch (error) {
-      Alert.alert('Error', 'Could not update your availability status');
+      Alert.alert(i18n.t('cancel'), 'Could not update your availability status');
     }
   };
 
   if (!profile) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ThemedText>Loading...</ThemedText>
+        <ThemedText>{i18n.t('loading')}</ThemedText>
       </ThemedView>
     );
   }
@@ -137,22 +143,30 @@ export default function WorkerWaitingScreen() {
           {/* Status Header */}
           <View style={styles.statusHeader}>
             <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
-            <ThemedText style={styles.statusText}>You are available for work</ThemedText>
+            <ThemedText style={styles.statusText}>{i18n.t('workerWaiting.statusText')}</ThemedText>
           </View>
           
           <WaitingIllustration />
           
-          <ThemedText style={styles.title}>Waiting for calls</ThemedText>
+          <ThemedText style={styles.title}>{i18n.t('workerWaiting.title')}</ThemedText>
           <ThemedText style={styles.subtitle}>
-            Employers can see your profile and may call you soon
+            {i18n.t('workerWaiting.subtitle')}
           </ThemedText>
           
           <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
             
             <View style={styles.infoRow}>
+              <Ionicons name="time-outline" size={22} color={primaryColor} style={styles.infoIcon} />
+              <View style={styles.infoContent}>
+                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.waitingTime')}</ThemedText>
+                <ThemedText style={styles.infoValue}>{formatWaitingTime(waitingTime)}</ThemedText>
+              </View>
+            </View>
+            
+            <View style={styles.infoRow}>
               <Ionicons name="person-outline" size={22} color={primaryColor} style={styles.infoIcon} />
               <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>Your Name</ThemedText>
+                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.yourName')}</ThemedText>
                 <ThemedText style={styles.infoValue}>{profile.name}</ThemedText>
               </View>
             </View>
@@ -160,7 +174,7 @@ export default function WorkerWaitingScreen() {
             <View style={styles.infoRow}>
               <Ionicons name="call-outline" size={22} color={primaryColor} style={styles.infoIcon} />
               <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>Contact Number</ThemedText>
+                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.contactNumber')}</ThemedText>
                 <ThemedText style={styles.infoValue}>{profile.phone}</ThemedText>
               </View>
             </View>
@@ -168,7 +182,7 @@ export default function WorkerWaitingScreen() {
             <View style={styles.infoRow}>
               <Ionicons name="construct-outline" size={22} color={primaryColor} style={styles.infoIcon} />
               <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>Skill</ThemedText>
+                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.skill')}</ThemedText>
                 <ThemedText style={styles.infoValue}>{profile.skill}</ThemedText>
               </View>
             </View>
@@ -179,7 +193,7 @@ export default function WorkerWaitingScreen() {
             onPress={handleFinishWaiting}
           >
             <ThemedText style={[styles.cancelButtonText, { color: dangerColor }]}>
-              I'm No Longer Available
+              {i18n.t('workerWaiting.noLongerAvailable')}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -281,26 +295,22 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
-    width: '100%',
-    marginBottom: 12,
-  },
-  buttonIcon: {
-    marginRight: 8,
+    marginVertical: 16,
   },
   shareButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
+    fontWeight: '500',
+    marginLeft: 8,
   },
   cancelButton: {
-    paddingVertical: 16,
+    borderWidth: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     borderRadius: 12,
-    width: '100%',
-    alignItems: 'center',
-    borderWidth: 1,
+    marginBottom: 16,
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '500',
-  },
+  }
 });

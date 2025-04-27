@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { useTheme } from '@/app/theme/useTheme';
 import { StatusBar } from 'expo-status-bar';
-
+import i18n from '@/app/i18n/i18n';
 
 export default function ProfileLayout() {
   const theme = useTheme();
@@ -20,7 +20,7 @@ export default function ProfileLayout() {
         <Stack.Screen
             name="index"
             options={{
-              title: 'Profile',
+              title: i18n.t('profile'),
               headerShown: false,
             }}
         />
@@ -28,7 +28,7 @@ export default function ProfileLayout() {
         <Stack.Screen
             name="edit-profile"
             options={{
-              title: 'Edit Profile',
+              title: i18n.t('workerProfile.editProfile'),
               headerShown: true,
               headerBackVisible: true,
             }}

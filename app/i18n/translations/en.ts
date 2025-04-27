@@ -45,6 +45,17 @@ export const en = {
     privacyPolicy: "By submitting, you agree to our terms and privacy policy"
   },
   
+  // Worker Success
+  workerSuccess: {
+    title: "Profile Submitted!",
+    message: "Your worker profile has been successfully created. Employers can now discover you and contact you for work opportunities.",
+    visibilityInfo: "Your profile is now visible to employers",
+    notificationInfo: "You will be notified when someone wants to hire you",
+    editInfo: "You can edit your profile anytime",
+    viewProfile: "View Profile",
+    goHome: "Go to Home"
+  },
+  
   // Worker Waiting
   workerWaiting: {
     statusText: "You are available for work",
@@ -106,5 +117,43 @@ export const en = {
     yourLocation: "Your Location",
     updateLocation: "Update Location",
     enterNewLocation: "Enter your new location",
+  },
+
+  // Worker Profile
+  workerProfile: {
+    editProfile: "Edit Profile",
+    createProfile: "Create Worker Profile",
+    noProfileTitle: "No Profile Yet",
+    noProfileDescription: "Create your worker profile to get discovered by employers in your area",
+    availabilityStatus: "Availability Status",
+    availableNow: "Available Now",
+    contactInformation: "Contact Information",
+    availabilityToggleEnabled: "You're currently available for work. Employers can find and contact you.",
+    availabilityToggleDisabled: "You're currently marked as unavailable. Update your status when you're ready to work.",
+    makeAvailable: "Make Me Available",
+    noLongerAvailable: "I'm No Longer Available",
+    shareProfile: "Share Profile",
+    shareProfileMessage: "Check out my worker profile on Lmoqf: {{name}} - {{skill}} - Contact: {{phone}}",
+    statusChangeTitle: "Confirm Status Change",
+    statusChangeMessage: "Are you sure you want to make yourself unavailable for work?"
+  },
+  
+  // Edit Profile
+  editProfile: {
+    title: "Edit Your Worker Profile",
+    subtitle: "Complete your details to be discoverable by employers",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Enter your name",
+    phoneNumber: "Phone Number",
+    phoneNumberPlaceholder: "Enter your phone number",
+    location: "Location/City",
+    locationPlaceholder: "Where you're available to work",
+    selectSkill: "Select Your Main Skill",
+    loadingSkills: "Loading available skills...",
+    availableToday: "Available Today?",
+    submitProfile: "Submit Profile",
+    privacyPolicy: "By submitting, you agree to our terms and privacy policy",
+    error: "Error loading profile",
+    registrationError: "An unexpected error occurred. Please try again."
   }
 };
