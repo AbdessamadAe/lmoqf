@@ -90,11 +90,6 @@ export default function WorkerRegistrationScreen() {
     }
   };
 
-  const handleBack = () => {
-    // buggy: to be fixed
-    //navigation.navigate('(onboarding)/index');
-  };
-
 return (
   <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
     <ThemedView style={styles.container}>
@@ -102,15 +97,6 @@ return (
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Manual back button for mobile devices that might not show the navigation header */}
-        <TouchableOpacity 
-          style={[styles.backButton, { backgroundColor: `${theme.colors.background}CC` }]} 
-          onPress={handleBack}
-          accessibilityLabel="Go back"
-        >
-          <Ionicons name="arrow-back" size={24} color={primaryColor} />
-        </TouchableOpacity>
-
         <View style={styles.header}>
           <WorkerRegistrationIllustration />
           <ThemedText style={styles.title}>Create Your Worker Profile</ThemedText>

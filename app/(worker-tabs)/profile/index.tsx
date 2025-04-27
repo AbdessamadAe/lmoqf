@@ -63,7 +63,7 @@ export default function ProfileScreen() {
   };
 
   const handleProfileEdit = () => {
-    router.push('/worker-registration');
+    router.push('/profile/edit-profile');
   };
 
   const handleShareProfile = async () => {

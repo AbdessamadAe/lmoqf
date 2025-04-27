@@ -26,7 +26,7 @@ export default function OnboardingScreen() {
       
       // If worker, navigate to registration page; if hirer, go to hirer tabs
       if (role === 'worker') {
-        router.replace('/worker-registration');
+        router.push('/(onboarding)/worker-registration');
       } else {
         router.replace('/(hirer-tabs)');
       }

@@ -40,7 +40,6 @@ export default function OnboardingLayout() {
         <Stack.Screen 
           name="worker-registration"
           options={{
-            title: 'Register as a Worker',
             headerShown: true, // Explicitly show header with back button
             headerBackVisible: true, // Explicitly show back button
           }}

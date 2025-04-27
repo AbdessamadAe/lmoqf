@@ -108,10 +108,6 @@ export default function EditProfileScreen() {
     }
   };
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
 return (
   <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
     <ThemedView style={styles.container}>
@@ -119,15 +115,6 @@ return (
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Manual back button for mobile devices that might not show the navigation header */}
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={handleBack}
-          accessibilityLabel="Go back"
-        >
-          <Ionicons name="arrow-back" size={24} color={primaryColor} />
-        </TouchableOpacity>
-
         <View style={styles.header}>
           <WorkerRegistrationIllustration />
           <ThemedText style={styles.title}>Edit Your Worker Profile</ThemedText>
