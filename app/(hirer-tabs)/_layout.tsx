@@ -5,7 +5,6 @@ import { HapticTab } from '@/components/HapticTab';
 import i18n from '@/app/i18n/i18n';
 import { BlurView } from 'expo-blur';
 import { Platform } from 'react-native';
-import { useLanguage } from '@/app/i18n/LanguageContext';
 import { useUserRole } from '@/app/context/UserRoleContext';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -14,7 +13,6 @@ import { HirerTabsParamList } from '../types/navigation';
 
 export default function HirerTabsLayout() {
   const theme = useTheme();
-  const { isRTL } = useLanguage();
   const { userRole, isLoading, isHirer } = useUserRole();
   
   // Show loading screen when checking user role

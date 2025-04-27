@@ -13,14 +13,14 @@ import i18n from '@/app/i18n/i18n';
 import { fetchAvailableWorkers } from '../services/hirerService';
 import { getWorkerProfile, isWorkerAvailable } from '@/app/services/workerService';
 import { HelloWave } from '@/components/HelloWave';
-import { useUserRole } from '@/app/context/UserRoleContext';
+import { useLanguage } from '../i18n/LanguageContext';
+
 
 export default function HomeScreen() {
   const [workersCount, setWorkersCount] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const theme = useTheme();
   const navigation = useNavigation();
-  const { userRole, isWorker, isHirer } = useUserRole();
 
   // Set the header title
   useEffect(() => {
@@ -87,9 +87,9 @@ export default function HomeScreen() {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
+            marginBottom: theme.spacing.md
           }]}>
-            Quick Actions
+            {i18n.t('hirerHome.quickActions')}
           </ThemedText>
           <View style={styles.actionsRow}>
                 <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
@@ -99,17 +99,17 @@ export default function HomeScreen() {
                     fontWeight: theme.fontWeights.semiBold,
                     fontSize: theme.fontSizes.md
                   }]}>
-                    Find Workers
+                    {i18n.t('hirerHome.findWorkers')}
                   </ThemedText>
                   <ThemedText style={[styles.actionDescription, {
                     color: theme.colors.textSecondary,
                     fontSize: theme.fontSizes.sm,
                     marginBottom: theme.spacing.sm
                   }]}>
-                    {workersCount} workers available
+                    {workersCount} {i18n.t('hirerHome.workersAvailable')}
                   </ThemedText>
                   <Button 
-                    title="Browse" 
+                    title={i18n.t('hirerHome.browse')} 
                     onPress={handleFindWorkers} 
                     variant="secondary" 
                     size="sm"
@@ -127,7 +127,7 @@ export default function HomeScreen() {
             fontWeight: theme.fontWeights.semiBold,
             marginBottom: theme.spacing.md 
           }]}>
-            Why Use Lmoqf?
+            {i18n.t('hirerHome.whyUseLmoqf')}
           </ThemedText>
           <Card style={styles.benefitCard} variant="outlined">
                 <View style={styles.benefitItem}>
@@ -137,10 +137,10 @@ export default function HomeScreen() {
                       color: theme.colors.textPrimary,
                       fontWeight: theme.fontWeights.semiBold 
                     }]}>
-                      Find Skilled Workers
+                      {i18n.t('hirerHome.findSkilledWorkers')}
                     </ThemedText>
                     <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Access a pool of qualified local workers
+                      {i18n.t('hirerHome.findSkilledWorkersDescription')}
                     </ThemedText>
                   </View>
                 </View>
@@ -152,10 +152,10 @@ export default function HomeScreen() {
                       color: theme.colors.textPrimary,
                       fontWeight: theme.fontWeights.semiBold 
                     }]}>
-                      Quick Hiring
+                      {i18n.t('hirerHome.quickHiring')}
                     </ThemedText>
                     <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      Find available workers in your area today
+                      {i18n.t('hirerHome.quickHiringDescription')}
                     </ThemedText>
                   </View>
                 </View>

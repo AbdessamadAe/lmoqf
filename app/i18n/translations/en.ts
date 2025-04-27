@@ -44,18 +44,8 @@ export const en = {
     submitProfile: "Submit Profile",
     privacyPolicy: "By submitting, you agree to our terms and privacy policy"
   },
-  
-  // Worker Success
-  workerSuccess: {
-    title: "Profile Submitted!",
-    message: "Your worker profile has been successfully created. Employers can now discover you and contact you for work opportunities.",
-    visibilityInfo: "Your profile is now visible to employers",
-    notificationInfo: "You will be notified when someone wants to hire you",
-    editInfo: "You can edit your profile anytime",
-    viewProfile: "View Profile",
-    goHome: "Go to Home"
-  },
-  
+
+
   // Worker Waiting
   workerWaiting: {
     statusText: "You are available for work",
@@ -155,5 +145,16 @@ export const en = {
     privacyPolicy: "By submitting, you agree to our terms and privacy policy",
     error: "Error loading profile",
     registrationError: "An unexpected error occurred. Please try again."
-  }
+  },
+  hirerHome: {
+    quickActions: "Quick Actions",
+    findWorkers: "Find Workers",
+    workersAvailable: "workers available",
+    browse: "Find Workers",
+    whyUseLmoqf: "Why Use Lmoqf?",
+    findSkilledWorkers: "Find Skilled Workers",
+    findSkilledWorkersDescription: "Access a pool of qualified local workers",
+    quickHiring: "Quick Hiring",
+    quickHiringDescription: "Find available workers in your area today",
+  },
 };

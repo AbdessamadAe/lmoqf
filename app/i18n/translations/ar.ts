@@ -155,5 +155,16 @@ export const ar = {
     privacyPolicy: "بالإرسال، أنت توافق على الشروط وسياسة الخصوصية",
     error: "خطأ في تحميل الملف الشخصي",
     registrationError: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
-  }
+  },
+  hirerHome: {
+    quickActions: "إجراءات سريعة",
+    findWorkers: "ابحث عن العمال",
+    workersAvailable: "عمال متاحون",
+    browse: "ابحث",
+    whyUseLmoqf: "لماذا تستخدم لموقف؟",
+    findSkilledWorkers: "ابحث عن عمال مهرة",
+    findSkilledWorkersDescription: "الوصول إلى مجموعة من العمال المؤهلين المحليين",
+    quickHiring: "توظيف سريع",
+    quickHiringDescription: "ابحث عن العمال المتاحين في منطقتك اليوم",
+  },
 };

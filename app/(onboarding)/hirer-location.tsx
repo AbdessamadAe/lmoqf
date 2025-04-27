@@ -103,10 +103,6 @@ export default function HirerLocationScreen() {
               </>
             )}
           </TouchableOpacity>
-
-          <ThemedText style={styles.skipText} onPress={() => router.replace('/(hirer-tabs)')}>
-            Skip for now
-          </ThemedText>
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
