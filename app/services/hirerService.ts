@@ -2,8 +2,20 @@
  * Service for fetching data needed by hirers
  */
 import { supabase } from '../lib/supabase';
+import { HIRER_LOCATION_KEY } from '@/constants/localStorage';
 
 
+
+
+export const saveHirerLocation = async (location: string): Promise<void> => {
+  try {
+    // Save the location to AsyncStorage
+    await AsyncStorage.setItem(HIRER_LOCATION_KEY, location.trim());
+  } catch (error) {
+    console.error('Error saving location:', error);
+    throw new Error('Failed to save location');
+  }
+};
 
 // Reusable error handler
 const handleError = (error: any, context: string): never => {
@@ -50,6 +62,8 @@ export const fetchWorkers = async (options?: {
         skill,
         available
       `);
+
+    const location = await AsyncStorage.getItem(HIRER_LOCATION_KEY);
     
     // Apply filters if provided
     if (options?.onlyAvailable) {
@@ -66,6 +80,10 @@ export const fetchWorkers = async (options?: {
     
     if (options?.phone) {
       query.eq('phone', options.phone);
+    }
+
+    if (location) {
+      query.eq('location', location);
     }
     
     const { data, error } = await query;

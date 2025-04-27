@@ -22,7 +22,6 @@ import { getCalledWorkers } from '../services/workerService';
 export default function WorkersScreen() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
   const [selectedSkill, setSelectedSkill] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -91,9 +90,6 @@ export default function WorkersScreen() {
       setWorkers(workersData);
       setSkills(skillsData);
 
-      // Extract unique locations from workers data
-      const uniqueLocations = Array.from(new Set(workersData.map(worker => worker.location))).sort();
-      setLocations(uniqueLocations);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -233,14 +229,6 @@ export default function WorkersScreen() {
             onValueChange={setSelectedSkill}
             containerStyle={styles.filterDropdown}
           />
-          <Dropdown
-            label="Location" 
-            placeholder="Select"
-            items={locations}
-            value={selectedLocation}
-            onValueChange={setSelectedLocation}
-            containerStyle={styles.filterDropdown}
-          />
         </View>
 
         {/* Active Filters Display */}
@@ -261,21 +249,6 @@ export default function WorkersScreen() {
                     size={16}
                     color={theme.colors.primary}
                     onPress={() => setSelectedSkill('')}
-                    style={styles.removeFilterIcon}
-                  />
-                </View>
-              )}
-              {selectedLocation && (
-                <View style={[styles.activeFilterChip, { backgroundColor: theme.colors.secondary + '15' }]}>
-                  <Ionicons name="location-outline" size={14} color={theme.colors.secondary} />
-                  <ThemedText style={[styles.activeFilterText, { color: theme.colors.secondary }]}>
-                    {selectedLocation}
-                  </ThemedText>
-                  <Ionicons
-                    name="close-circle"
-                    size={16}
-                    color={theme.colors.secondary}
-                    onPress={() => setSelectedLocation('')}
                     style={styles.removeFilterIcon}
                   />
                 </View>
