@@ -10,6 +10,7 @@ import { fetchAvailableWorkers, fetchSkills } from '../services/hirerService';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { InputField } from '../components/InputField';
+import { Dropdown } from '../components/Dropdown';
 import { EmptyStateIllustration } from '@/components/illustrations/EmptyStateIllustration';
 import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
@@ -27,7 +28,6 @@ export default function WorkersScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeFilter, setActiveFilter] = useState<'skills' | 'locations'>('skills');
   const [calledWorkers, setCalledWorkers] = useState<Record<string, boolean>>({});
   const theme = useTheme();
   const navigation = useNavigation();
@@ -107,14 +107,6 @@ export default function WorkersScreen() {
     setRefreshing(false);
   };
 
-  const handleSkillFilter = (skill: string) => {
-    setSelectedSkill(selectedSkill === skill ? '' : skill);
-  };
-
-  const handleLocationFilter = (location: string) => {
-    setSelectedLocation(selectedLocation === location ? '' : location);
-  };
-
   const clearFilters = () => {
     setSelectedSkill('');
     setSelectedLocation('');
@@ -141,7 +133,6 @@ export default function WorkersScreen() {
   // };
 
   // Filter workers based on selected skill, location and search query
-
   const filteredWorkers = workers.filter(worker => {
     const matchesSkill = selectedSkill ? worker.skill === selectedSkill : true;
     const matchesLocation = selectedLocation ? worker.location === selectedLocation : true;
@@ -232,73 +223,25 @@ export default function WorkersScreen() {
           />
         </View>
 
-        {/* Filter Tabs */}
-        <View style={styles.filterTabs}>
-          <Button
-            title="Skills"
-            variant={activeFilter === 'skills' ? 'primary' : 'outline'}
-            size="sm"
-            onPress={() => setActiveFilter('skills')}
-            fullWidth={false}
-            style={styles.filterTab}
+        {/* Filter Dropdowns */}
+        <View style={styles.filterContainer}>
+          <Dropdown 
+            label="Skill"
+            placeholder="Select skill"
+            items={skills}
+            value={selectedSkill}
+            onValueChange={setSelectedSkill}
+            containerStyle={styles.filterDropdown}
           />
-          <Button
-            title="Locations"
-            variant={activeFilter === 'locations' ? 'primary' : 'outline'}
-            size="sm"
-            onPress={() => setActiveFilter('locations')}
-            fullWidth={false}
-            style={styles.filterTab}
+          <Dropdown
+            label="Location" 
+            placeholder="Select"
+            items={locations}
+            value={selectedLocation}
+            onValueChange={setSelectedLocation}
+            containerStyle={styles.filterDropdown}
           />
         </View>
-
-        {/* Filter controls */}
-        <View style={styles.filterControlsContainer}>
-          {(selectedSkill || selectedLocation || searchQuery) && (
-            <Button
-              title="Clear Filters"
-              variant="text"
-              size="sm"
-              onPress={clearFilters}
-              icon="close-circle-outline"
-              fullWidth={false}
-              style={styles.clearButton}
-            />
-          )}
-        </View>
-
-        {/* Filter pills */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.pillsContainer}
-        >
-          {activeFilter === 'skills' ? (
-            skills.map(skill => (
-              <Button
-                key={skill}
-                title={skill}
-                variant={selectedSkill === skill ? 'primary' : 'outline'}
-                size="sm"
-                onPress={() => handleSkillFilter(skill)}
-                fullWidth={false}
-                style={styles.pillButton}
-              />
-            ))
-          ) : (
-            locations.map(location => (
-              <Button
-                key={location}
-                title={location}
-                variant={selectedLocation === location ? 'primary' : 'outline'}
-                size="sm"
-                onPress={() => handleLocationFilter(location)}
-                fullWidth={false}
-                style={styles.pillButton}
-              />
-            ))
-          )}
-        </ScrollView>
 
         {/* Active Filters Display */}
         {(selectedSkill || selectedLocation) && (
@@ -506,14 +449,13 @@ const styles = StyleSheet.create({
   searchInput: {
     marginBottom: 8,
   },
-  filterTabs: {
+  filterContainer: {
     flexDirection: 'row',
-    marginBottom: 8,
+    gap: 12,
+    marginBottom: 12,
   },
-  filterTab: {
-    marginRight: 8,
+  filterDropdown: {
     flex: 1,
-    maxWidth: 120,
   },
   filterControlsContainer: {
     flexDirection: 'row',
@@ -525,14 +467,6 @@ const styles = StyleSheet.create({
   },
   resetCallsButton: {
     marginLeft: 'auto',
-  },
-  pillsContainer: {
-    flexDirection: 'row',
-    paddingBottom: 8,
-  },
-  pillButton: {
-    marginRight: 8,
-    marginBottom: 8,
   },
   activeFiltersContainer: {
     marginVertical: 12,

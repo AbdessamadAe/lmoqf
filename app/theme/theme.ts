@@ -58,7 +58,7 @@ export const darkTheme = {
   colors: {
     primary: '#5D9CEC',       // Brighter blue - stands out in dark mode
     secondary: '#4A6FA5',     // Medium blue - complementary tone
-    tertiary: '#81A4CD',      // Light blue - accent for important elements
+    tertiary: '#2ECC71',      // Light green - accent for important elements
     background: '#1E293B',    // Dark blue-gray - professional dark background
     card: '#2C3E50',          // Dark slate - for content cards
     textPrimary: '#ECF0F1',   // Off-white - primary text
