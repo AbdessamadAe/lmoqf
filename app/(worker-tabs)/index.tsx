@@ -15,7 +15,6 @@ export default function WorkerWaitingScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [waitingTime, setWaitingTime] = useState<number>(0);
   
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
@@ -42,60 +41,7 @@ export default function WorkerWaitingScreen() {
     };
     
     loadProfileData();
-    
-    // Set up interval to update waiting time
-    const timer = setInterval(async () => {
-      try {
-        const duration = await getWaitingDuration();
-        if (duration !== null) {
-          setWaitingTime(duration);
-        }
-      } catch (error) {
-        // Silent fail for timer updates
-      }
-    }, 60000); // Update every minute
-    
-    // App state change handler to refresh when app comes to foreground
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    
-    return () => {
-      clearInterval(timer);
-      subscription.remove();
-    };
   }, [params.newRegistration]);
-  
-  // Handle app coming to foreground
-  const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    if (appState.match(/inactive|background/) && nextAppState === 'active') {
-      // App has come to the foreground
-      try {
-        const duration = await getWaitingDuration();
-        if (duration !== null) {
-          setWaitingTime(duration);
-        }
-        
-        // Check if worker is still available (in case storage was cleared elsewhere)
-        const availability = await getWorkerAvailability();
-        if (!availability) {
-          router.replace('/(worker-tabs)');
-        }
-      } catch (error) {
-        // Silent fail for app state changes
-      }
-    }
-    setAppState(nextAppState);
-  };
-
-  // Format waiting time into hours and minutes
-  const formatWaitingTime = (minutes: number): string => {
-    if (minutes < 60) {
-      return `${minutes} ${minutes !== 1 ? i18n.t('workerWaiting.minutes', 'minutes') : i18n.t('workerWaiting.minute', 'minute')}`;
-    } else {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-      return `${hours} ${hours !== 1 ? i18n.t('workerWaiting.hours', 'hours') : i18n.t('workerWaiting.hour', 'hour')} ${remainingMinutes} ${remainingMinutes !== 1 ? i18n.t('workerWaiting.minutes', 'minutes') : i18n.t('workerWaiting.minute', 'minute')}`;
-    }
-  };
 
   // Share contact info
   const handleShare = async () => {
@@ -154,15 +100,6 @@ export default function WorkerWaitingScreen() {
           </ThemedText>
           
           <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
-            
-            <View style={styles.infoRow}>
-              <Ionicons name="time-outline" size={22} color={primaryColor} style={styles.infoIcon} />
-              <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.waitingTime')}</ThemedText>
-                <ThemedText style={styles.infoValue}>{formatWaitingTime(waitingTime)}</ThemedText>
-              </View>
-            </View>
-            
             <View style={styles.infoRow}>
               <Ionicons name="person-outline" size={22} color={primaryColor} style={styles.infoIcon} />
               <View style={styles.infoContent}>

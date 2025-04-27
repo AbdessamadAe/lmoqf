@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from '../../services/hirerService';
-import { getWorkerProfile, registerWorker, validateWorkerData } from '../../services/workerService';
+import { getWorkerProfile, registerWorker, updateWorkerProfile, validateWorkerData } from '../../services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../../types';
@@ -86,26 +86,16 @@ export default function EditProfileScreen() {
 
     setIsSubmitting(true);
     try {
-      const result = await registerWorker(workerData);
+      const result = await updateWorkerProfile(workerData);
       if (result.success && result.profile) {
-        // Redirect based on availability status
-        if (available) {
-          // If available, send to waiting screen
-          router.replace({
-            pathname: '/(worker-tabs)',
-            params: { directFromRegistration: 'true' }
-          });
-        } else {
-          // If not available today, navigate to profile screen
-          router.replace({
-            pathname: '/(worker-tabs)/profile',
-            params: { directFromRegistration: 'true' }
-          });
-        }
+        Alert.alert(i18n.t('editProfile.profileUpdated'));
+        router.push('/(worker-tabs)/profile');
       }
     } catch (error) {
       console.error('Error during registration:', error);
       Alert.alert(i18n.t('editProfile.registrationError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

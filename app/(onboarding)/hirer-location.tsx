@@ -9,6 +9,7 @@ import { OnboardingIllustration } from '@/components/illustrations/OnboardingIll
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveHirerLocation } from '../services/hirerService';
+import i18n from '../i18n/i18n';
 
 export default function HirerLocationScreen() {
   const [location, setLocation] = useState('');
@@ -23,7 +24,7 @@ export default function HirerLocationScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerTitle: 'Set Your Location',
+      headerTitle: i18n.t('setHirerLocation.headerTitle'),
       headerStyle: {
         backgroundColor: theme.colors.background,
       },
@@ -65,22 +66,22 @@ export default function HirerLocationScreen() {
         >
           <View style={styles.header}>
             <OnboardingIllustration />
-            <ThemedText style={styles.title}>Set Your Location</ThemedText>
-            <ThemedText style={styles.subtitle}>We'll show you workers available in your area</ThemedText>
+            <ThemedText style={styles.title}>{i18n.t('setHirerLocation.title')}</ThemedText>
+            <ThemedText style={styles.subtitle}>{i18n.t('setHirerLocation.subtitle')}</ThemedText>
           </View>
 
           <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
             <View style={styles.inputContainer}>
               <View style={styles.labelContainer}>
-                <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-                <ThemedText style={styles.label}>Your Location</ThemedText>
+              <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+              <ThemedText style={styles.label}>{i18n.t('setHirerLocation.location')}</ThemedText>
               </View>
               <TextInput
-                style={[styles.input, { backgroundColor: inputBackground }]}
-                value={location}
-                onChangeText={setLocation}
-                placeholder="Enter your city or area"
-                placeholderTextColor={theme.colors.textSecondary}
+              style={[styles.input, { backgroundColor: inputBackground, textAlign: 'center' }]}
+              value={location}
+              onChangeText={setLocation}
+              placeholder={`${i18n.t('setHirerLocation.locationPlaceholder')}`}
+              placeholderTextColor={theme.colors.textSecondary}
               />
             </View>
           </View>
@@ -98,7 +99,7 @@ export default function HirerLocationScreen() {
               <ActivityIndicator size="small" color={theme.colors.background} />
             ) : (
               <>
-                <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>Continue</ThemedText>
+                <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>{i18n.t('setHirerLocation.continue')}</ThemedText>
                 <Ionicons name="arrow-forward" size={20} color={theme.colors.background} style={styles.submitIcon} />
               </>
             )}

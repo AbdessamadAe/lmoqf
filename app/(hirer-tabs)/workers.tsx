@@ -110,25 +110,6 @@ export default function WorkersScreen() {
     setSearchQuery('');
   };
 
-  // const resetCalledWorkers = () => {
-  //   Alert.alert(
-  //     "Reset Called Workers",
-  //     "Are you sure you want to clear all called workers history?",
-  //     [
-  //       { text: "Cancel", style: "cancel" },
-  //       { 
-  //         text: "Reset", 
-  //         onPress: async () => {
-  //           const updatedCalledWorkers = {};
-  //           setCalledWorkers(updatedCalledWorkers);
-  //           await saveCalledWorkers(updatedCalledWorkers);
-  //         },
-  //         style: "destructive"
-  //       }
-  //     ]
-  //   );
-  // };
-
   // Filter workers based on selected skill, location and search query
   const filteredWorkers = workers.filter(worker => {
     const matchesSkill = selectedSkill ? worker.skill === selectedSkill : true;
@@ -147,8 +128,8 @@ export default function WorkersScreen() {
 
     if (!phone) {
       Alert.alert(
-        "Phone Number Unavailable",
-        `${worker.name}'s phone number is not available.`
+        i18n.t('availableWorkers.contactWorker'),
+        i18n.t('workerProfile.contactInformation') + ' ' + i18n.t('validation.phoneRequired')
       );
       return;
     }
@@ -169,16 +150,16 @@ export default function WorkersScreen() {
           return Linking.openURL(phoneUrl);
         } else {
           Alert.alert(
-            "Call Not Supported",
-            "Your device doesn't support making phone calls from the app."
+            i18n.t('cancel'),
+            i18n.t('settings.contactSupportDescription')
           );
         }
       })
       .catch(error => {
         console.error('Error making call:', error);
         Alert.alert(
-          "Call Error",
-          "There was an error trying to make the call. Please try again."
+          i18n.t('cancel'),
+          i18n.t('settings.contactSupportDescription')
         );
       });
   };
@@ -188,7 +169,7 @@ export default function WorkersScreen() {
       <ThemedView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <ThemedText style={{ marginTop: 16, color: theme.colors.textSecondary }}>
-          Loading workers...
+          {i18n.t('loading')}
         </ThemedText>
       </ThemedView>
     );
@@ -212,7 +193,7 @@ export default function WorkersScreen() {
         {/* Search */}
         <View style={styles.searchContainer}>
           <InputField
-            placeholder="Search workers by name, skill, or location"
+            placeholder={i18n.t('availableWorkers.subtitle')}
             iconName="search"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -223,8 +204,8 @@ export default function WorkersScreen() {
         {/* Filter Dropdowns */}
         <View style={styles.filterContainer}>
           <Dropdown 
-            label="Skill"
-            placeholder="Select skill"
+            label={i18n.t('workerRegistration.selectSkill')}
+            placeholder={i18n.t('availableWorkers.filterBySkill')}
             items={skills}
             value={selectedSkill}
             onValueChange={setSelectedSkill}
@@ -236,7 +217,7 @@ export default function WorkersScreen() {
         {(selectedSkill) && (
           <View style={styles.activeFiltersContainer}>
             <ThemedText style={[styles.activeFiltersTitle, { color: theme.colors.textSecondary }]}>
-              Active filters:
+              {i18n.t('availableWorkers.filterBySkill')}:
             </ThemedText>
             <View style={styles.activeFiltersList}>
               {selectedSkill && (
@@ -266,12 +247,12 @@ export default function WorkersScreen() {
             fontWeight: theme.fontWeights.semiBold
           }]}>
             {selectedSkill && selectedLocation ?
-              `${selectedSkill} Workers in ${selectedLocation}` :
+              `${selectedSkill} ${i18n.t('availableWorkers.workersIn')} ${selectedLocation}` :
               selectedSkill ?
-                `${selectedSkill} Workers` :
+                `${selectedSkill} ${i18n.t('availableWorkers.workersIn')}` :
                 selectedLocation ?
-                  `Workers in ${selectedLocation}` :
-                  `Available Workers`
+                  `${i18n.t('availableWorkers.workersIn')} ${selectedLocation}` :
+                  i18n.t('availableWorkers.availableWorkers')
             }
           </ThemedText>
           <View style={[styles.counterBadge, { backgroundColor: theme.colors.primary + '20' }]}>
@@ -290,7 +271,7 @@ export default function WorkersScreen() {
               fontSize: theme.fontSizes.xl,
               fontWeight: theme.fontWeights.semiBold
             }]}>
-              No workers found
+              {i18n.t('availableWorkers.noWorkersFound')}
             </ThemedText>
             <ThemedText style={[styles.emptyStateText, {
               color: theme.colors.textSecondary,
@@ -299,15 +280,16 @@ export default function WorkersScreen() {
               marginBottom: 24
             }]}>
               {selectedSkill && selectedLocation ?
-                `No ${selectedSkill} workers in ${selectedLocation} are currently available` :
+                i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill }) + ' ' + i18n.t('availableWorkers.noWorkersArea') :
                 selectedSkill ?
-                  `No workers with ${selectedSkill} skills are currently available` :
+                  i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill }) :
                   selectedLocation ?
-                    `No workers in ${selectedLocation} are currently available` :
-                    'No workers match your search criteria'}
+                    i18n.t('availableWorkers.noWorkersArea') :
+                    i18n.t('availableWorkers.noWorkersFound')
+              }
             </ThemedText>
             <Button
-              title="Clear Filters"
+              title={i18n.t('cancel')}
               variant="primary"
               icon="refresh"
               onPress={clearFilters}
@@ -315,7 +297,7 @@ export default function WorkersScreen() {
               style={{ marginBottom: 16 }}
             />
             <Button
-              title="Refresh"
+              title={i18n.t('refresh')}
               variant="outline"
               icon="refresh"
               onPress={handleRefresh}
@@ -358,7 +340,7 @@ export default function WorkersScreen() {
                           <View style={styles.calledBadge}>
                             <Ionicons name="checkmark-circle" size={16} color={theme.colors.success} />
                             <ThemedText style={styles.calledText}>
-                              Called
+                              {i18n.t('done')}
                             </ThemedText>
                           </View>
                         )}
@@ -390,7 +372,7 @@ export default function WorkersScreen() {
                   </View>
 
                   <Button
-                    title={isCalled ? "Call Again" : "Contact Worker"}
+                    title={isCalled ? i18n.t('submit') : i18n.t('availableWorkers.contactWorker')}
                     variant={isCalled ? "outline" : "primary"}
                     icon="call-outline"
                     onPress={() => handleCallWorker(worker)}
@@ -483,6 +465,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
+    marginHorizontal: 12
   },
   counterText: {
     fontSize: 14,

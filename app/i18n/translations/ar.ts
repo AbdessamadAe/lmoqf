@@ -9,6 +9,7 @@ export const ar = {
   loading: "جاري التحميل...",
   refresh: "تحديث",
   save: "حفظ",
+  welcome: "مرحبًا بك",
   
   // Navigation
   home: "الرئيسية",
@@ -82,7 +83,8 @@ export const ar = {
     noWorkersArea: "لا يوجد عمال متاحون حاليًا في منطقتك",
     contactWorker: "الاتصال بالعامل",
     hourlyRate: "الأجر بالساعة",
-    location: "الموقع"
+    location: "الموقع",
+    workersIn: "عامل في",
   },
   
   // Validation
@@ -116,7 +118,8 @@ export const ar = {
     darkModeDescription: "التبديل بين المظهر الفاتح والداكن",
     yourLocation: "موقعك",
     updateLocation: "تحديث الموقع",
-    enterNewLocation: "أدخل موقعك الجديد"
+    enterNewLocation: "أدخل موقعك الجديد",
+    location: "الموقع",
   },
   
   // Worker Profile
@@ -166,5 +169,15 @@ export const ar = {
     findSkilledWorkersDescription: "الوصول إلى مجموعة من العمال المؤهلين المحليين",
     quickHiring: "توظيف سريع",
     quickHiringDescription: "ابحث عن العمال المتاحين في منطقتك اليوم",
+  },
+  setHirerLocation: {
+    headerTitle: "تعيين موقعك",
+    title: "تعيين موقع صاحب العمل",
+    subtitle: "حدد موقعك لتسهيل العثور العمال في منطقتك",
+    location: "الموقع",
+    locationPlaceholder: "أين أنت بحاجة إلى العمال",
+    updateLocation: "تحديث الموقع",
+    locationUpdated: "تم تحديث الموقع بنجاح",
+    continue: "استمر",
   },
 };

@@ -262,6 +262,36 @@ export const registerWorker = async (workerData: WorkerProfile): Promise<{ succe
   }
 };
 
+
+/*
+  update worker profile
+*/
+
+export const updateWorkerProfile = async (workerData: WorkerProfile): Promise<{ success: boolean, profile?: WorkerProfile }> => {
+  try {
+    // Validate worker data
+    const validation = validateWorkerData(workerData);
+    if (!validation.valid) {
+      Alert.alert('Validation Error', validation.message || 'Please complete all required fields');
+      return { success: false };
+    }
+    
+    // Update the worker profile in Supabase
+    const { error } = await supabase
+      .from('workers')
+      .update(workerData)
+      .eq('phone', workerData.phone);
+      
+    if (error) throw error;
+
+    return { success: true, profile: workerData };
+  } catch (error) {
+    console.error('Error updating worker profile:', error);
+    Alert.alert('Update Error', 'Could not update your profile. Please try again.');
+    return { success: false };
+  }
+};
+
 /**
  * Check if worker registration is valid
  */

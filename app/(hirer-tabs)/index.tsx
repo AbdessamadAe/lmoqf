@@ -69,7 +69,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -83,7 +83,7 @@ export default function HomeScreen() {
       >
         {/* Quick Actions - Role Specific */}
         <View style={styles.actionsSection}>
-          <ThemedText style={[styles.sectionTitle, { 
+          <ThemedText style={[styles.sectionTitle, {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold,
@@ -92,15 +92,17 @@ export default function HomeScreen() {
             {i18n.t('hirerHome.quickActions')}
           </ThemedText>
           <View style={styles.actionsRow}>
-                <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
-                  <Ionicons name="people-outline" size={24} color={theme.colors.secondary} style={styles.actionIcon} />
-                  <ThemedText style={[styles.actionTitle, { 
+            <Card style={[styles.actionCard, { flex: 1 }]} variant="flat">
+              <View style={styles.benefitItem}>
+                <Ionicons name="people" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
+                <View style={styles.benefitContent}>
+                  <ThemedText style={[styles.benefitTitle, {
                     color: theme.colors.textPrimary,
-                    fontWeight: theme.fontWeights.semiBold,
-                    fontSize: theme.fontSizes.md
+                    fontWeight: theme.fontWeights.semiBold
                   }]}>
                     {i18n.t('hirerHome.findWorkers')}
                   </ThemedText>
+
                   <ThemedText style={[styles.actionDescription, {
                     color: theme.colors.textSecondary,
                     fontSize: theme.fontSizes.sm,
@@ -108,57 +110,59 @@ export default function HomeScreen() {
                   }]}>
                     {workersCount} {i18n.t('hirerHome.workersAvailable')}
                   </ThemedText>
-                  <Button 
-                    title={i18n.t('hirerHome.browse')} 
-                    onPress={handleFindWorkers} 
-                    variant="secondary" 
-                    size="sm"
-                    icon="arrow-forward"
-                  />
-                </Card>
+                </View>
+              </View>
+              <Button
+                title={i18n.t('hirerHome.browse')}
+                onPress={handleFindWorkers}
+                variant="secondary"
+                size="sm"
+                icon="arrow-forward"
+              />
+            </Card>
           </View>
         </View>
 
         {/* Role-specific Benefits Section */}
         <View style={styles.benefitsSection}>
-          <ThemedText style={[styles.sectionTitle, { 
+          <ThemedText style={[styles.sectionTitle, {
             color: theme.colors.textPrimary,
             fontSize: theme.fontSizes.lg,
             fontWeight: theme.fontWeights.semiBold,
-            marginBottom: theme.spacing.md 
+            marginBottom: theme.spacing.md
           }]}>
             {i18n.t('hirerHome.whyUseLmoqf')}
           </ThemedText>
           <Card style={styles.benefitCard} variant="outlined">
-                <View style={styles.benefitItem}>
-                  <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      {i18n.t('hirerHome.findSkilledWorkers')}
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      {i18n.t('hirerHome.findSkilledWorkersDescription')}
-                    </ThemedText>
-                  </View>
-                </View>
-                
-                <View style={styles.benefitItem}>
-                  <Ionicons name="timer" size={24} color="#FFC107" style={styles.benefitIcon} />
-                  <View style={styles.benefitContent}>
-                    <ThemedText style={[styles.benefitTitle, { 
-                      color: theme.colors.textPrimary,
-                      fontWeight: theme.fontWeights.semiBold 
-                    }]}>
-                      {i18n.t('hirerHome.quickHiring')}
-                    </ThemedText>
-                    <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
-                      {i18n.t('hirerHome.quickHiringDescription')}
-                    </ThemedText>
-                  </View>
-                </View>
+            <View style={styles.benefitItem}>
+              <Ionicons name="search" size={24} color={theme.colors.primary} style={styles.benefitIcon} />
+              <View style={styles.benefitContent}>
+                <ThemedText style={[styles.benefitTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold
+                }]}>
+                  {i18n.t('hirerHome.findSkilledWorkers')}
+                </ThemedText>
+                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
+                  {i18n.t('hirerHome.findSkilledWorkersDescription')}
+                </ThemedText>
+              </View>
+            </View>
+
+            <View style={styles.benefitItem}>
+              <Ionicons name="timer" size={24} color="#FFC107" style={styles.benefitIcon} />
+              <View style={styles.benefitContent}>
+                <ThemedText style={[styles.benefitTitle, {
+                  color: theme.colors.textPrimary,
+                  fontWeight: theme.fontWeights.semiBold
+                }]}>
+                  {i18n.t('hirerHome.quickHiring')}
+                </ThemedText>
+                <ThemedText style={[styles.benefitDescription, { color: theme.colors.textSecondary }]}>
+                  {i18n.t('hirerHome.quickHiringDescription')}
+                </ThemedText>
+              </View>
+            </View>
           </Card>
         </View>
       </ScrollView>
@@ -197,7 +201,6 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     padding: 16,
-    alignItems: 'flex-start',
   },
   actionIcon: {
     marginBottom: 12,

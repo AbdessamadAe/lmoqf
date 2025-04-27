@@ -9,6 +9,7 @@ export const en = {
   loading: "Loading...",
   refresh: "Refresh",
   save: "Save",
+  welcome: "Welcome",
   
   // Navigation
   home: "Home",
@@ -72,7 +73,8 @@ export const en = {
     noWorkersArea: "No workers are currently available in your area",
     contactWorker: "Contact Worker",
     hourlyRate: "Hourly Rate",
-    location: "Location"
+    location: "Location",
+    workersIn: "Workers in"
   },
   
   // Validation
@@ -156,5 +158,15 @@ export const en = {
     findSkilledWorkersDescription: "Access a pool of qualified local workers",
     quickHiring: "Quick Hiring",
     quickHiringDescription: "Find available workers in your area today",
+  },
+  setHirerLocation: {
+    headerTitle: "Set Your Location",
+    title: "Set Your Location",
+    subtitle: "We'll show you workers available in your area",
+    location: "Your Location",
+    locationPlaceholder: "Enter your city or area",
+    continue: "Continue",
+    error: "Error saving location",
+    errorMessage: "Failed to save your location. Please try again."
   },
 };
