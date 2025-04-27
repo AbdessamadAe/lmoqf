@@ -6,9 +6,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from './services/hirerService';
-import { registerWorker, validateWorkerData, WorkerProfile } from './services/workerService';
+import { registerWorker, validateWorkerData } from './services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
+import { Worker } from './types';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -42,7 +43,7 @@ export default function WorkerRegistrationScreen() {
   }, []);
 
   const handleSubmit = async () => {
-    const workerData: WorkerProfile = {
+    const workerData: Worker = {
       name,
       phone,
       location,

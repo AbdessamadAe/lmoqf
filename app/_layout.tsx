@@ -20,7 +20,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
-  
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -40,7 +40,7 @@ export default function RootLayout() {
       <LanguageProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <UserRoleProvider>
-            <Stack 
+            <Stack
               initialRouteName="onboarding"
               screenOptions={{
                 headerShown: false,
@@ -49,55 +49,46 @@ export default function RootLayout() {
                 headerShadowVisible: false,
               }}
             >
-              <Stack.Screen 
-                name="onboarding" 
-                options={{ 
+              <Stack.Screen
+                name="onboarding"
+                options={{
                   headerShown: false,
                   // Prevent going back to onboarding once in the app
                   gestureEnabled: false,
-                }} 
+                }}
               />
-              
-              <Stack.Screen 
-                name="(worker-tabs)" 
-                options={{ 
+
+              <Stack.Screen
+                name="(worker-tabs)"
+                options={{
                   headerShown: false,
                   // Prevent going back to onboarding
                   gestureEnabled: false,
-                }} 
+                }}
               />
-              
-              <Stack.Screen 
-                name="(hirer-tabs)" 
-                options={{ 
+
+              <Stack.Screen
+                name="(hirer-tabs)"
+                options={{
                   headerShown: false,
                   // Prevent going back to onboarding
                   gestureEnabled: false,
-                }} 
+                }}
               />
-              
-              <Stack.Screen 
-                name="worker-registration" 
-                options={{ 
+
+              <Stack.Screen
+                name="worker-registration"
+                options={{
                   headerShown: true,
                   headerTitle: "Register as a Worker",
-                  headerTitleStyle: { 
+                  headerTitleStyle: {
                     fontSize: 20,
                     fontWeight: '600',
                   }
-                }} 
+                }}
               />
-              
-              <Stack.Screen 
-                name="worker-waiting" 
-                options={{ 
-                  headerShown: true,
-                  headerTitle: '', 
-                  headerBackTitleVisible: true, // Allow back title to be visible
-                  gestureEnabled: true,
-                }} 
-              />
-              
+
+
               <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/app/theme/useTheme';
-import { fetchAvailableWorkers, Worker, fetchSkills } from '../services/hirerService';
+import { fetchAvailableWorkers, fetchSkills } from '../services/hirerService';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { InputField } from '../components/InputField';
@@ -14,12 +14,7 @@ import { EmptyStateIllustration } from '@/components/illustrations/EmptyStateIll
 import i18n from '@/app/i18n/i18n';
 import { StatusBar } from 'expo-status-bar';
 import { useUserRole } from '@/app/context/UserRoleContext';
-
-// Update the Worker interface if needed
-// If this is already defined elsewhere, this change should be made there instead
-interface ExtendedWorker extends Worker {
-  phone?: string;
-}
+import { Worker } from '../types';
 
 export default function WorkersScreen() {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -97,7 +92,7 @@ export default function WorkersScreen() {
     return matchesSkill && matchesSearch;
   });
 
-  const handleCallWorker = (worker: ExtendedWorker) => {
+  const handleCallWorker = (worker: Worker) => {
     const phone = worker.phone || '';
     
     if (!phone) {

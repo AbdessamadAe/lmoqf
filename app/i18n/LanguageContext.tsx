@@ -33,26 +33,8 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
         if (savedLanguage) {
           changeLanguage(savedLanguage);
         } else {
-          // Use device language as default
+          // Assume default language is English
           let deviceLanguage = 'en';
-          
-          if (Platform.OS === 'web') {
-            // For web, use the browser's language
-            try {
-              deviceLanguage = navigator?.language?.split('-')[0] || 'en';
-            } catch (error) {
-              console.warn('Could not detect browser language:', error);
-            }
-          } else {
-            // For native platforms
-            try {
-              const reactNativeLocalize = require('react-native-localize');
-              const locales = reactNativeLocalize.getLocales();
-              deviceLanguage = locales?.[0]?.languageCode || 'en';
-            } catch (error) {
-              console.warn('Could not detect device language:', error);
-            }
-          }
           
           changeLanguage(deviceLanguage);
         }

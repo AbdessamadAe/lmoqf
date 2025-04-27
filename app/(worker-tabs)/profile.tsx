@@ -42,16 +42,15 @@ export default function ProfileScreen() {
   // Load profile data
   useEffect(() => {
     loadProfileData();
-  }, [params.newRegistration]);
+  }, []);
   
   const loadProfileData = async () => {
     setIsLoading(true);
     try {      
       const profileData = await getWorkerProfile();
-      
+      console.log('Profile Data:', profileData);
       if (profileData) {
         setProfile(profileData);
-        
         const availabilityStatus = await isWorkerAvailable();
         setIsAvailable(availabilityStatus);
       }
