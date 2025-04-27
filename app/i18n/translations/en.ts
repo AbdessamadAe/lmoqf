@@ -87,6 +87,7 @@ export const en = {
   
   // Settings
   settings: {
+    location: "Location",
     language: "Language",
     appLanguage: "Lang",
     notifications: "Notifications",
