@@ -3,7 +3,7 @@
  */
 import { supabase } from '../lib/supabase';
 import { HIRER_LOCATION_KEY } from '@/constants/localStorage';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -14,6 +14,18 @@ export const saveHirerLocation = async (location: string): Promise<void> => {
   } catch (error) {
     console.error('Error saving location:', error);
     throw new Error('Failed to save location');
+  }
+};
+
+export const getHirerLocation = async (): Promise<string | null> => {
+  try {
+    // Retrieve the location from AsyncStorage
+    const location = await AsyncStorage.getItem(HIRER_LOCATION_KEY);
+    return location;
+  }
+  catch (error) {
+    console.error('Error retrieving location:', error);
+    throw new Error('Failed to retrieve location');
   }
 };
 

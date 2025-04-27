@@ -8,6 +8,7 @@ export const ar = {
   done: "تم",
   loading: "جاري التحميل...",
   refresh: "تحديث",
+  save: "حفظ",
   
   // Navigation
   home: "الرئيسية",
@@ -112,6 +113,10 @@ export const ar = {
     logoutButton: "تسجيل الخروج",
     appearance: "المظهر",
     darkMode: "الوضع الداكن",
-    darkModeDescription: "التبديل بين المظهر الفاتح والداكن"
+    darkModeDescription: "التبديل بين المظهر الفاتح والداكن",
+    yourLocation: "موقعك",
+    updateLocation: "تحديث الموقع",
+    enterNewLocation: "أدخل موقعك الجديد"
+    
   }
 };

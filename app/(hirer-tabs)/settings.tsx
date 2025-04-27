@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView, Switch, TouchableOpacity, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from 'expo-router';
@@ -16,6 +16,7 @@ import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { logoutWorker } from '@/app/services/workerService';
+import { getHirerLocation, saveHirerLocation } from '../services/hirerService';
 
 // Settings item component
 const SettingsItem = ({ 
@@ -77,6 +78,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const navigation = useNavigation();
   const { locale, changeLanguage } = useLanguage();
+  const [location, setLocation] = useState('');
 
   // Set the header title
   useEffect(() => {
@@ -93,7 +95,53 @@ export default function SettingsScreen() {
       },
       headerShadowVisible: false,
     });
+
+    // Fetch hirer location when component mounts
+    fetchHirerLocation();
   }, [navigation, theme]);
+
+  const fetchHirerLocation = async () => {
+    try {
+      const hirerLocation = await getHirerLocation();
+      if (hirerLocation) {
+        setLocation(hirerLocation);
+      }
+    } catch (error) {
+      console.error('Error fetching hirer location:', error);
+    }
+  };
+
+  const updateLocation = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    Alert.prompt(
+      i18n.t('settings.updateLocation') || 'Update Location',
+      i18n.t('settings.enterNewLocation') || 'Enter your new location',
+      [
+        {
+          text: i18n.t('cancel'),
+          style: "cancel"
+        },
+        {
+          text: i18n.t('save'),
+          onPress: async (newLocation) => {
+            if (newLocation && newLocation.trim() !== '') {
+              try {
+                await saveHirerLocation(newLocation.trim());
+                setLocation(newLocation.trim());
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              } catch (error) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Alert.alert('Error', 'Failed to update location. Please try again.');
+              }
+            }
+          }
+        }
+      ],
+      'plain-text',
+      location
+    );
+  };
 
   const handleLogout = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -146,6 +194,35 @@ export default function SettingsScreen() {
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       <ScrollView contentContainerStyle={styles.container}>
+        {/* Location */}
+        <View style={styles.section}>
+          <ThemedText style={[styles.sectionTitle, { 
+            color: theme.colors.textPrimary,
+            fontSize: theme.fontSizes.md,
+            fontWeight: theme.fontWeights.semiBold
+          }]}>
+            {i18n.t('settings.location') || 'Location'}
+          </ThemedText>
+          
+          <Card style={styles.card} variant="elevated">
+            <SettingsItem 
+              icon="location"
+              title={i18n.t('settings.yourLocation') || 'Your Location'}
+              description={location || i18n.t('settings.noLocation') || 'No location set'}
+              onPress={updateLocation}
+              iconColor="#EC4899"
+              isLast={true}
+              rightElement={
+                <Ionicons 
+                  name="chevron-forward" 
+                  size={20} 
+                  color={theme.colors.textSecondary} 
+                />
+              }
+            />
+          </Card>
+        </View>
+
         {/* Language */}
         <View style={styles.section}>
           <ThemedText style={[styles.sectionTitle, { 

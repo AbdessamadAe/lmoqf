@@ -8,6 +8,7 @@ export const en = {
   done: "Done",
   loading: "Loading...",
   refresh: "Refresh",
+  save: "Save",
   
   // Navigation
   home: "Home",
@@ -101,6 +102,9 @@ export const en = {
     logoutButton: "Log out",
     appearance: "Appearance",
     darkMode: "Dark Mode",
-    darkModeDescription: "Switch between light and dark theme"
+    darkModeDescription: "Switch between light and dark theme",
+    yourLocation: "Your Location",
+    updateLocation: "Update Location",
+    enterNewLocation: "Enter your new location",
   }
 };

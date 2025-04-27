@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/app/theme/useTheme';
-import { fetchAvailableWorkers, fetchSkills } from '../services/hirerService';
+import { fetchAvailableWorkers, fetchSkills, getHirerLocation } from '../services/hirerService';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { InputField } from '../components/InputField';
@@ -82,14 +82,15 @@ export default function WorkersScreen() {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [workersData, skillsData] = await Promise.all([
+      const [workersData, skillsData, hirerLocation] = await Promise.all([
         fetchAvailableWorkers(),
         fetchSkills(),
+        getHirerLocation(),
       ]);
 
       setWorkers(workersData);
       setSkills(skillsData);
-
+      setSelectedLocation(hirerLocation || '');
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -232,7 +233,7 @@ export default function WorkersScreen() {
         </View>
 
         {/* Active Filters Display */}
-        {(selectedSkill || selectedLocation) && (
+        {(selectedSkill) && (
           <View style={styles.activeFiltersContainer}>
             <ThemedText style={[styles.activeFiltersTitle, { color: theme.colors.textSecondary }]}>
               Active filters:
