@@ -10,6 +10,7 @@ export const en = {
   refresh: "Refresh",
   save: "Save",
   welcome: "Welcome",
+  success: "Success",
   
   // Navigation
   home: "Home",
@@ -58,7 +59,11 @@ export const en = {
     skill: "Skill",
     shareButton: "Share Contact Info",
     shareMessage: "I'm available for work today! Contact me at: {{phone}} - {{name}} ({{skill}})",
-    noLongerAvailable: "I'm No Longer Available"
+    noLongerAvailable: "I'm No Longer Available",
+    resetNotificationTitle: "Availability Reset",
+    resetNotificationMessage: "Your availability was automatically set to unavailable at 9pm. Set yourself available again to be visible for tomorrow.",
+    setAvailableAgain: "Set Available for Tomorrow",
+    availableAgain: "You're now available for work! Employers can find and contact you."
   },
   
   // Available Workers

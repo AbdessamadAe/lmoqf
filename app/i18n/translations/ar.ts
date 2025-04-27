@@ -10,6 +10,7 @@ export const ar = {
   refresh: "تحديث",
   save: "حفظ",
   welcome: "مرحبًا بك",
+  success: "نجاح",
   
   // Navigation
   home: "الرئيسية",
