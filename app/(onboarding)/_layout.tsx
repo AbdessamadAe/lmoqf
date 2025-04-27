@@ -43,8 +43,6 @@ export default function OnboardingLayout() {
             title: 'Register as a Worker',
             headerShown: true, // Explicitly show header with back button
             headerBackVisible: true, // Explicitly show back button
-            headerBackTitle: '', // Hide back text if present
-            headerShadowVisible: false, // Remove shadow
           }}
         />
       </Stack>

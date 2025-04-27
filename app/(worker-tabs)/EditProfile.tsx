@@ -6,12 +6,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from '../services/hirerService';
-import { registerWorker, validateWorkerData } from '../services/workerService';
+import { getWorkerProfile, registerWorker, validateWorkerData } from '../services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../types';
 
-export default function WorkerRegistrationScreen() {
+export default function EditProfileScreen() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
@@ -21,16 +21,11 @@ export default function WorkerRegistrationScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
+  const [profile, setProfile] = useState(null);
 
   const inputBackground = useThemeColor({ light: '#f5f5f7', dark: '#1e1e1e' }, 'background');
   const cardBackground = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
-
-  // Ensure header is properly configured
-  useEffect(() => {
-    // We'll let the layout file handle the header configuration
-    // This ensures the back button will show properly
-  }, []);
 
   // Load skills from our data service
   useEffect(() => {
@@ -47,6 +42,29 @@ export default function WorkerRegistrationScreen() {
     };
 
     loadSkills();
+  }, []);
+
+  const loadProfile = async () => {
+    setIsLoading(true);
+    try {
+      const profileData = await getWorkerProfile();
+      if (profileData) {
+        setProfile(profileData);
+        setName(profileData.name);
+        setPhone(profileData.phone);
+        setLocation(profileData.location);
+        setSelectedSkill(profileData.skill);
+        setAvailable(profileData.available);
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  useEffect(() => {
+    // Load the profile data when the component mounts
+    loadProfile();
   }, []);
 
   const handleSubmit = async () => {
@@ -91,8 +109,7 @@ export default function WorkerRegistrationScreen() {
   };
 
   const handleBack = () => {
-    // buggy: to be fixed
-    //navigation.navigate('(onboarding)/index');
+    navigation.goBack();
   };
 
 return (
@@ -113,7 +130,7 @@ return (
 
         <View style={styles.header}>
           <WorkerRegistrationIllustration />
-          <ThemedText style={styles.title}>Create Your Worker Profile</ThemedText>
+          <ThemedText style={styles.title}>Edit Your Worker Profile</ThemedText>
           <ThemedText style={styles.subtitle}>Complete your details to be discoverable by employers</ThemedText>
         </View>
 
@@ -205,13 +222,6 @@ return (
               <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
               <ThemedText style={styles.label}>Available Today?</ThemedText>
             </View>
-            <Switch
-              value={available}
-              onValueChange={setAvailable}
-              ios_backgroundColor="#ccc"
-              trackColor={{ false: '#767577', true: primaryColor }}
-              thumbColor="#f4f3f4"
-            />
           </View>
         </View>
 
