@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import i18n from '@/app/i18n/i18n';
 import { useLanguage } from '@/app/i18n/LanguageContext';
-import { useUserRole } from './context/UserRoleContext';
+import { useUserRole } from '../context/UserRoleContext';
 
 export type UserRole = 'worker' | 'hirer';
 

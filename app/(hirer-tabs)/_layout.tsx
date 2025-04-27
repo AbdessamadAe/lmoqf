@@ -9,10 +9,13 @@ import { useLanguage } from '@/app/i18n/LanguageContext';
 import { useUserRole } from '@/app/context/UserRoleContext';
 import { ActivityIndicator, View } from 'react-native';
 
-export default function TabsLayout() {
+// Import navigation types for type safety
+import { HirerTabsParamList } from '../types/navigation';
+
+export default function HirerTabsLayout() {
   const theme = useTheme();
   const { isRTL } = useLanguage();
-  const { userRole, isLoading, isWorker, isHirer } = useUserRole();
+  const { userRole, isLoading, isHirer } = useUserRole();
   
   // Show loading screen when checking user role
   if (isLoading) {
@@ -23,15 +26,15 @@ export default function TabsLayout() {
     );
   }
   
-  // If no user role is set, redirect to onboarding
-  if (!userRole) {
-    return <Redirect href="/onboarding" />;
+  // If no user role is set or user is not a hirer, redirect to onboarding
+  if (!userRole || !isHirer) {
+    return <Redirect href="/(onboarding)" />;
   }
   
   // Get translations as strings instead of objects
   const homeLabel = String(i18n.t('home'));
   const workersLabel = String(i18n.t('workers'));
-  const settingsLabel = String( i18n.t('settingsTitle'));
+  const settingsLabel = String(i18n.t('settingsTitle'));
   
   return (
     <Tabs
@@ -77,6 +80,7 @@ export default function TabsLayout() {
         }),
       }}
     >
+      {/* Home/Dashboard Screen */}
       <Tabs.Screen
         name="index"
         options={{
@@ -87,7 +91,7 @@ export default function TabsLayout() {
         }}
       />
       
-      {/* The Workers tab is only accessible to hirers */}
+      {/* Workers Listing Screen */}
       <Tabs.Screen
         name="workers"
         options={{
@@ -98,7 +102,7 @@ export default function TabsLayout() {
         }}
       />
       
-      {/* Settings is accessible to all users */}
+      {/* Settings Screen */}
       <Tabs.Screen
         name="settings"
         options={{

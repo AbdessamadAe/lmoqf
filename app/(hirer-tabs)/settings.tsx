@@ -112,7 +112,7 @@ export default function SettingsScreen() {
             try {
               await logoutWorker();
               // Redirect to onboarding screen
-              router.replace('/onboarding');
+              router.replace('/');
             } catch (error) {
               Alert.alert('Error', 'Failed to log out. Please try again.');
             }

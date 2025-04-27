@@ -9,10 +9,13 @@ import { useLanguage } from '@/app/i18n/LanguageContext';
 import { useUserRole } from '@/app/context/UserRoleContext';
 import { ActivityIndicator, View } from 'react-native';
 
-export default function TabsLayout() {
+// Import navigation types for type safety
+import { WorkerTabsParamList } from '../types/navigation';
+
+export default function WorkerTabsLayout() {
   const theme = useTheme();
   const { isRTL } = useLanguage();
-  const { userRole, isLoading, isWorker, isHirer } = useUserRole();
+  const { userRole, isLoading, isWorker } = useUserRole();
   
   // Show loading screen when checking user role
   if (isLoading) {
@@ -23,14 +26,14 @@ export default function TabsLayout() {
     );
   }
   
-  // If no user role is set, redirect to onboarding
-  if (!userRole) {
-    return <Redirect href="/onboarding" />;
+  // If no user role is set or user is not a worker, redirect to onboarding
+  if (!userRole || !isWorker) {
+    return <Redirect href="/(onboarding)" />;
   }
   
   // Get translations as strings instead of objects
   const homeLabel = String(i18n.t('home'));
-  const profileLabel = isWorker ? String(i18n.t('profile')) : "My Account";
+  const profileLabel = String(i18n.t('profile'));
   const settingsLabel = String(i18n.t('settingsTitle'));
   
   return (
@@ -77,6 +80,7 @@ export default function TabsLayout() {
         }),
       }}
     >
+      {/* Home/Waiting Screen */}
       <Tabs.Screen
         name="index"
         options={{
@@ -87,7 +91,7 @@ export default function TabsLayout() {
         }}
       />
       
-      {/* The Profile tab is more relevant to workers but accessible to both */}
+      {/* Worker Profile Screen */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -98,7 +102,7 @@ export default function TabsLayout() {
         }}
       />
       
-      {/* Settings is accessible to all users */}
+      {/* Settings Screen */}
       <Tabs.Screen
         name="settings"
         options={{

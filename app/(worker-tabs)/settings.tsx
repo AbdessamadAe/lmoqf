@@ -111,8 +111,8 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await logoutWorker();
-              // Redirect to onboarding screen
-              router.replace('/onboarding');
+              // Redirect to root/onboarding screen outside of tabs
+              router.replace('/(onboarding)');
             } catch (error) {
               Alert.alert('Error', 'Failed to log out. Please try again.');
             }

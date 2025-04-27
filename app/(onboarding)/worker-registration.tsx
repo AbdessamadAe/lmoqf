@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Switch, View, ActivityIndicator, Alert } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { fetchSkills } from './services/hirerService';
-import { registerWorker, validateWorkerData } from './services/workerService';
+import { fetchSkills } from '../services/hirerService';
+import { registerWorker, validateWorkerData } from '../services/workerService';
 import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
-import { Worker } from './types';
+import { Worker } from '../types';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -20,10 +20,17 @@ export default function WorkerRegistrationScreen() {
   const [skills, setSkills] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigation = useNavigation();
 
   const inputBackground = useThemeColor({ light: '#f5f5f7', dark: '#1e1e1e' }, 'background');
   const cardBackground = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
+
+  // Ensure header is properly configured
+  useEffect(() => {
+    // We'll let the layout file handle the header configuration
+    // This ensures the back button will show properly
+  }, []);
 
   // Load skills from our data service
   useEffect(() => {
@@ -83,13 +90,25 @@ export default function WorkerRegistrationScreen() {
     }
   };
 
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
 return (
-  <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+  <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
     <ThemedView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* Manual back button for mobile devices that might not show the navigation header */}
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+          accessibilityLabel="Go back"
+        >
+          <Ionicons name="arrow-back" size={24} color={primaryColor} />
+        </TouchableOpacity>
 
         <View style={styles.header}>
           <WorkerRegistrationIllustration />
@@ -346,6 +365,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     left: 20,
-    zIndex: 1,
+    zIndex: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

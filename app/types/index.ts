@@ -7,4 +7,3 @@ export interface Worker {
     skill: string;
     available?: boolean;
   }
-
