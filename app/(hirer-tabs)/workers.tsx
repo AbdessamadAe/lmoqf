@@ -567,6 +567,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     marginTop: 30,
+    marginBottom: 40,
   },
   emptyStateTitle: {
     marginTop: 16,

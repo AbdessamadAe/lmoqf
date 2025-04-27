@@ -171,4 +171,10 @@ export const en = {
     error: "Error saving location",
     errorMessage: "Failed to save your location. Please try again."
   },
+  skills: {
+    Construction: "Construction",
+    Firma: "Firma",
+    Cleaning: "Cleaning",
+    Driving: "Driving"
+  }
 };

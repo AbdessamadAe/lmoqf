@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTheme } from '@/app/theme/useTheme';
-
+import i18n from '../i18n/i18n';
 interface DropdownProps {
   label?: string;
   placeholder?: string;
@@ -132,7 +132,7 @@ export function Dropdown({
                     color: value === item ? theme.colors.primary : theme.colors.textPrimary,
                     fontWeight: value === item ? theme.fontWeights.medium : theme.fontWeights.regular
                   }}>
-                    {item}
+                    {i18n.t(`skills.${item}`)}
                   </ThemedText>
                   {value === item && (
                     <Ionicons name="checkmark" size={20} color={theme.colors.primary} />

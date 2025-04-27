@@ -189,7 +189,7 @@ export default function ProfileScreen() {
               <View style={[styles.skillBadge, { backgroundColor: theme.colors.primary + '15' }]}>
                 <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
                 <ThemedText style={[styles.skillText, { color: theme.colors.primary }]}>
-                  {profile.skill}
+                  {i18n.t(`skills.${profile.skill}`)}
                 </ThemedText>
               </View>
               

@@ -179,7 +179,7 @@ return (
                         { color: skill === selectedSkill ? theme.colors.background : undefined }
                       ]}
                     >
-                      {skill}
+                      {i18n.t(`skills.${skill}`)}
                     </ThemedText>
                   </TouchableOpacity>
                 ))}

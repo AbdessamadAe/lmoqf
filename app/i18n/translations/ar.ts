@@ -181,4 +181,10 @@ export const ar = {
     locationUpdated: "تم تحديث الموقع بنجاح",
     continue: "استمر",
   },
+  skills: {
+    Construction: "البناء",
+    Firma: "فيرما",
+    Cleaning: "التنظيف",
+    Driving: "القيادة",
+  }
 };
