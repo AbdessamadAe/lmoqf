@@ -15,8 +15,7 @@ import * as Linking from 'expo-linking';
 import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { logoutWorker } from '@/app/services/workerService';
-import { getHirerLocation, saveHirerLocation } from '../services/hirerService';
+import { getHirerLocation, logoutHirer, saveHirerLocation } from '../services/hirerService';
 
 // Settings item component
 const SettingsItem = ({ 
@@ -158,9 +157,9 @@ export default function SettingsScreen() {
           text: i18n.t('settings.logoutButton'),
           onPress: async () => {
             try {
-              await logoutWorker();
+              await logoutHirer();
               // Redirect to onboarding screen
-              router.replace('/');
+              router.replace('(onboarding)');
             } catch (error) {
               Alert.alert('Error', 'Failed to log out. Please try again.');
             }
@@ -212,13 +211,6 @@ export default function SettingsScreen() {
               onPress={updateLocation}
               iconColor="#EC4899"
               isLast={true}
-              rightElement={
-                <Ionicons 
-                  name="chevron-forward" 
-                  size={20} 
-                  color={theme.colors.textSecondary} 
-                />
-              }
             />
           </Card>
         </View>
@@ -234,18 +226,11 @@ export default function SettingsScreen() {
           </ThemedText>
           
           <Card style={styles.card} variant="elevated">
-            <View style={[styles.settingsItem, { borderBottomWidth: 0 }]}>
+            <View style={[styles.settingsItem, { borderBottomWidth: 0,
+              justifyContent: 'space-between',
+             }]}>
               <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
                 <Ionicons name="language" size={22} color={theme.colors.primary} />
-              </View>
-              <View style={styles.settingsItemContent}>
-                <ThemedText style={[styles.settingsItemTitle, { 
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold,
-                  fontSize: theme.fontSizes.md,
-                }]}>
-                  {i18n.t('settings.appLanguage')}
-                </ThemedText>
               </View>
               <LanguageSelector />
             </View>

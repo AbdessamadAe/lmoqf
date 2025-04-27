@@ -157,18 +157,11 @@ export default function SettingsScreen() {
           </ThemedText>
           
           <Card style={styles.card} variant="elevated">
-            <View style={[styles.settingsItem, { borderBottomWidth: 0 }]}>
+            <View style={[styles.settingsItem, { borderBottomWidth: 0,
+              justifyContent: 'space-between',
+             }]}>
               <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
                 <Ionicons name="language" size={22} color={theme.colors.primary} />
-              </View>
-              <View style={styles.settingsItemContent}>
-                <ThemedText style={[styles.settingsItemTitle, { 
-                  color: theme.colors.textPrimary,
-                  fontWeight: theme.fontWeights.semiBold,
-                  fontSize: theme.fontSizes.md,
-                }]}>
-                  {i18n.t('settings.appLanguage')}
-                </ThemedText>
               </View>
               <LanguageSelector />
             </View>

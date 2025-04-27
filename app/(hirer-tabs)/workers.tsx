@@ -197,7 +197,8 @@ export default function WorkersScreen() {
             iconName="search"
             value={searchQuery}
             onChangeText={setSearchQuery}
-            containerStyle={styles.searchInput}
+            containerStyle={[styles.searchInput, { textAlign: 'center' }]}
+            inputStyle={{ textAlign: 'center' }}
           />
         </View>
 

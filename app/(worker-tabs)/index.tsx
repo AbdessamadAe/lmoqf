@@ -33,7 +33,10 @@ export default function WorkerWaitingScreen() {
 
       } catch (error) {
         console.error('Failed to load profile data:', error);
-        Alert.alert(i18n.t('cancel'), 'Failed to load profile data');
+        Alert.alert(
+          i18n.t('cancel'), 
+          i18n.t('editProfile.error')
+        );
         router.replace('/(worker-tabs)');
       } finally {
         setIsLoading(false);
@@ -58,7 +61,7 @@ export default function WorkerWaitingScreen() {
         }),
       });
     } catch (error) {
-      Alert.alert(i18n.t('cancel'), 'Could not share your information');
+      Alert.alert(i18n.t('cancel'), i18n.t('settings.contactSupportDescription'));
     }
   };
 
@@ -70,7 +73,10 @@ export default function WorkerWaitingScreen() {
       // Navigate to profile screen instead of onboarding
       router.replace('/(worker-tabs)/profile');
     } catch (error) {
-      Alert.alert(i18n.t('cancel'), 'Could not update your availability status');
+      Alert.alert(
+        i18n.t('cancel'), 
+        i18n.t('workerProfile.statusChangeMessage')
+      );
     }
   };
 
@@ -124,6 +130,17 @@ export default function WorkerWaitingScreen() {
               </View>
             </View>
           </View>
+          
+          {/* Add share button */}
+          <TouchableOpacity
+            style={[styles.shareButton, { backgroundColor: primaryColor }]}
+            onPress={handleShare}
+          >
+            <Ionicons name="share-social-outline" size={20} color="#fff" />
+            <ThemedText style={[styles.shareButtonText, { color: '#fff' }]}>
+              {i18n.t('workerWaiting.shareButton')}
+            </ThemedText>
+          </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.cancelButton, { borderColor: dangerColor }]}

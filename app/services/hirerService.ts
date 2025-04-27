@@ -7,6 +7,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
+export const logoutHirer = async (): Promise<void> => {
+  try {
+    // Clear local storage  
+    await AsyncStorage.clear();
+    console.log('Hirer logged out successfully, all local storage cleared');
+  } catch (error) {
+    console.error('Error logging out:', error);
+    throw new Error('Failed to log out');
+  }
+}
+
+
 export const saveHirerLocation = async (location: string): Promise<void> => {
   try {
     // Save the location to AsyncStorage
