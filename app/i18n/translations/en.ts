@@ -63,6 +63,7 @@ export const en = {
   
   // Available Workers
   availableWorkers: {
+    search: "Search",
     headerTitle: "Available Workers",
     title: "Find the right worker",
     subtitle: "Browse through our collection of skilled professionals",

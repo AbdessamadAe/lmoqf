@@ -73,6 +73,7 @@ export const ar = {
   
   // Available Workers
   availableWorkers: {
+    search: "بحث",
     headerTitle: "العمال المتاحون",
     title: "ابحث عن العامل المناسب",
     subtitle: "تصفح مجموعتنا من المهنيين المهرة",

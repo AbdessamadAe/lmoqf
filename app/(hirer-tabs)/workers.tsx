@@ -192,6 +192,13 @@ export default function WorkersScreen() {
       >
         {/* Search */}
         <View style={styles.searchContainer}>
+          <ThemedText style={[styles.searchTitle, {
+            color: theme.colors.textPrimary,
+            fontSize: theme.fontSizes.md,
+            fontWeight: theme.fontWeights.semiBold
+          }]}>
+            {i18n.t('availableWorkers.search')}
+          </ThemedText>
           <InputField
             placeholder={i18n.t('availableWorkers.subtitle')}
             iconName="search"
