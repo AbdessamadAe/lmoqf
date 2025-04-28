@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert, ActivityIndicator } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -156,7 +157,8 @@ export default function WorkerWaitingScreen() {
   if (!profile) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ThemedText>{i18n.t('loading')}</ThemedText>
+        <ActivityIndicator size="large" color={primaryColor} />
+        <ThemedText style={styles.loadingText}>{i18n.t('loading')}</ThemedText>
       </ThemedView>
     );
   }
@@ -169,19 +171,17 @@ export default function WorkerWaitingScreen() {
           {showResetNotification && (
             <View style={[styles.notificationCard, { backgroundColor: warningColor + '20' }]}>
               <View style={styles.notificationHeader}>
-                <Ionicons name="time-outline" size={24} color={warningColor} />
+                <Ionicons name="time-outline" size={20} color={warningColor} />
                 <ThemedText style={[styles.notificationTitle, { color: warningColor }]}>
                   {i18n.t('workerWaiting.resetNotificationTitle')}
                 </ThemedText>
                 <TouchableOpacity onPress={handleDismissNotification}>
-                  <Ionicons name="close-outline" size={24} color={warningColor} />
+                  <Ionicons name="close-outline" size={20} color={warningColor} />
                 </TouchableOpacity>
               </View>
-              
               <ThemedText style={styles.notificationText}>
                 {i18n.t('workerWaiting.resetNotificationMessage')}
               </ThemedText>
-              
               <TouchableOpacity
                 style={[styles.notificationButton, { backgroundColor: warningColor }]}
                 onPress={handleSetAvailable}
@@ -192,57 +192,35 @@ export default function WorkerWaitingScreen() {
               </TouchableOpacity>
             </View>
           )}
-          
+
           {/* Status Header */}
           <View style={styles.statusHeader}>
             <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
             <ThemedText style={styles.statusText}>{i18n.t('workerWaiting.statusText')}</ThemedText>
           </View>
-          
+
           <WaitingIllustration />
-          
+
           <ThemedText style={styles.title}>{i18n.t('workerWaiting.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>
-            {i18n.t('workerWaiting.subtitle')}
-          </ThemedText>
-          
+          <ThemedText style={styles.subtitle}>{i18n.t('workerWaiting.subtitle')}</ThemedText>
+
+          {/* Profile Info */}
           <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
             <View style={styles.infoRow}>
-              <Ionicons name="person-outline" size={22} color={primaryColor} style={styles.infoIcon} />
-              <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.yourName')}</ThemedText>
-                <ThemedText style={styles.infoValue}>{profile.name}</ThemedText>
-              </View>
+              <Ionicons name="person-outline" size={20} color={primaryColor} style={styles.infoIcon} />
+              <ThemedText style={styles.infoValue}>{profile.name}</ThemedText>
             </View>
-            
             <View style={styles.infoRow}>
-              <Ionicons name="call-outline" size={22} color={primaryColor} style={styles.infoIcon} />
-              <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.contactNumber')}</ThemedText>
-                <ThemedText style={styles.infoValue}>{profile.phone}</ThemedText>
-              </View>
+              <Ionicons name="call-outline" size={20} color={primaryColor} style={styles.infoIcon} />
+              <ThemedText style={styles.infoValue}>{profile.phone}</ThemedText>
             </View>
-            
             <View style={styles.infoRow}>
-              <Ionicons name="construct-outline" size={22} color={primaryColor} style={styles.infoIcon} />
-              <View style={styles.infoContent}>
-                <ThemedText style={styles.infoLabel}>{i18n.t('workerWaiting.skill')}</ThemedText>
-                <ThemedText style={styles.infoValue}>{profile.skill}</ThemedText>
-              </View>
+              <Ionicons name="construct-outline" size={20} color={primaryColor} style={styles.infoIcon} />
+              <ThemedText style={styles.infoValue}>{profile.skill}</ThemedText>
             </View>
           </View>
-          
-          {/* Add share button */}
-          <TouchableOpacity
-            style={[styles.shareButton, { backgroundColor: primaryColor }]}
-            onPress={handleShare}
-          >
-            <Ionicons name="share-social-outline" size={20} color="#fff" />
-            <ThemedText style={[styles.shareButtonText, { color: '#fff' }]}>
-              {i18n.t('workerWaiting.shareButton')}
-            </ThemedText>
-          </TouchableOpacity>
-          
+
+          {/* Action Buttons */}
           <TouchableOpacity
             style={[styles.cancelButton, { borderColor: dangerColor }]}
             onPress={handleFinishWaiting}
@@ -263,144 +241,113 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
-    paddingTop: 35,
-  },
-  loadingContainer: {
-    flex: 1,
+    padding: 16,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
-    flex: 1,
     alignItems: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    zIndex: 1,
+    gap: 16,
   },
   statusHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 0,
+    marginBottom: 16,
   },
   statusIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     marginRight: 8,
   },
   statusText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
   title: {
-    fontSize: 26,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
-    opacity: 0.7,
-    marginBottom: 24,
-    maxWidth: '90%',
+    color: 'rgba(0, 0, 0, 0.6)',
   },
   infoCard: {
     width: '100%',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 12,
+    padding: 16,
+    borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowRadius: 4,
     elevation: 2,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   infoIcon: {
     marginRight: 12,
-    width: 24,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    fontSize: 14,
-    opacity: 0.7,
-    marginBottom: 2,
   },
   infoValue: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
-  },
-  shareButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginVertical: 16,
-  },
-  shareButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 8,
   },
   cancelButton: {
-    borderWidth: 2,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    marginTop: 16,
   },
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
   notificationCard: {
     width: '100%',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 12,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowRadius: 4,
     elevation: 2,
   },
   notificationHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
   notificationTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
   notificationText: {
-    fontSize: 14,
-    opacity: 0.7,
-    marginBottom: 16,
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 12,
   },
   notificationButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
   },
   notificationButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
-  }
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
 });

@@ -11,6 +11,7 @@ export const ar = {
   save: "حفظ",
   welcome: "مرحبًا بك",
   success: "نجاح",
+  Back: "رجوع",
   
   // Navigation
   home: "الرئيسية",
@@ -20,7 +21,7 @@ export const ar = {
   
   // Onboarding Screen
   onboarding: {
-    title: "لمواقف",
+    title: "لموقف",
     subtitle: "ربط العمال وأصحاب العمل بسلاسة",
     workerButton: "أنا عامل",
     workerDescription: "ابحث عن فرص عمل بالقرب منك",
@@ -78,7 +79,7 @@ export const ar = {
     headerTitle: "العمال المتاحون",
     title: "ابحث عن العامل المناسب",
     subtitle: "تصفح مجموعتنا من المهنيين المهرة",
-    filterBySkill: "تصفية حسب المهارة",
+    filterBySkill: "المهارة",
     availableWorkers: "العمال المتاحون",
     noWorkersFound: "لم يتم العثور على عمال",
     noWorkersSkill: "لا يوجد عمال بمهارات {{skill}} متاحين حاليًا",

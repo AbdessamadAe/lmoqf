@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator, Linking, Alert } from 'react-native';
+import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator, Linking, Alert, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +18,8 @@ import { useUserRole } from '@/app/context/UserRoleContext';
 import { Worker } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCalledWorkers } from '../services/workerService';
+import { TouchableOpacity } from 'react-native';
+import { useLanguage } from '@/app/i18n/LanguageContext';
 
 export default function WorkersScreen() {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -31,6 +33,7 @@ export default function WorkersScreen() {
   const theme = useTheme();
   const navigation = useNavigation();
   const { isHirer, userRole } = useUserRole();
+  const { isRTL } = useLanguage();
 
   // If user is not a hirer, redirect to home page
   if (!isHirer) {
@@ -104,12 +107,6 @@ export default function WorkersScreen() {
     setRefreshing(false);
   };
 
-  const clearFilters = () => {
-    setSelectedSkill('');
-    setSelectedLocation('');
-    setSearchQuery('');
-  };
-
   // Filter workers based on selected skill, location and search query
   const filteredWorkers = workers.filter(worker => {
     const matchesSkill = selectedSkill ? worker.skill === selectedSkill : true;
@@ -175,93 +172,140 @@ export default function WorkersScreen() {
     );
   }
 
+  // Render individual worker card item
+  const renderWorkerCard = ({ item: worker }: { item: Worker }) => {
+    const isCalled = calledWorkers[worker.id];
+    return (
+      <Card
+        key={worker.id}
+        style={[
+          styles.workerCard,
+          isCalled && styles.calledWorkerCard,
+          { opacity: isCalled ? 0.8 : 1 },
+          isRTL && styles.workerCardRTL
+        ]}
+        variant="elevated"
+      >
+        <View style={[
+          styles.cardHeader,
+          isRTL && styles.cardHeaderRTL
+        ]}>
+          <View style={[
+            styles.avatarContainer,
+            {
+              backgroundColor: theme.colors.primary + '15',
+              opacity: isCalled ? 0.7 : 1
+            },
+            isRTL && styles.avatarContainerRTL
+          ]}>
+            <ThemedText style={styles.avatarText}>
+              {worker.name.charAt(0)}
+            </ThemedText>
+          </View>
+          
+          <View style={styles.headerContent}>
+            <ThemedText 
+              numberOfLines={1} 
+              style={[styles.workerName, {
+                color: theme.colors.textPrimary,
+                fontSize: theme.fontSizes.md,
+                fontWeight: theme.fontWeights.semiBold,
+                textAlign: isRTL ? 'right' : 'left',
+              }]}
+            >
+              {worker.name}
+            </ThemedText>
+            
+            <View style={[
+              styles.tagsContainer,
+              isRTL && styles.tagsContainerRTL
+            ]}>
+              <View style={[styles.tag, { backgroundColor: theme.colors.primary + '15' }]}>
+                <Ionicons name="construct-outline" size={12} color={theme.colors.primary} style={isRTL ? {marginRight: 0, marginLeft: 2} : undefined} />
+                <ThemedText style={[styles.tagText, { color: theme.colors.primary }]}>
+                  {worker.skill}
+                </ThemedText>
+              </View>
+              <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
+                <Ionicons name="location-outline" size={12} color={theme.colors.secondary} style={isRTL ? {marginRight: 0, marginLeft: 2} : undefined} />
+                <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
+                  {worker.location}
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+          
+          <TouchableOpacity
+            style={[styles.callButton, {
+              backgroundColor: isCalled ? theme.colors.background : theme.colors.primary,
+              borderColor: theme.colors.primary,
+            }]}
+            onPress={() => handleCallWorker(worker)}
+          >
+            <Ionicons 
+              name="call-outline" 
+              size={18} 
+              color={isCalled ? theme.colors.primary : 'white'} 
+            />
+          </TouchableOpacity>
+        </View>
+        
+        {isCalled && (
+          <View style={[
+            styles.calledBadge,
+            isRTL && styles.calledBadgeRTL
+          ]}>
+            <Ionicons name="checkmark-circle" size={14} color={theme.colors.success} />
+            <ThemedText style={styles.calledText}>
+              {i18n.t('done')}
+            </ThemedText>
+          </View>
+        )}
+      </Card>
+    );
+  };
+
   return (
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[theme.colors.primary]}
-            tintColor={theme.colors.primary}
-          />
-        }
-      >
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <ThemedText style={[styles.searchTitle, {
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.md,
-            fontWeight: theme.fontWeights.semiBold
-          }]}>
-            {i18n.t('availableWorkers.search')}
-          </ThemedText>
+      
+      <View style={styles.container}>
+        {/* Search and Filters Header */}
+        <View style={[
+          styles.filterHeaderContainer,
+          isRTL && styles.filterHeaderContainerRTL
+        ]}>
+          {/* Search */}
           <InputField
-            placeholder={i18n.t('availableWorkers.subtitle')}
+            placeholder={i18n.t('availableWorkers.search')}
             iconName="search"
+            textAlign={isRTL ? 'right' : 'left'}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            containerStyle={[styles.searchInput, { textAlign: 'center' }]}
-            inputStyle={{ textAlign: 'center' }}
+            containerStyle={styles.searchInput}
           />
-        </View>
 
-        {/* Filter Dropdowns */}
-        <View style={styles.filterContainer}>
+          {/* Filter Dropdown */}
           <Dropdown 
-            label={i18n.t('workerRegistration.selectSkill')}
             placeholder={i18n.t('availableWorkers.filterBySkill')}
             items={skills}
-            value={selectedSkill}
+            value={selectedSkill ? i18n.t("skills." + selectedSkill) : undefined}
             onValueChange={setSelectedSkill}
             containerStyle={styles.filterDropdown}
-          />
+            compact={false}
+            label={i18n.t('availableWorkers.filterBySkill')}
+            />
         </View>
 
-        {/* Active Filters Display */}
-        {(selectedSkill) && (
-          <View style={styles.activeFiltersContainer}>
-            <ThemedText style={[styles.activeFiltersTitle, { color: theme.colors.textSecondary }]}>
-              {i18n.t('availableWorkers.filterBySkill')}:
-            </ThemedText>
-            <View style={styles.activeFiltersList}>
-              {selectedSkill && (
-                <View style={[styles.activeFilterChip, { backgroundColor: theme.colors.primary + '15' }]}>
-                  <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
-                  <ThemedText style={[styles.activeFilterText, { color: theme.colors.primary }]}>
-                    {selectedSkill}
-                  </ThemedText>
-                  <Ionicons
-                    name="close-circle"
-                    size={16}
-                    color={theme.colors.primary}
-                    onPress={() => setSelectedSkill('')}
-                    style={styles.removeFilterIcon}
-                  />
-                </View>
-              )}
-            </View>
-          </View>
-        )}
-
-        {/* Results Heading */}
-        <View style={styles.resultsHeader}>
+        {/* Results Count */}
+        <View style={[
+          styles.resultsHeader,
+          isRTL && styles.resultsHeaderRTL
+        ]}>
           <ThemedText style={[styles.resultsTitle, {
-            color: theme.colors.textPrimary,
-            fontSize: theme.fontSizes.lg,
-            fontWeight: theme.fontWeights.semiBold
+            textAlign: isRTL ? 'right' : 'left'
           }]}>
-            {selectedSkill && selectedLocation ?
-              `${selectedSkill} ${i18n.t('availableWorkers.workersIn')} ${selectedLocation}` :
-              selectedSkill ?
-                `${selectedSkill} ${i18n.t('availableWorkers.workersIn')}` :
-                selectedLocation ?
-                  `${i18n.t('availableWorkers.workersIn')} ${selectedLocation}` :
-                  i18n.t('availableWorkers.availableWorkers')
-            }
+            {i18n.t('availableWorkers.availableWorkers')}
           </ThemedText>
           <View style={[styles.counterBadge, { backgroundColor: theme.colors.primary + '20' }]}>
             <ThemedText style={[styles.counterText, { color: theme.colors.primary }]}>
@@ -270,40 +314,16 @@ export default function WorkersScreen() {
           </View>
         </View>
 
-        {/* Worker Cards */}
+        {/* Worker List */}
         {filteredWorkers.length === 0 ? (
           <ThemedView style={styles.emptyState}>
             <EmptyStateIllustration />
-            <ThemedText style={[styles.emptyStateTitle, {
-              color: theme.colors.textPrimary,
-              fontSize: theme.fontSizes.xl,
-              fontWeight: theme.fontWeights.semiBold
-            }]}>
+            <ThemedText style={styles.emptyStateTitle}>
               {i18n.t('availableWorkers.noWorkersFound')}
             </ThemedText>
-            <ThemedText style={[styles.emptyStateText, {
-              color: theme.colors.textSecondary,
-              fontSize: theme.fontSizes.md,
-              textAlign: 'center',
-              marginBottom: 24
-            }]}>
-              {selectedSkill && selectedLocation ?
-                i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill }) + ' ' + i18n.t('availableWorkers.noWorkersArea') :
-                selectedSkill ?
-                  i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill }) :
-                  selectedLocation ?
-                    i18n.t('availableWorkers.noWorkersArea') :
-                    i18n.t('availableWorkers.noWorkersFound')
-              }
+            <ThemedText style={styles.emptyStateText}>
+              {i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill || '' })}
             </ThemedText>
-            <Button
-              title={i18n.t('cancel')}
-              variant="primary"
-              icon="refresh"
-              onPress={clearFilters}
-              fullWidth={false}
-              style={{ marginBottom: 16 }}
-            />
             <Button
               title={i18n.t('refresh')}
               variant="outline"
@@ -313,85 +333,23 @@ export default function WorkersScreen() {
             />
           </ThemedView>
         ) : (
-          <View style={styles.workersContainer}>
-            {filteredWorkers.map((worker) => {
-              const isCalled = calledWorkers[worker.id];
-              return (
-                <Card
-                  key={worker.id}
-                  style={[
-                    styles.workerCard,
-                    isCalled && styles.calledWorkerCard,
-                    { opacity: isCalled ? 0.8 : 1 }
-                  ]}
-                  variant="elevated"
-                >
-                  <View style={styles.cardHeader}>
-                    <View style={[styles.avatarContainer, {
-                      backgroundColor: theme.colors.primary + '15',
-                      opacity: isCalled ? 0.7 : 1
-                    }]}>
-                      <ThemedText style={[styles.avatarText, { color: theme.colors.primary }]}>
-                        {worker.name.charAt(0)}
-                      </ThemedText>
-                    </View>
-                    <View style={styles.headerContent}>
-                      <View style={styles.nameContainer}>
-                        <ThemedText style={[styles.workerName, {
-                          color: theme.colors.textPrimary,
-                          fontSize: theme.fontSizes.lg,
-                          fontWeight: theme.fontWeights.semiBold
-                        }]}>
-                          {worker.name}
-                        </ThemedText>
-                        {isCalled && (
-                          <View style={styles.calledBadge}>
-                            <Ionicons name="checkmark-circle" size={16} color={theme.colors.success} />
-                            <ThemedText style={styles.calledText}>
-                              {i18n.t('done')}
-                            </ThemedText>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    <Button
-                      icon="call-outline"
-                      variant={isCalled ? "outline" : "ghost"}
-                      size="sm"
-                      onPress={() => handleCallWorker(worker)}
-                      fullWidth={false}
-                      style={styles.callButton}
-                    />
-                  </View>
-
-                  <View style={[styles.tagsContainer, { gap: theme.spacing.sm }]}>
-                    <View style={[styles.tag, { backgroundColor: theme.colors.primary + '15' }]}>
-                      <Ionicons name="construct-outline" size={14} color={theme.colors.primary} />
-                      <ThemedText style={[styles.tagText, { color: theme.colors.primary }]}>
-                        {worker.skill}
-                      </ThemedText>
-                    </View>
-                    <View style={[styles.tag, { backgroundColor: theme.colors.secondary + '15' }]}>
-                      <Ionicons name="location-outline" size={14} color={theme.colors.secondary} />
-                      <ThemedText style={[styles.tagText, { color: theme.colors.secondary }]}>
-                        {worker.location}
-                      </ThemedText>
-                    </View>
-                  </View>
-
-                  <Button
-                    title={isCalled ? i18n.t('submit') : i18n.t('availableWorkers.contactWorker')}
-                    variant={isCalled ? "outline" : "primary"}
-                    icon="call-outline"
-                    onPress={() => handleCallWorker(worker)}
-                    style={{ marginTop: theme.spacing.md }}
-                  />
-                </Card>
-              );
-            })}
-          </View>
+          <FlatList
+            data={filteredWorkers}
+            renderItem={renderWorkerCard}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.workersList}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                colors={[theme.colors.primary]}
+                tintColor={theme.colors.primary}
+              />
+            }
+          />
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -402,179 +360,161 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scrollContent: {
-    marginTop: 0,
-    padding: 16,
-    paddingBottom: 40,
+  container: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingTop: 8,
   },
-  searchContainer: {
-    marginBottom: 16,
+  filterHeaderContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: 12,
+    width: '100%',
+  },
+  filterHeaderContainerRTL: {
+    textAlign: 'right',
   },
   searchInput: {
-    marginBottom: 8,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 12,
+    minHeight: 38,
+    marginRight: 8,
   },
   filterDropdown: {
-    flex: 1,
-  },
-  filterControlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 8,
-  },
-  clearButton: {
-    alignSelf: 'flex-end',
-  },
-  resetCallsButton: {
-    marginLeft: 'auto',
-  },
-  activeFiltersContainer: {
-    marginVertical: 12,
-  },
-  activeFiltersTitle: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  activeFiltersList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  activeFilterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 16,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  activeFilterText: {
-    fontSize: 13,
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  removeFilterIcon: {
-    marginLeft: 4,
+    minHeight: 38
   },
   resultsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 16,
+    marginBottom: 12,
+  },
+  resultsHeaderRTL: {
+    flexDirection: 'row-reverse',
   },
   resultsTitle: {
-    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
   },
   counterBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 12,
-    marginHorizontal: 12
   },
   counterText: {
     fontSize: 14,
     fontWeight: '600',
   },
-  workersContainer: {
-    gap: 16,
+  workersList: {
+    paddingBottom: 20,
   },
   workerCard: {
-    padding: 16,
+    padding: 12,
+    marginBottom: 10,
   },
   calledWorkerCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50', // Success green color
+    borderLeftWidth: 3,
+    borderLeftColor: '#4CAF50',
+  },
+  workerCardRTL: {
+    borderLeftWidth: 0,
+    borderRightWidth: 3,
+    borderRightColor: '#4CAF50',
   },
   cardHeader: {
     flexDirection: 'row',
-    marginBottom: 16,
     alignItems: 'center',
+  },
+  cardHeaderRTL: {
+    flexDirection: 'row-reverse',
   },
   avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 10,
+  },
+  avatarContainerRTL: {
+    marginRight: 0,
+    marginLeft: 10,
   },
   avatarText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   headerContent: {
     flex: 1,
     justifyContent: 'center',
   },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
   workerName: {
     marginBottom: 4,
-    marginRight: 8,
-  },
-  calledBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4CAF5015', // Light green background
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 10,
-  },
-  calledText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#4CAF50', // Success green color
-    marginLeft: 2,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingText: {
-    marginLeft: 4,
-  },
-  callButton: {
-    marginLeft: 8,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 4,
+    gap: 6,
+  },
+  tagsContainerRTL: {
+    flexDirection: 'row-reverse',
   },
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
     borderRadius: 4,
-    marginRight: 8,
-    marginBottom: 8,
   },
   tagText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
-    marginLeft: 4,
+    marginLeft: 2,
+  },
+  callButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  calledBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: '#4CAF5015',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+  },
+  calledBadgeRTL: {
+    right: 'auto',
+    left: 12,
+    flexDirection: 'row-reverse',
+  },
+  calledText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#4CAF50',
+    marginLeft: 2,
   },
   emptyState: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    marginTop: 30,
-    marginBottom: 40,
   },
   emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyStateText: {
-    maxWidth: '80%',
+    fontSize: 14,
+    textAlign: 'center',
     marginBottom: 24,
+    opacity: 0.7,
   },
 });

@@ -67,7 +67,7 @@ export default function HirerTabsLayout() {
           fontSize: 12,
           fontWeight: '500',
         },
-        ...(Platform.OS === 'ios' && {
+        ...({
           tabBarBackground: () => (
             <BlurView
               tint={theme.isDark ? 'dark' : 'light'}
@@ -83,6 +83,8 @@ export default function HirerTabsLayout() {
         name="index"
         options={{
           title: homeLabel,
+          headerTitle: homeLabel,
+          headerTitleAlign: 'center',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -94,6 +96,8 @@ export default function HirerTabsLayout() {
         name="workers"
         options={{
           title: workersLabel,
+          headerTitle: workersLabel,
+          headerTitleAlign: 'center',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={color} />
           ),
@@ -105,6 +109,8 @@ export default function HirerTabsLayout() {
         name="settings"
         options={{
           title: settingsLabel,
+          headerTitle: settingsLabel,
+          headerTitleAlign: 'center',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),

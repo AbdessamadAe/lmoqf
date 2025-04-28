@@ -118,6 +118,21 @@ export default function ProfileScreen() {
     }
   };
 
+  // If still loading, show loading spinner
+  if (isLoading) {
+    return (
+      <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
+        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+        <ThemedView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <ThemedText style={styles.loadingText}>
+            {i18n.t('loading', 'Loading...')}
+          </ThemedText>
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
+
   // If no profile exists, show empty state
   if (!profile) {
     return (
@@ -373,6 +388,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
+    marginLeft: 8,
   },
   statusDescription: {
     marginBottom: 16,
@@ -395,5 +411,15 @@ const styles = StyleSheet.create({
   },
   actionsCard: {
     marginBottom: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    opacity: 0.7,
   },
 });

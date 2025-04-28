@@ -11,6 +11,7 @@ export const en = {
   save: "Save",
   welcome: "Welcome",
   success: "Success",
+  Back: "Back",
   
   // Navigation
   home: "Home",
@@ -72,7 +73,7 @@ export const en = {
     headerTitle: "Available Workers",
     title: "Find the right worker",
     subtitle: "Browse through our collection of skilled professionals",
-    filterBySkill: "Filter by skill",
+    filterBySkill: "skill",
     availableWorkers: "Available Workers",
     noWorkersFound: "No workers found",
     noWorkersSkill: "No workers with {{skill}} skills are currently available",
