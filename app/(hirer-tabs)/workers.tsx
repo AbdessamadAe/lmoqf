@@ -245,22 +245,10 @@ export default function WorkersScreen() {
             <Ionicons 
               name="call-outline" 
               size={18} 
-              color={isCalled ? theme.colors.primary : 'white'} 
+              color={isCalled ? theme.colors.tertiary : 'white'} 
             />
           </TouchableOpacity>
         </View>
-        
-        {isCalled && (
-          <View style={[
-            styles.calledBadge,
-            isRTL && styles.calledBadgeRTL
-          ]}>
-            <Ionicons name="checkmark-circle" size={14} color={theme.colors.success} />
-            <ThemedText style={styles.calledText}>
-              {i18n.t('done')}
-            </ThemedText>
-          </View>
-        )}
       </Card>
     );
   };
