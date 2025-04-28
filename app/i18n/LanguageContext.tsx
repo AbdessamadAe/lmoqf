@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { I18nManager, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n, { setLanguage } from './i18n';
+import { LANGUAGE_STORAGE_KEY } from './constants';
 
 // Define the shape of our context
 type LanguageContextType = {
@@ -17,8 +18,6 @@ const LanguageContext = createContext<LanguageContextType>({
   isRTL: false,
 });
 
-// Storage key for persisted language preference
-const LANGUAGE_STORAGE_KEY = '@lmoqf:language';
 
 // Language Provider component
 export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_ROLE_STORAGE_KEY } from '@/constants/localStorage';
 
 export type UserRole = 'worker' | 'hirer' | null;
 
@@ -28,7 +29,7 @@ export const UserRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // Load saved user role from AsyncStorage on component mount
     const loadUserRole = async () => {
       try {
-        const savedRole = await AsyncStorage.getItem('@lmoqf:user_role') as UserRole;
+        const savedRole = await AsyncStorage.getItem(USER_ROLE_STORAGE_KEY) as UserRole;
         if (savedRole) {
           setUserRoleState(savedRole);
         }
@@ -43,9 +44,9 @@ export const UserRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setUserRole = async (role: UserRole) => {
     try {
       if (role) {
-        await AsyncStorage.setItem('@lmoqf:user_role', role);
+        await AsyncStorage.setItem(USER_ROLE_STORAGE_KEY, role);
       } else {
-        await AsyncStorage.removeItem('@lmoqf:user_role');
+        await AsyncStorage.removeItem(USER_ROLE_STORAGE_KEY);
       }
       setUserRoleState(role);
     } catch (error) {

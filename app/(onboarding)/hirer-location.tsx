@@ -10,11 +10,13 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveHirerLocation } from '../services/hirerService';
 import i18n from '../i18n/i18n';
+import { useUserRole } from '../context/UserRoleContext';
 
 export default function HirerLocationScreen() {
   const [location, setLocation] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
+  const { setUserRole } = useUserRole();
 
   const theme = useTheme();
   const inputBackground = theme.colors.inputBackground;
@@ -47,6 +49,7 @@ export default function HirerLocationScreen() {
     setIsSubmitting(true);
     try {
       await saveHirerLocation(location.trim());
+      await setUserRole('hirer');
       // Navigate to the hirer tabs
       router.replace('/(hirer-tabs)');
     } catch (error) {

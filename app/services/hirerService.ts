@@ -2,7 +2,7 @@
  * Service for fetching data needed by hirers
  */
 import { supabase } from '../lib/supabase';
-import { HIRER_LOCATION_KEY } from '@/constants/localStorage';
+import { HIRER_CALLED_WORKERS_KEY, HIRER_LOCATION_KEY } from '@/constants/localStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -10,7 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const logoutHirer = async (): Promise<void> => {
   try {
     // Clear local storage  
-    await AsyncStorage.clear();
+    await AsyncStorage.removeItem(HIRER_LOCATION_KEY);
+    await AsyncStorage.removeItem(HIRER_CALLED_WORKERS_KEY);
     console.log('Hirer logged out successfully, all local storage cleared');
   } catch (error) {
     console.error('Error logging out:', error);

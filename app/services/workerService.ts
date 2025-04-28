@@ -4,7 +4,7 @@ import 'react-native-get-random-values'; // Required for crypto functions
 import { v4 as uuidv4 } from 'uuid';
 import { Worker } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { WORKER_PHONE_KEY } from '@/constants/localStorage';
+import { HIRER_CALLED_WORKERS_KEY, WORKER_PHONE_KEY } from '@/constants/localStorage';
 
 
 // Worker profile interface should use Worker from dataService
@@ -24,7 +24,7 @@ const AVAILABILITY_RESET_DETECTED = 'lmoqf@:availabilityResetDetected';
 
 export const getCalledWorkers = async (): Promise<Worker[]> => {
   try {
-    const calledworkers = await AsyncStorage.getItem('lmoqf@:calledWorkers');
+    const calledworkers = await AsyncStorage.getItem(HIRER_CALLED_WORKERS_KEY);
     if (calledworkers) {
       return JSON.parse(calledworkers);
     }
@@ -38,7 +38,7 @@ export const getCalledWorkers = async (): Promise<Worker[]> => {
 
 export const setCalledWorkers = async (calledWorkers: Worker[]): Promise<void> => {
   try {
-    await AsyncStorage.setItem('calledWorkers', JSON.stringify(updatedCalledWorkers));
+    await AsyncStorage.setItem(HIRER_CALLED_WORKERS_KEY, JSON.stringify(calledWorkers));
   } catch (error) {
     console.error('Error setting called workers:', error);
   }
@@ -189,7 +189,9 @@ export const logoutWorker = async (): Promise<void> => {
     }
     
     // Clear all AsyncStorage data
-    await AsyncStorage.clear();
+    await AsyncStorage.deleteItem(WORKER_PHONE_KEY);
+    
+
     
     console.log('Worker logged out successfully, all local storage cleared');
   } catch (error) {

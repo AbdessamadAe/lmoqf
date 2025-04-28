@@ -17,13 +17,9 @@ export type UserRole = 'worker' | 'hirer';
 export default function OnboardingScreen() {
   const theme = useTheme();
   const { isRTL } = useLanguage();
-  const { setUserRole } = useUserRole();
   
   const handleRoleSelect = async (role: UserRole) => {
-    try {
-      // Set the user role in the context
-      await setUserRole(role);
-      
+    try {      
       // If worker, navigate to registration page
       if (role === 'worker') {
         router.push('/(onboarding)/worker-registration');

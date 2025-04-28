@@ -11,6 +11,7 @@ import { WorkerRegistrationIllustration } from '@/components/illustrations/Worke
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../types';
 import i18n from '@/app/i18n/i18n';
+import { useUserRole } from '../context/UserRoleContext';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -22,7 +23,8 @@ export default function WorkerRegistrationScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
-
+  const { setUserRole } = useUserRole();
+  
   const theme = useTheme();
   const inputBackground = theme.colors.inputBackground;
   const primaryColor = theme.colors.primary;
@@ -70,6 +72,7 @@ export default function WorkerRegistrationScreen() {
     try {
       const result = await registerWorker(workerData);
       if (result.success && result.profile) {
+        await setUserRole('worker');
         // Redirect based on availability status
         if (available) {
           // If available, send to waiting screen
