@@ -10,7 +10,7 @@ const i18n = new I18n({
 });
 
 // Set default locale to English
-i18n.defaultLocale = 'en';
+i18n.defaultLocale = 'fr';
 i18n.enableFallback = true;
 
 // Set initial locale based on device settings
@@ -19,10 +19,10 @@ if (Platform.OS === 'web') {
   // For web, use the browser's language
   try {
     const browserLang = navigator.language.split('-')[0];
-    i18n.locale = browserLang in i18n.translations ? browserLang : 'en';
+    i18n.locale = browserLang in i18n.translations ? browserLang : 'fr';
   } catch (error) {
     console.warn('Could not detect browser language, defaulting to English:', error);
-    i18n.locale = 'en';
+    i18n.locale = 'fr';
   }
 } else {
   // For native platforms, try to use react-native-localize
@@ -32,11 +32,11 @@ if (Platform.OS === 'web') {
     if (Array.isArray(locales) && locales.length > 0) {
       i18n.locale = locales[0].languageCode;
     } else {
-      i18n.locale = 'en';
+      i18n.locale = 'fr';
     }
   } catch (error) {
     console.warn('Could not detect device language, defaulting to English:', error);
-    i18n.locale = 'en';
+    i18n.locale = 'fr';
   }
 }
 

@@ -19,17 +19,17 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
 
     // Show alert to confirm language change as it will reload the app
     Alert.alert(
-      language === 'en' ? 'Change Language' : 'تغيير اللغة',
-      language === 'en' 
-        ? 'Are you sure you want to change the language to English?' 
+      language === 'fr' ? 'Changer la langue' : 'تغيير اللغة',
+      language === 'fr' 
+        ? 'Est-ce que vous êtes sûr de vouloir changer la langue en français ?' 
         : 'هل أنت متأكد أنك تريد تغيير اللغة إلى العربية؟',
       [
         {
-          text: language === 'en' ? 'Cancel' : 'إلغاء',
+          text: language === 'fr' ? 'Annuler' : 'إلغاء',
           style: 'cancel'
         },
         {
-          text: language === 'en' ? 'Change' : 'تغيير',
+          text: language === 'fr' ? 'Changer' : 'تغيير',
           onPress: () => {
             setLocale(language);
             // The app will reload due to RTL changes if switching between LTR and RTL languages
@@ -42,13 +42,13 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity
-        style={[styles.languageButton, locale === 'en' && { backgroundColor: primaryColor }]}
-        onPress={() => changeLanguage('en')}
+        style={[styles.languageButton, locale === 'fr' && { backgroundColor: primaryColor }]}
+        onPress={() => changeLanguage('fr')}
       >
-        <ThemedText style={[styles.languageText, locale === 'en' && styles.activeText]}>
-          English
+        <ThemedText style={[styles.languageText, locale === 'fr' && styles.activeText]}>
+          Francais
         </ThemedText>
-        {locale === 'en' && (
+        {locale === 'fr' && (
           <Ionicons name="checkmark" size={16} color={theme.colors.textPrimary === theme.colors.background ? theme.colors.textPrimary : theme.colors.background} style={styles.checkIcon} />
         )}
       </TouchableOpacity>

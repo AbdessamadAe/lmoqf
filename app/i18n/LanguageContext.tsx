@@ -13,7 +13,7 @@ type LanguageContextType = {
 
 // Create the context with default values
 const LanguageContext = createContext<LanguageContextType>({
-  locale: 'en',
+  locale: 'fr',
   setLocale: () => {},
   isRTL: false,
 });
@@ -21,7 +21,7 @@ const LanguageContext = createContext<LanguageContextType>({
 
 // Language Provider component
 export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [locale, setLocale] = useState<string>(i18n.locale || 'en');
+  const [locale, setLocale] = useState<string>(i18n.locale || 'fr');
   const [isRTL, setIsRTL] = useState<boolean>(I18nManager.isRTL);
 
   // Load saved language preference
@@ -39,13 +39,13 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
           }
         } else {
           // Assume default language is English
-          let deviceLanguage = 'en';
+          let deviceLanguage = 'fr';
           changeLanguage(deviceLanguage);
         }
       } catch (error) {
         console.error("Failed to load language preference:", error);
         // Ensure we have a fallback
-        changeLanguage('en');
+        changeLanguage('fr');
       }
     };
     
