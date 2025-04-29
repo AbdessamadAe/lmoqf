@@ -193,6 +193,9 @@ export const ar = {
   },
   locations: {
     Massa: "ماسة",
+    Belfaa: "بلفاع",
+    Inzegan: "إنزكان",
+    Tiznit: "تزنيت",
     Casablanca: "الدار البيضاء",
     Rabat: "الرباط",
     Marrakech: "مراكش",

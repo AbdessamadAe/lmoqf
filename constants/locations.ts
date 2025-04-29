@@ -1,5 +1,8 @@
 export const locations = [
     'Massa',
+    'Belfaa',
+    'Inzegan',
+    'Tiznit',
     'Casablanca',
     'Rabat',
     'Marrakech',

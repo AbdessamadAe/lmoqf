@@ -186,6 +186,9 @@ export const en = {
   },
   locations: {
     Massa: "Massa",
+    Belfaa: "Belfaa",
+    Inzegan: "Inzegan",
+    Tiznit: "Tiznit",
     Casablanca: 'Casablanca',
     Rabat: 'Rabat',
     Mattakech: 'Marrakech',
