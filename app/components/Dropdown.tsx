@@ -60,19 +60,6 @@ export function Dropdown({
 
   return (
     <View style={[styles.container, containerStyle]}>
-      {label && (
-        <ThemedText 
-          style={{ 
-            marginBottom: theme.spacing.xs,
-            fontSize: theme.fontSizes.md,
-            fontWeight: theme.fontWeights.medium,
-            textAlign: effectiveTextAlign,
-          }}
-        >
-          {label} {required && <ThemedText style={{ color: theme.colors.notification }}>*</ThemedText>}
-        </ThemedText>
-      )}
-      
       <TouchableOpacity
         onPress={toggleModal}
         style={[

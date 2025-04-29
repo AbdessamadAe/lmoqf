@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Image } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { OnboardingIllustration } from '@/components/illustrations/OnboardingIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import i18n from '@/app/i18n/i18n';
@@ -45,7 +44,11 @@ export default function OnboardingScreen() {
         </View>
         
         <View style={styles.illustrationContainer}>
-          <OnboardingIllustration />
+          <Image
+            source={require('@/assets/images/splash-icon.png')}
+            style={styles.illustrationImage}
+            resizeMode="contain"
+          />
         </View>
         
         <View style={styles.optionsContainer}>
@@ -134,6 +137,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 5,
   },
+  illustrationImage: {
+    width: '100%',
+    height: 300,
+    maxWidth: 300,
+  },
   optionsContainer: {
     gap: 14,
     paddingHorizontal: 4,
@@ -184,9 +192,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     opacity: 0.5,
-    marginBottom: 4, // Add some margin at the bottom
+    marginBottom: 8, // Add some margin at the bottom
   },
   languageSelector: {
-    marginVertical: 16
+    marginVertical: 8
   },
 });
