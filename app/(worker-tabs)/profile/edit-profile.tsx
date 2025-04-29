@@ -7,10 +7,10 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from '../../services/hirerService';
 import { getWorkerProfile, registerWorker, updateWorkerProfile, validateWorkerData } from '../../services/workerService';
-import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../../types';
 import i18n from '@/app/i18n/i18n';
+import { useTheme } from '@/app/theme/useTheme';
 
 export default function EditProfileScreen() {
   const [name, setName] = useState('');
@@ -23,6 +23,7 @@ export default function EditProfileScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
   const [profile, setProfile] = useState(null);
+  const theme = useTheme();
 
   const inputBackground = useThemeColor({ light: '#f5f5f7', dark: '#1e1e1e' }, 'background');
   const cardBackground = useThemeColor({ light: '#ffffff', dark: '#2a2a2a' }, 'background');
@@ -99,137 +100,143 @@ export default function EditProfileScreen() {
     }
   };
 
-return (
-  <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
-    <ThemedView style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <View style={styles.header}>
-          <WorkerRegistrationIllustration />
-          <ThemedText style={styles.title}>{i18n.t('editProfile.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>{i18n.t('editProfile.subtitle')}</ThemedText>
-        </View>
-
-        <View style={styles.formCard}>
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('editProfile.fullName')}</ThemedText>
-            </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={name}
-              onChangeText={setName}
-              placeholder={i18n.t('editProfile.fullNamePlaceholder')}
-              placeholderTextColor="#999"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="call-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('editProfile.phoneNumber')}</ThemedText>
-            </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={phone}
-              onChangeText={setPhone}
-              placeholder={i18n.t('editProfile.phoneNumberPlaceholder')}
-              keyboardType="phone-pad"
-              placeholderTextColor="#999"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('editProfile.location')}</ThemedText>
-            </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={location}
-              onChangeText={setLocation}
-              placeholder={i18n.t('editProfile.locationPlaceholder')}
-              placeholderTextColor="#999"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="construct-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('editProfile.selectSkill')}</ThemedText>
-            </View>
-            {isLoading ? (
-              <View style={styles.skillsLoading}>
-                <ActivityIndicator size="small" color={primaryColor} />
-                <ThemedText style={styles.loadingText}>{i18n.t('editProfile.loadingSkills')}</ThemedText>
-              </View>
-            ) : (
-              <View style={styles.skillsGrid}>
-                {skills.map(skill => (
-                  <TouchableOpacity
-                    key={skill}
-                    style={[
-                      styles.skillButton,
-                      {
-                        backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
-                        borderWidth: skill === selectedSkill ? 0 : 1,
-                        borderColor: 'rgba(0,0,0,0.05)'
-                      }
-                    ]}
-                    onPress={() => setSelectedSkill(skill)}
-                  >
-                    <ThemedText
-                      style={[
-                        styles.skillText,
-                        { color: skill === selectedSkill ? '#fff' : undefined }
-                      ]}
-                    >
-                    {i18n.t(`skills.${skill}`)}
-
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          <View style={styles.availabilityContainer}>
-            <View style={styles.availabilityLeft}>
-              <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('editProfile.availableToday')}</ThemedText>
-            </View>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            { backgroundColor: primaryColor },
-            isSubmitting && styles.disabledButton
-          ]}
-          onPress={handleSubmit}
-          disabled={isSubmitting}
+  return (
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
+      <ThemedView style={styles.container}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <>
-              <ThemedText style={styles.submitText}>{i18n.t('editProfile.submitProfile')}</ThemedText>
-              <Ionicons name="arrow-forward" size={20} color="#fff" style={styles.submitIcon} />
-            </>
-          )}
-        </TouchableOpacity>
+          <View style={styles.header}>
+            <ThemedText style={styles.title}>{i18n.t('editProfile.title')}</ThemedText>
+            <ThemedText style={styles.subtitle}>{i18n.t('editProfile.subtitle')}</ThemedText>
+          </View>
 
-        <ThemedText style={styles.policyNote}>
-          {i18n.t('editProfile.privacyPolicy')}
-        </ThemedText>
-      </ScrollView>
-    </ThemedView>
-  </SafeAreaView>
-);
+          <View style={styles.formCard}>
+            <View style={styles.inputContainer}>
+              <View style={styles.labelContainer}>
+                <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>{i18n.t('editProfile.fullName')}</ThemedText>
+              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: inputBackground }]}
+                value={name}
+                onChangeText={setName}
+                placeholder={i18n.t('editProfile.fullNamePlaceholder')}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <View style={styles.labelContainer}>
+                <Ionicons name="call-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>{i18n.t('editProfile.phoneNumber')}</ThemedText>
+              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: inputBackground }]}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder={i18n.t('editProfile.phoneNumberPlaceholder')}
+                keyboardType="phone-pad"
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <View style={styles.labelContainer}>
+                <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>{i18n.t('editProfile.location')}</ThemedText>
+              </View>
+              <TextInput
+                style={[styles.input, { backgroundColor: inputBackground }]}
+                value={location}
+                onChangeText={setLocation}
+                placeholder={i18n.t('editProfile.locationPlaceholder')}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <View style={styles.labelContainer}>
+                <Ionicons name="construct-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>{i18n.t('editProfile.selectSkill')}</ThemedText>
+              </View>
+              {isLoading ? (
+                <View style={styles.skillsLoading}>
+                  <ActivityIndicator size="small" color={primaryColor} />
+                  <ThemedText style={styles.loadingText}>{i18n.t('editProfile.loadingSkills')}</ThemedText>
+                </View>
+              ) : (
+                <View style={styles.skillsGrid}>
+                  {skills.map(skill => (
+                    <TouchableOpacity
+                      key={skill}
+                      style={[
+                        styles.skillButton,
+                        {
+                          backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
+                          borderWidth: skill === selectedSkill ? 0 : 1,
+                          borderColor: 'rgba(0,0,0,0.05)'
+                        }
+                      ]}
+                      onPress={() => setSelectedSkill(skill)}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.skillText,
+                          { color: skill === selectedSkill ? '#fff' : undefined }
+                        ]}
+                      >
+                        {i18n.t(`skills.${skill}`)}
+
+                      </ThemedText>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            <View style={styles.availabilityContainer}>
+              <View style={styles.availabilityLeft}>
+                <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+                <ThemedText style={styles.label}>{i18n.t('editProfile.availableToday')}</ThemedText>
+              </View>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              { backgroundColor: primaryColor },
+              isSubmitting && styles.disabledButton
+            ]}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+                <ActivityIndicator size="small" color={theme.colors.background} />
+              ) : (
+                <>
+                  <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>
+                    {i18n.t('workerRegistration.submitProfile')}
+                  </ThemedText>
+                  <Ionicons 
+                    name={theme.direction === 'rtl' ? "arrow-back" : "arrow-forward"}
+                    size={18} 
+                    color={theme.colors.background} 
+                    style={styles.submitIcon} 
+                  />
+                </>
+              )}
+          </TouchableOpacity>
+
+          <ThemedText style={styles.policyNote}>
+            {i18n.t('editProfile.privacyPolicy')}
+          </ThemedText>
+        </ScrollView>
+      </ThemedView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -240,49 +247,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     padding: 20,
-    paddingBottom: 40,
+  },
+  contentContainer: {
+    flex: 1,
+    maxWidth: 500,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     marginBottom: 8,
-    marginTop: 12,
-    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     opacity: 0.7,
-    textAlign: 'center',
-    paddingHorizontal: 40,
+    lineHeight: 22,
   },
-  formCard: {
-    borderRadius: 20,
-    padding: 20,
+  formSection: {
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 2,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    paddingHorizontal: 4,
   },
   labelIcon: {
     marginRight: 6,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
   },
   input: {
@@ -290,13 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     fontSize: 16,
   },
-  skillsLoading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    justifyContent: 'center',
-  },
-  loadingText: {
+  dropdownWrapper: {
     marginLeft: 8,
     fontSize: 14,
     opacity: 0.7,
@@ -361,11 +358,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  dropdownStyle: {
+    padding: 16,
+    borderRadius: 12,
+    fontSize: 16,
   },
 });

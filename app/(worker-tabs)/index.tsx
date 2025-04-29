@@ -1,51 +1,59 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TouchableOpacity, AppState, AppStateStatus, Share, Alert, ActivityIndicator } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
+import Animated, { FadeInDown, useAnimatedStyle, withRepeat, withSequence, withTiming, useSharedValue } from 'react-native-reanimated';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/hooks/useThemeColor';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WaitingIllustration } from '@/components/illustrations/WaitingIllustration';
 import { Ionicons } from '@expo/vector-icons';
-import { 
-  getWorkerAvailability, 
-  getWorkerProfile, 
-  setWorkerUnavailable, 
-  setWorkerAvailable,
-} from '@/app/services/workerService';
+import { Card } from '@/app/components/Card';
+import { Button } from '@/app/components/Button';
+import { getWorkerProfile, setWorkerUnavailable } from '@/app/services/workerService';
 import * as Haptics from 'expo-haptics';
 import i18n from '@/app/i18n/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '@/app/theme/useTheme';
+import { StatusBar } from 'expo-status-bar';
+import { useLanguage } from '@/app/i18n/LanguageContext';
 
 export default function WorkerWaitingScreen() {
   const [profile, setProfile] = useState<any>(null);
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [showResetNotification, setShowResetNotification] = useState<boolean>(false);
   // Mock data for waiting workers count - to be replaced with actual API call later
   const [waitingWorkersCount, setWaitingWorkersCount] = useState<number>(22);
+  const [timeWaiting, setTimeWaiting] = useState<string>("00:00:00");
   
-  const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
-  const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
-  const warningColor = useThemeColor({ light: '#f59e0b', dark: '#fbbf24' }, 'text');
-  const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
-  const secondaryColor = useThemeColor({ light: '#64748b', dark: '#94a3b8' }, 'text');
+  const theme = useTheme();
+  const { isRTL } = useLanguage();
   const params = useLocalSearchParams<{ newRegistration?: string }>();
+  const insets = useSafeAreaInsets();
+  
+  // Pulse animation for status indicator
+  const pulseValue = useSharedValue(1);
+  
+  useEffect(() => {
+    pulseValue.value = withRepeat(
+      withSequence(
+        withTiming(1.2, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1
+    );
+  }, []);
+  
+  const pulseStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: pulseValue.value }],
+    };
+  });
 
   // Load profile and check for reset notification
   useEffect(() => {
     const loadProfileData = async () => {
       try {
         setIsLoading(true);
-        
         const profileData = await getWorkerProfile();
-        console.log('Profile data:', profileData);
         setProfile(profileData);
-
-        // TODO: Replace with actual API call to get waiting workers count
-        // Example: const count = await getWaitingWorkersCount();
-        // setWaitingWorkersCount(count);
-
       } catch (error) {
         console.error('Failed to load profile data:', error);
         Alert.alert(
@@ -59,6 +67,18 @@ export default function WorkerWaitingScreen() {
     };
     
     loadProfileData();
+    
+    // Update the waiting time every second
+    const timer = setInterval(() => {
+      // This is mock implementation. In production, calculate actual time from start
+      const now = new Date();
+      const hours = String(now.getHours() % 2).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      setTimeWaiting(`${hours}:${minutes}:${seconds}`);
+    }, 1000);
+    
+    return () => clearInterval(timer);
   }, [params.newRegistration]);
 
   // Become unavailable and go back to profile
@@ -66,7 +86,6 @@ export default function WorkerWaitingScreen() {
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       await setWorkerUnavailable();
-      // Navigate to profile screen instead of onboarding
       router.replace('/(worker-tabs)/profile');
     } catch (error) {
       Alert.alert(
@@ -76,209 +95,155 @@ export default function WorkerWaitingScreen() {
     }
   };
 
-  if (!profile) {
+  if (isLoading) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={primaryColor} />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
         <ThemedText style={styles.loadingText}>{i18n.t('loading')}</ThemedText>
       </ThemedView>
     );
   }
 
   return (
-    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
-      <ThemedView style={styles.container}>
-        <View style={styles.content}>
-          {/* Status Header */}
-          <View style={styles.statusHeader}>
-            <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
-            <ThemedText style={styles.statusText}>{i18n.t('workerWaiting.statusText')}</ThemedText>
+    <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
+      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+      <ThemedView style={[styles.container, { paddingTop: Math.max(insets.top, 20) }]}>
+        {/* Status Badge */}
+        <Animated.View 
+          entering={FadeInDown.delay(200).springify()}
+          style={[
+            styles.statusContainer, 
+            { borderBottomWidth: 1, borderBottomColor: theme.colors.border, paddingBottom: 16 }
+          ]}
+        >
+          <View style={[styles.statusWrapper, isRTL && styles.rtlRow]}>
+            <Animated.View style={[styles.statusDot, { backgroundColor: theme.colors.tertiary }, pulseStyle]} />
+            <ThemedText style={{
+              fontSize: theme.fontSizes.md,
+              fontWeight: theme.fontWeights.semiBold,
+              color: theme.colors.tertiary
+            }}>
+              {i18n.t('workerWaiting.statusText')}
+            </ThemedText>
           </View>
+          <ThemedText style={{
+            fontSize: theme.fontSizes.sm,
+            color: theme.colors.textSecondary
+          }}>
+            {timeWaiting}
+          </ThemedText>
+        </Animated.View>
 
-          <WaitingIllustration />
-
-          <ThemedText style={styles.title}>{i18n.t('workerWaiting.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>{i18n.t('workerWaiting.subtitle')}</ThemedText>
-
-          {/* Waiting Workers Metrics Card */}
+        {/* Main Content */}
+        <View style={styles.mainContent}>
+          {/* Header Section */}
           <Animated.View 
             entering={FadeInDown.delay(300).springify()}
-            style={[styles.metricsCard, { backgroundColor: cardBackground }]}
+            style={styles.headerSection}
           >
-            <View style={styles.metricsContent}>
-              <View style={styles.metricsIconContainer}>
-                <Ionicons name="people-outline" size={28} color={primaryColor} />
-              </View>
-              <View style={styles.metricsTextContainer}>
-                <ThemedText style={styles.metricsCount}>{waitingWorkersCount}</ThemedText>
-                <ThemedText style={styles.metricsLabel}>
-                  {i18n.t('workerWaiting.otherWorkersWaiting')}
-                </ThemedText>
-              </View>
-            </View>
-            <ThemedText style={styles.metricsFooter}>
-              {i18n.t('workerWaiting.youAreNotAlone')}
+            <ThemedText style={{
+              fontSize: theme.fontSizes.xl,
+              fontWeight: theme.fontWeights.bold,
+              marginBottom: theme.spacing.sm,
+              color: theme.colors.textPrimary
+            }}>
+              {i18n.t('workerWaiting.title')}
+            </ThemedText>
+            <ThemedText style={{
+              fontSize: theme.fontSizes.md,
+              color: theme.colors.textSecondary,
+              lineHeight: 22
+            }}>
+              {i18n.t('workerWaiting.subtitle')}
             </ThemedText>
           </Animated.View>
 
-          <View style={styles.userInfoBadge}>
-            <Ionicons name="person-circle-outline" size={20} color={secondaryColor} />
-            <ThemedText style={styles.userInfoText}>
-              {profile.name} • {profile.skill}
-            </ThemedText>
-          </View>
-
-          {/* Action Buttons */}
-          <TouchableOpacity
-            style={[styles.cancelButton, { borderColor: dangerColor }]}
-            onPress={handleFinishWaiting}
+          {/* Stats Section */}
+          <Animated.View 
+            entering={FadeInDown.delay(400).springify()}
           >
-            <ThemedText style={[styles.cancelButtonText, { color: dangerColor }]}>
-              {i18n.t('workerWaiting.noLongerAvailable')}
-            </ThemedText>
-          </TouchableOpacity>
+            <Card style={{ marginTop: theme.spacing.md }} variant="elevated">
+              <View style={[
+                styles.statRow,
+                isRTL && styles.rtlRow
+              ]}>
+                <View style={[
+                  styles.statIconWrapper, 
+                  { backgroundColor: theme.colors.primary + '15' },
+                  isRTL ? { marginLeft: 16, marginRight: 0 } : { marginRight: 16 }
+                ]}>
+                  <Ionicons name="people-outline" size={22} color={theme.colors.primary} />
+                </View>
+                <View style={styles.statTextContainer}>
+                  <ThemedText style={{
+                    fontSize: theme.fontSizes.sm,
+                    color: theme.colors.textSecondary
+                  }}>
+                    {i18n.t('workerWaiting.workersWaiting')}
+                  </ThemedText>
+                  <ThemedText style={{
+                    fontSize: theme.fontSizes.xl,
+                    fontWeight: theme.fontWeights.semiBold,
+                    color: theme.colors.textPrimary
+                  }}>
+                    {waitingWorkersCount}
+                  </ThemedText>
+                </View>
+              </View>
+            </Card>
+          </Animated.View>
+
+          {/* Info Section */}
+          <Animated.View 
+            entering={FadeInDown.delay(500).springify()}
+            style={{ marginTop: theme.spacing.lg }}
+          >
+            <Card variant="outlined">
+              <View style={[
+                styles.infoSection,
+                isRTL && styles.rtlRow
+              ]}>
+                <Ionicons 
+                  name="information-outline" 
+                  size={20} 
+                  color={theme.colors.primary}
+                  style={isRTL ? { marginLeft: theme.spacing.md } : { marginRight: theme.spacing.md }}
+                />
+                <ThemedText style={{
+                  flex: 1,
+                  fontSize: theme.fontSizes.md,
+                  lineHeight: 22,
+                  color: theme.colors.textSecondary
+                }}>
+                  {i18n.t('workerWaiting.youAreNotAlone')}
+                </ThemedText>
+              </View>
+            </Card>
+          </Animated.View>
         </View>
+
+        {/* Action Button - Fixed positioning to ensure visibility on all screen sizes */}
+        <Animated.View 
+          entering={FadeInDown.delay(600).springify()}
+          style={[
+            styles.actionContainer,
+            { paddingBottom: Math.max(insets.bottom, Platform.OS === 'ios' ? 20 : 12) }
+          ]}
+        >
+          <Button
+            title={i18n.t('workerProfile.noLongerAvailable')}
+            onPress={handleFinishWaiting}
+            variant="outline"
+            icon="close-circle"
+            iconPosition={isRTL ? "left" : "right"}
+          />
+        </Animated.View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-  },
-  content: {
-    alignItems: 'center',
-    gap: 16,
-  },
-  statusHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statusIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: 'rgba(0, 0, 0, 0.6)',
-    marginBottom: 8,
-  },
-  metricsCard: {
-    width: '100%',
-    padding: 20,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  metricsContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  metricsIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  metricsTextContainer: {
-    flex: 1,
-  },
-  metricsCount: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  metricsLabel: {
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  metricsFooter: {
-    fontSize: 12,
-    fontStyle: 'italic',
-    opacity: 0.6,
-  },
-  userInfoBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-  },
-  userInfoText: {
-    marginLeft: 6,
-    fontSize: 12,
-    opacity: 0.7,
-  },
-  cancelButton: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  cancelButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  notificationCard: {
-    width: '100%',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  notificationHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  notificationTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  notificationText: {
-    fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.6)',
-    marginBottom: 12,
-  },
-  notificationButton: {
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  notificationButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -288,5 +253,56 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     opacity: 0.7,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  statusWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rtlRow: {
+    flexDirection: 'row-reverse',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 8,
+  },
+  mainContent: {
+    flex: 1,
+  },
+  headerSection: {
+    marginBottom: 28,
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statIconWrapper: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  statTextContainer: {
+    flex: 1,
+  },
+  infoSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  actionContainer: {
+    width: '100%',
+    marginBottom: 30,
   },
 });

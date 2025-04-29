@@ -72,7 +72,9 @@ export const ar = {
     skill: "المهارة",
     shareButton: "مشاركة معلومات الاتصال",
     shareMessage: "أنا متاح للعمل اليوم! اتصل بي على: {{phone}} - {{name}} ({{skill}})",
-    noLongerAvailable: "لم أعد متاحًا"
+    noLongerAvailable: "لم أعد متاحًا",
+    workersWaiting: "عدد العمال في انتظار المكالمات",
+    youAreNotAlone: "أنت لست وحدك",
   },
   
   // Available Workers
