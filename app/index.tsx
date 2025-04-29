@@ -7,8 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 export default function Index() {
   const { userRole, isRoleSelected } = useUserRole();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
-  console.log('User role:', userRole);
-  console.log('Is role selected:', isRoleSelected);
+
   useEffect(() => {
     if (isRoleSelected) {
       const path = userRole === 'worker' 
@@ -21,7 +20,6 @@ export default function Index() {
   }, [userRole, isRoleSelected]);
 
   if (redirectPath === null) {
-    // Show loading indicator while determining route
     return (
       <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ThemedText>Loading...</ThemedText>

@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 // Import navigation types
 import { OnboardingStackParamList } from '../types/navigation';
-
+import i18n from '../i18n/i18n';
 export default function OnboardingLayout() {
   const theme = useTheme();
 
@@ -31,7 +31,7 @@ export default function OnboardingLayout() {
         <Stack.Screen 
           name="index" 
           options={{
-            title: 'Welcome',
+            title: i18n.t('back'),
             headerShown: false, // Hide header for the main onboarding screen
           }}
         />
@@ -42,6 +42,7 @@ export default function OnboardingLayout() {
           options={{
             headerShown: true, // Explicitly show header with back button
             headerBackVisible: true, // Explicitly show back button
+            headerTitle: i18n.t('workerRegistration.headerTitle')
           }}
         />
       </Stack>

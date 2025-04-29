@@ -34,7 +34,6 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
         } else {
           // Assume default language is English
           let deviceLanguage = 'en';
-          
           changeLanguage(deviceLanguage);
         }
       } catch (error) {
