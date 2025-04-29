@@ -65,7 +65,9 @@ export const en = {
     resetNotificationTitle: "Availability Reset",
     resetNotificationMessage: "Your availability was automatically set to unavailable at 9pm. Set yourself available again to be visible for tomorrow.",
     setAvailableAgain: "Set Available for Tomorrow",
-    availableAgain: "You're now available for work! Employers can find and contact you."
+    availableAgain: "You're now available for work! Employers can find and contact you.",
+    otherWorkersWaiting: "Other workers are also waiting for calls",
+    youAreNotAlone: "You're not alone!",
   },
   
   // Available Workers

@@ -13,10 +13,6 @@ import {
   getWorkerProfile, 
   setWorkerUnavailable, 
   setWorkerAvailable,
-  getWaitingDuration, 
-  hasAvailabilityResetNotification, 
-  clearAvailabilityResetNotification,
-  startAvailabilityResetCheck
 } from '@/app/services/workerService';
 import * as Haptics from 'expo-haptics';
 import i18n from '@/app/i18n/i18n';
@@ -26,32 +22,15 @@ export default function WorkerWaitingScreen() {
   const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showResetNotification, setShowResetNotification] = useState<boolean>(false);
+  // Mock data for waiting workers count - to be replaced with actual API call later
+  const [waitingWorkersCount, setWaitingWorkersCount] = useState<number>(22);
   
   const primaryColor = useThemeColor({ light: '#2563eb', dark: '#3b82f6' }, 'tint');
   const dangerColor = useThemeColor({ light: '#ef4444', dark: '#f87171' }, 'text');
   const warningColor = useThemeColor({ light: '#f59e0b', dark: '#fbbf24' }, 'text');
   const cardBackground = useThemeColor({ light: '#F9FAFB', dark: '#1F2937' }, 'background');
+  const secondaryColor = useThemeColor({ light: '#64748b', dark: '#94a3b8' }, 'text');
   const params = useLocalSearchParams<{ newRegistration?: string }>();
-
-  // Check for availability reset when app comes to foreground
-  const handleAppStateChange = useCallback(async (nextAppState: AppStateStatus) => {
-    if (appState !== nextAppState) {
-      setAppState(nextAppState);
-      
-      if (nextAppState === 'active') {
-        // Check if there's a reset notification when app becomes active
-        checkForResetNotification();
-      }
-    }
-  }, [appState]);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    
-    return () => {
-      subscription.remove();
-    };
-  }, [handleAppStateChange]);
 
   // Load profile and check for reset notification
   useEffect(() => {
@@ -59,15 +38,13 @@ export default function WorkerWaitingScreen() {
       try {
         setIsLoading(true);
         
-        // Start the availability reset check system
-        await startAvailabilityResetCheck();
-        
-        // Check if there's a reset notification
-        await checkForResetNotification();
-        
         const profileData = await getWorkerProfile();
         console.log('Profile data:', profileData);
         setProfile(profileData);
+
+        // TODO: Replace with actual API call to get waiting workers count
+        // Example: const count = await getWaitingWorkersCount();
+        // setWaitingWorkersCount(count);
 
       } catch (error) {
         console.error('Failed to load profile data:', error);
@@ -84,31 +61,6 @@ export default function WorkerWaitingScreen() {
     loadProfileData();
   }, [params.newRegistration]);
 
-  // Check if there's a reset notification to show
-  const checkForResetNotification = async () => {
-    const hasNotification = await hasAvailabilityResetNotification();
-    setShowResetNotification(hasNotification);
-  };
-
-  // Share contact info
-  const handleShare = async () => {
-    if (!profile) return;
-    
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    try {
-      await Share.share({
-        message: i18n.t('workerWaiting.shareMessage', {
-          phone: profile.phone,
-          name: profile.name,
-          skill: profile.skill
-        }),
-      });
-    } catch (error) {
-      Alert.alert(i18n.t('cancel'), i18n.t('settings.contactSupportDescription'));
-    }
-  };
-
   // Become unavailable and go back to profile
   const handleFinishWaiting = async () => {
     try {
@@ -124,36 +76,6 @@ export default function WorkerWaitingScreen() {
     }
   };
 
-  // Set worker available again after reset
-  const handleSetAvailable = async () => {
-    try {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      await setWorkerAvailable();
-      await clearAvailabilityResetNotification();
-      setShowResetNotification(false);
-      
-      // Refresh profile to show updated status
-      const profileData = await getWorkerProfile();
-      setProfile(profileData);
-      
-      Alert.alert(
-        i18n.t('success'), 
-        i18n.t('workerWaiting.availableAgain')
-      );
-    } catch (error) {
-      Alert.alert(
-        i18n.t('cancel'), 
-        i18n.t('workerProfile.statusChangeMessage')
-      );
-    }
-  };
-
-  // Dismiss the reset notification
-  const handleDismissNotification = async () => {
-    await clearAvailabilityResetNotification();
-    setShowResetNotification(false);
-  };
-
   if (!profile) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -167,32 +89,6 @@ export default function WorkerWaitingScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ThemedView style={styles.container}>
         <View style={styles.content}>
-          {/* Reset Notification */}
-          {showResetNotification && (
-            <View style={[styles.notificationCard, { backgroundColor: warningColor + '20' }]}>
-              <View style={styles.notificationHeader}>
-                <Ionicons name="time-outline" size={20} color={warningColor} />
-                <ThemedText style={[styles.notificationTitle, { color: warningColor }]}>
-                  {i18n.t('workerWaiting.resetNotificationTitle')}
-                </ThemedText>
-                <TouchableOpacity onPress={handleDismissNotification}>
-                  <Ionicons name="close-outline" size={20} color={warningColor} />
-                </TouchableOpacity>
-              </View>
-              <ThemedText style={styles.notificationText}>
-                {i18n.t('workerWaiting.resetNotificationMessage')}
-              </ThemedText>
-              <TouchableOpacity
-                style={[styles.notificationButton, { backgroundColor: warningColor }]}
-                onPress={handleSetAvailable}
-              >
-                <ThemedText style={[styles.notificationButtonText, { color: '#fff' }]}>
-                  {i18n.t('workerWaiting.setAvailableAgain')}
-                </ThemedText>
-              </TouchableOpacity>
-            </View>
-          )}
-
           {/* Status Header */}
           <View style={styles.statusHeader}>
             <View style={[styles.statusIndicator, { backgroundColor: primaryColor }]} />
@@ -204,20 +100,32 @@ export default function WorkerWaitingScreen() {
           <ThemedText style={styles.title}>{i18n.t('workerWaiting.title')}</ThemedText>
           <ThemedText style={styles.subtitle}>{i18n.t('workerWaiting.subtitle')}</ThemedText>
 
-          {/* Profile Info */}
-          <View style={[styles.infoCard, { backgroundColor: cardBackground }]}>
-            <View style={styles.infoRow}>
-              <Ionicons name="person-outline" size={20} color={primaryColor} style={styles.infoIcon} />
-              <ThemedText style={styles.infoValue}>{profile.name}</ThemedText>
+          {/* Waiting Workers Metrics Card */}
+          <Animated.View 
+            entering={FadeInDown.delay(300).springify()}
+            style={[styles.metricsCard, { backgroundColor: cardBackground }]}
+          >
+            <View style={styles.metricsContent}>
+              <View style={styles.metricsIconContainer}>
+                <Ionicons name="people-outline" size={28} color={primaryColor} />
+              </View>
+              <View style={styles.metricsTextContainer}>
+                <ThemedText style={styles.metricsCount}>{waitingWorkersCount}</ThemedText>
+                <ThemedText style={styles.metricsLabel}>
+                  {i18n.t('workerWaiting.otherWorkersWaiting')}
+                </ThemedText>
+              </View>
             </View>
-            <View style={styles.infoRow}>
-              <Ionicons name="call-outline" size={20} color={primaryColor} style={styles.infoIcon} />
-              <ThemedText style={styles.infoValue}>{profile.phone}</ThemedText>
-            </View>
-            <View style={styles.infoRow}>
-              <Ionicons name="construct-outline" size={20} color={primaryColor} style={styles.infoIcon} />
-              <ThemedText style={styles.infoValue}>{profile.skill}</ThemedText>
-            </View>
+            <ThemedText style={styles.metricsFooter}>
+              {i18n.t('workerWaiting.youAreNotAlone')}
+            </ThemedText>
+          </Animated.View>
+
+          <View style={styles.userInfoBadge}>
+            <Ionicons name="person-circle-outline" size={20} color={secondaryColor} />
+            <ThemedText style={styles.userInfoText}>
+              {profile.name} • {profile.skill}
+            </ThemedText>
           </View>
 
           {/* Action Buttons */}
@@ -272,27 +180,58 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     color: 'rgba(0, 0, 0, 0.6)',
+    marginBottom: 8,
   },
-  infoCard: {
+  metricsCard: {
     width: '100%',
-    padding: 16,
+    padding: 20,
     borderRadius: 12,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  infoRow: {
+  metricsContent: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
   },
-  infoIcon: {
-    marginRight: 12,
+  metricsIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
   },
-  infoValue: {
+  metricsTextContainer: {
+    flex: 1,
+  },
+  metricsCount: {
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  metricsLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    opacity: 0.7,
+  },
+  metricsFooter: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    opacity: 0.6,
+  },
+  userInfoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  userInfoText: {
+    marginLeft: 6,
+    fontSize: 12,
+    opacity: 0.7,
   },
   cancelButton: {
     borderWidth: 1,
@@ -300,7 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 8,
   },
   cancelButtonText: {
     fontSize: 14,
