@@ -1,15 +1,15 @@
 import { I18n } from 'i18n-js';
 import { Platform } from 'react-native';
-import { en } from './translations/en';
+import { fr } from './translations/fr';
 import { ar } from './translations/ar';
 
 // Create i18n instance
 const i18n = new I18n({
-  en,
+  fr,
   ar
 });
 
-// Set default locale to English
+// Set default locale to French
 i18n.defaultLocale = 'fr';
 i18n.enableFallback = true;
 
