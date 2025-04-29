@@ -132,33 +132,47 @@ export default function WorkersScreen() {
     }
 
     const phoneUrl = `tel:${phone}`;
+    
+    // Mark worker as called - we do this regardless of whether call succeeds
+    const updatedCalledWorkers = {
+      ...calledWorkers,
+      [worker.id]: true
+    };
+    setCalledWorkers(updatedCalledWorkers);
+    saveCalledWorkers(updatedCalledWorkers);
 
-    Linking.canOpenURL(phoneUrl)
-      .then(supported => {
-        if (supported) {
-          // Mark worker as called
-          const updatedCalledWorkers = {
-            ...calledWorkers,
-            [worker.id]: true
-          };
-          setCalledWorkers(updatedCalledWorkers);
-          saveCalledWorkers(updatedCalledWorkers);
-
-          return Linking.openURL(phoneUrl);
-        } else {
+    // Handle phone call differently based on platform
+    if (Platform.OS === 'android') {
+      // On Android, we need different handling
+      Linking.openURL(phoneUrl)
+        .catch(error => {
+          console.error('Error making call on Android:', error);
+          Alert.alert(
+            i18n.t('error'),
+            i18n.t('settings.contactSupportDescription') || 'Unable to make the call'
+          );
+        });
+    } else {
+      // iOS handling
+      Linking.canOpenURL(phoneUrl)
+        .then(supported => {
+          if (supported) {
+            return Linking.openURL(phoneUrl);
+          } else {
+            Alert.alert(
+              i18n.t('cancel'),
+              i18n.t('settings.contactSupportDescription')
+            );
+          }
+        })
+        .catch(error => {
+          console.error('Error making call:', error);
           Alert.alert(
             i18n.t('cancel'),
             i18n.t('settings.contactSupportDescription')
           );
-        }
-      })
-      .catch(error => {
-        console.error('Error making call:', error);
-        Alert.alert(
-          i18n.t('cancel'),
-          i18n.t('settings.contactSupportDescription')
-        );
-      });
+        });
+    }
   };
 
   if (isLoading) {
