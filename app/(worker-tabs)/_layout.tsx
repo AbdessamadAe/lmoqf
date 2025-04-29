@@ -67,7 +67,7 @@ export default function WorkerTabsLayout() {
           fontSize: 12,
           fontWeight: '500',
         },
-        ...(Platform.OS === 'ios' && {
+        ...(true && {
           tabBarBackground: () => (
             <BlurView
               tint={theme.isDark ? 'dark' : 'light'}

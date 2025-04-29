@@ -1,7 +1,7 @@
 
 export const ar = {
   // Common
-  appName: "لموقف",
+  appName: "الموقف",
   submit: "إرسال",
   cancel: "إلغاء",
   next: "التالي",
@@ -23,7 +23,7 @@ export const ar = {
   
   // Onboarding Screen
   onboarding: {
-    title: "لموقف",
+    title: "الموقف",
     subtitle: "ربط العمال وأصحاب العمل بسلاسة",
     workerButton: "أنا عامل",
     workerDescription: "ابحث عن فرص عمل بالقرب منك",

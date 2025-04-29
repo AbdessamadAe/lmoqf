@@ -5,7 +5,6 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { OnboardingIllustration } from '@/components/illustrations/OnboardingIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { saveHirerLocation } from '../services/hirerService';
 import i18n from '../i18n/i18n';
@@ -32,8 +31,8 @@ export default function HirerLocationScreen() {
       },
       headerTitleStyle: {
         color: theme.colors.textPrimary,
-        fontSize: theme.fontSizes.xl,
-        fontWeight: theme.fontWeights.bold,
+        fontSize: 20,
+        fontWeight: '600',
       },
       headerShadowVisible: false,
     });
@@ -67,54 +66,66 @@ export default function HirerLocationScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          <View style={styles.header}>
-            <OnboardingIllustration />
-            <ThemedText style={[styles.title, { textAlign: theme.textAlign }]}>{i18n.t('setHirerLocation.title')}</ThemedText>
-            <ThemedText style={[styles.subtitle, { textAlign: theme.textAlign }]}>{i18n.t('setHirerLocation.subtitle')}</ThemedText>
-          </View>
+          <View style={styles.contentContainer}>
+            <View style={styles.header}>
+              <ThemedText style={[styles.title, { textAlign: theme.textAlign }]}>
+                {i18n.t('setHirerLocation.title')}
+              </ThemedText>
+              <ThemedText style={[styles.subtitle, { textAlign: theme.textAlign }]}>
+                {i18n.t('setHirerLocation.subtitle')}
+              </ThemedText>
+            </View>
 
-          <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
-            <View style={styles.inputContainer}>
+            <View style={[styles.formSection]}>
               <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
-                <Ionicons name="location-outline" size={18} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                <Ionicons 
+                  name="location" 
+                  size={16} 
+                  color={primaryColor} 
+                  style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} 
+                />
                 <ThemedText style={styles.label}>{i18n.t('setHirerLocation.location')}</ThemedText>
               </View>
               
-              <Dropdown
-                placeholder={i18n.t('setHirerLocation.locationPlaceholder')}
-                items={locations}
-                value={location ? i18n.t('locations.' + location) : ''}
-                onValueChange={setLocation}
-                textAlign={theme.textAlign}
-                dropdownStyle={styles.dropdownStyle}
-                label='location'
-              />
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.submitButton,
-              { backgroundColor: primaryColor },
-              isSubmitting && styles.disabledButton
-            ]}
-            onPress={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.colors.background} />
-            ) : (
-              <>
-                <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>{i18n.t('setHirerLocation.continue')}</ThemedText>
-                <Ionicons 
-                  name={theme.direction === 'rtl' ? "arrow-back" : "arrow-forward"} 
-                  size={20} 
-                  color={theme.colors.background} 
-                  style={styles.submitIcon} 
+              <View style={[styles.dropdownWrapper, { backgroundColor: theme.colors.card }]}>
+                <Dropdown
+                  placeholder={i18n.t('setHirerLocation.locationPlaceholder')}
+                  items={locations}
+                  value={location ? i18n.t('locations.' + location) : ''}
+                  onValueChange={setLocation}
+                  textAlign={theme.textAlign}
+                  dropdownStyle={styles.dropdownStyle}
+                  label='location'
                 />
-              </>
-            )}
-          </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.submitButton,
+                { backgroundColor: primaryColor },
+                isSubmitting && styles.disabledButton
+              ]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color={theme.colors.background} />
+              ) : (
+                <>
+                  <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>
+                    {i18n.t('setHirerLocation.continue')}
+                  </ThemedText>
+                  <Ionicons 
+                    name={theme.direction === 'rtl' ? "arrow-back" : "arrow-forward"} 
+                    size={18} 
+                    color={theme.colors.background} 
+                    style={styles.submitIcon} 
+                  />
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
@@ -129,114 +140,76 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     padding: 20,
-    paddingBottom: 40,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    maxWidth: 500,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 36,
+    paddingHorizontal: 12,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 12,
-    textAlign: 'center',
+    fontWeight: '700',
+    marginBottom: 10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     opacity: 0.7,
-    textAlign: 'center',
-    paddingHorizontal: 40,
+    lineHeight: 22,
   },
-  formCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 2,
-  },
-  inputContainer: {
-    marginBottom: 20,
+  formSection: {
+    marginBottom: 36,
   },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
+    paddingHorizontal: 4,
   },
   labelIcon: {
     marginRight: 6,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
   },
-  input: {
-    padding: 16,
-    borderRadius: 12,
-    fontSize: 16,
-  },
-  loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    justifyContent: 'center',
-  },
-  loadingText: {
-    marginLeft: 8,
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  suggestedTitle: {
-    marginBottom: 12,
-    fontSize: 14,
-  },
-  locationsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  locationButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  locationText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  submitButton: {
-    padding: 18,
-    borderRadius: 16,
-    alignItems: 'center',
-    minHeight: 60,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  disabledButton: {
-    opacity: 0.7,
-  },
-  submitText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  submitIcon: {
-    marginLeft: 8,
-  },
-  skipText: {
-    textAlign: 'center',
-    fontSize: 14,
-    marginTop: 16,
-    opacity: 0.7,
-    textDecorationLine: 'underline',
+  dropdownWrapper: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 1,
   },
   dropdownStyle: {
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
+  },
+  submitButton: {
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  submitText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  submitIcon: {
+    marginLeft: 8,
   },
 });

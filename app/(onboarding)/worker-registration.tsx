@@ -7,7 +7,6 @@ import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchSkills } from '../services/hirerService';
 import { registerWorker, validateWorkerData } from '../services/workerService';
-import { WorkerRegistrationIllustration } from '@/components/illustrations/WorkerRegistrationIllustration';
 import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../types';
 import i18n from '@/app/i18n/i18n';
@@ -96,145 +95,155 @@ export default function WorkerRegistrationScreen() {
     }
   };
 
-return (
-  <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
-    <ThemedView style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <View style={styles.header}>
-          <WorkerRegistrationIllustration />
-          <ThemedText style={styles.title}>{i18n.t('workerRegistration.title')}</ThemedText>
-          <ThemedText style={styles.subtitle}>{i18n.t('workerRegistration.subtitle')}</ThemedText>
-        </View>
-
-        <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="person-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('workerRegistration.fullName')}</ThemedText>
-            </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={name}
-              onChangeText={setName}
-              placeholder={i18n.t('workerRegistration.fullNamePlaceholder')}
-              placeholderTextColor={theme.colors.textSecondary}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="call-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('workerRegistration.phoneNumber')}</ThemedText>
-            </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={phone}
-              onChangeText={setPhone}
-              placeholder={i18n.t('workerRegistration.phoneNumberPlaceholder')}
-              keyboardType="phone-pad"
-              placeholderTextColor={theme.colors.textSecondary}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="location-outline" size={18} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
-              <ThemedText style={styles.label}>{i18n.t('workerRegistration.location')}</ThemedText>
-            </View>
-            <Dropdown
-              placeholder={i18n.t('workerRegistration.locationPlaceholder')}
-              items={locations}
-              value={location ? i18n.t('locations.' + location) : ''}
-              onValueChange={setLocation}
-              textAlign={theme.textAlign}
-              dropdownStyle={styles.dropdownStyle}
-              label="location"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="construct-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('workerRegistration.selectSkill')}</ThemedText>
-            </View>
-            {isLoading ? (
-              <View style={styles.skillsLoading}>
-                <ActivityIndicator size="small" color={primaryColor} />
-                <ThemedText style={styles.loadingText}>{i18n.t('workerRegistration.loadingSkills')}</ThemedText>
-              </View>
-            ) : (
-              <View style={styles.skillsGrid}>
-                {skills.map(skill => (
-                  <TouchableOpacity
-                    key={skill}
-                    style={[
-                      styles.skillButton,
-                      {
-                        backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
-                        borderWidth: skill === selectedSkill ? 0 : 1,
-                        borderColor: theme.colors.border
-                      }
-                    ]}
-                    onPress={() => setSelectedSkill(skill)}
-                  >
-                    <ThemedText
-                      style={[
-                        styles.skillText,
-                        { color: skill === selectedSkill ? theme.colors.background : undefined }
-                      ]}
-                    >
-                      {i18n.t(`skills.${skill}`)}
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          <View style={styles.availabilityContainer}>
-            <View style={styles.availabilityLeft}>
-              <Ionicons name="time-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('workerRegistration.availableToday')}</ThemedText>
-            </View>
-            <Switch
-              value={available}
-              onValueChange={setAvailable}
-              ios_backgroundColor={theme.colors.border}
-              trackColor={{ false: theme.colors.border, true: primaryColor }}
-              thumbColor={theme.colors.background}
-            />
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            { backgroundColor: primaryColor },
-            isSubmitting && styles.disabledButton
-          ]}
-          onPress={handleSubmit}
-          disabled={isSubmitting}
+  return (
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.safeArea}>
+      <ThemedView style={styles.container}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={theme.colors.background} />
-          ) : (
-            <>
-              <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>{i18n.t('workerRegistration.submitProfile')}</ThemedText>
-              <Ionicons name="arrow-forward" size={20} color={theme.colors.background} style={styles.submitIcon} />
-            </>
-          )}
-        </TouchableOpacity>
+          <View style={styles.contentContainer}>
+            <View style={styles.header}>
+              <ThemedText style={styles.title}>{i18n.t('workerRegistration.title')}</ThemedText>
+              <ThemedText style={styles.subtitle}>{i18n.t('workerRegistration.subtitle')}</ThemedText>
+            </View>
 
-        <ThemedText style={styles.policyNote}>
-          {i18n.t('workerRegistration.privacyPolicy')}
-        </ThemedText>
-      </ScrollView>
-    </ThemedView>
-  </SafeAreaView>
-);
+            <View style={styles.formSection}>
+                <View style={styles.inputContainer}>
+                <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="person" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.fullName')}</ThemedText>
+                </View>
+                <TextInput
+                  style={[styles.input, { backgroundColor: inputBackground, textAlign: theme.textAlign }]}
+                  value={name}
+                  onChangeText={setName}
+                  placeholder={i18n.t('workerRegistration.fullNamePlaceholder')}
+                  placeholderTextColor={theme.colors.textSecondary}
+                />
+                </View>
+
+              <View style={styles.inputContainer}>
+                <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="call" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.phoneNumber')}</ThemedText>
+                </View>
+                <TextInput
+                  style={[styles.input, { backgroundColor: inputBackground, textAlign: theme.textAlign }]}
+                  value={phone}
+                  onChangeText={setPhone}
+                  placeholder={i18n.t('workerRegistration.phoneNumberPlaceholder')}
+                  keyboardType="phone-pad"
+                  placeholderTextColor={theme.colors.textSecondary}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="location" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.location')}</ThemedText>
+                </View>
+                <View style={[styles.dropdownWrapper, { backgroundColor: inputBackground }]}>
+                  <Dropdown
+                    placeholder={i18n.t('workerRegistration.locationPlaceholder')}
+                    items={locations}
+                    value={location ? i18n.t('locations.' + location) : ''}
+                    onValueChange={setLocation}
+                    textAlign={theme.textAlign}
+                    dropdownStyle={styles.dropdownStyle}
+                    label="location"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="construct" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.selectSkill')}</ThemedText>
+                </View>
+                {isLoading ? (
+                  <View style={styles.skillsLoading}>
+                    <ActivityIndicator size="small" color={primaryColor} />
+                    <ThemedText style={styles.loadingText}>{i18n.t('workerRegistration.loadingSkills')}</ThemedText>
+                  </View>
+                ) : (
+                  <View style={styles.skillsGrid}>
+                    {skills.map(skill => (
+                      <TouchableOpacity
+                        key={skill}
+                        style={[
+                          styles.skillButton,
+                          {
+                            backgroundColor: skill === selectedSkill ? primaryColor : inputBackground,
+                            borderWidth: skill === selectedSkill ? 0 : 1,
+                            borderColor: theme.colors.border
+                          }
+                        ]}
+                        onPress={() => setSelectedSkill(skill)}
+                      >
+                        <ThemedText
+                          style={[
+                            styles.skillText,
+                            { color: skill === selectedSkill ? theme.colors.background : undefined }
+                          ]}
+                        >
+                          {i18n.t(`skills.${skill}`)}
+                        </ThemedText>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              <View style={[styles.availabilityContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                <View style={[styles.availabilityLeft, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="time" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.availableToday')}</ThemedText>
+                </View>
+                <Switch
+                  value={available}
+                  onValueChange={setAvailable}
+                  ios_backgroundColor={theme.colors.border}
+                  trackColor={{ false: theme.colors.border, true: primaryColor }}
+                  thumbColor={theme.colors.background}
+                />
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.submitButton,
+                { backgroundColor: primaryColor },
+                isSubmitting && styles.disabledButton
+              ]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color={theme.colors.background} />
+              ) : (
+                <>
+                  <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>
+                    {i18n.t('workerRegistration.submitProfile')}
+                  </ThemedText>
+                  <Ionicons 
+                    name={theme.direction === 'rtl' ? "arrow-back" : "arrow-forward"}
+                    size={18} 
+                    color={theme.colors.background} 
+                    style={styles.submitIcon} 
+                  />
+                </>
+              )}
+            </TouchableOpacity>
+
+            <ThemedText style={styles.policyNote}>
+              {i18n.t('workerRegistration.privacyPolicy')}
+            </ThemedText>
+          </View>
+        </ScrollView>
+      </ThemedView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -245,49 +254,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     padding: 20,
-    paddingBottom: 40,
+  },
+  contentContainer: {
+    flex: 1,
+    maxWidth: 500,
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     marginBottom: 8,
-    marginTop: 12,
-    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     opacity: 0.7,
-    textAlign: 'center',
-    paddingHorizontal: 40,
+    lineHeight: 22,
   },
-  formCard: {
-    borderRadius: 20,
-    padding: 20,
+  formSection: {
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 2,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   labelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    paddingHorizontal: 4,
   },
   labelIcon: {
     marginRight: 6,
   },
   label: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
   },
   input: {
@@ -295,13 +300,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     fontSize: 16,
   },
-  skillsLoading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    justifyContent: 'center',
-  },
-  loadingText: {
+  dropdownWrapper: {
     marginLeft: 8,
     fontSize: 14,
     opacity: 0.7,

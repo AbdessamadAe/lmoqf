@@ -138,9 +138,8 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   illustrationImage: {
-    width: '100%',
-    height: 300,
-    maxWidth: 300,
+    height: 200,
+    maxWidth: 200,
   },
   optionsContainer: {
     gap: 14,

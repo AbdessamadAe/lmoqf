@@ -31,6 +31,12 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
         const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
         if (savedLanguage) {
           changeLanguage(savedLanguage);
+          if (savedLanguage === 'ar') {
+            I18nManager.forceRTL(true);
+          }
+          else {
+            I18nManager.forceRTL(false);
+          }
         } else {
           // Assume default language is English
           let deviceLanguage = 'en';

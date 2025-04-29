@@ -22,7 +22,7 @@ export const en = {
   
   // Onboarding Screen
   onboarding: {
-    title: "Lmoqf",
+    title: "LMOUQF",
     subtitle: "Connect workers and employers seamlessly",
     workerButton: "I'm a Worker",
     workerDescription: "Find work opportunities near you",
@@ -62,12 +62,11 @@ export const en = {
     shareButton: "Share Contact Info",
     shareMessage: "I'm available for work today! Contact me at: {{phone}} - {{name}} ({{skill}})",
     noLongerAvailable: "I'm No Longer Available",
-    resetNotificationTitle: "Availability Reset",
-    resetNotificationMessage: "Your availability was automatically set to unavailable at 9pm. Set yourself available again to be visible for tomorrow.",
     setAvailableAgain: "Set Available for Tomorrow",
     availableAgain: "You're now available for work! Employers can find and contact you.",
-    otherWorkersWaiting: "Other workers are also waiting for calls",
+    workersWaiting: "Other workers are also waiting for calls",
     youAreNotAlone: "You're not alone!",
+    timeWaiting: "Time Waiting",
   },
   
   // Available Workers
