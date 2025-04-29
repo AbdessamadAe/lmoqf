@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator, Linking, Alert, FlatList } from 'react-native';
+import { StyleSheet, ScrollView, View, RefreshControl, ActivityIndicator, Linking, Alert, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -257,87 +257,101 @@ export default function WorkersScreen() {
     <SafeAreaView edges={['left', 'right']} style={{ flex: 1 }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       
-      <View style={styles.container}>
-        {/* Search and Filters Header */}
-        <View style={[
-          styles.filterHeaderContainer,
-          isRTL && styles.filterHeaderContainerRTL
-        ]}>
-          {/* Search */}
-          <InputField
-            placeholder={i18n.t('availableWorkers.search')}
-            iconName="search"
-            textAlign={isRTL ? 'right' : 'left'}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            containerStyle={styles.searchInput}
-          />
-
-          {/* Filter Dropdown */}
-          <Dropdown 
-            placeholder={i18n.t('availableWorkers.filterBySkill')}
-            items={skills}
-            value={selectedSkill ? i18n.t("skills." + selectedSkill) : undefined}
-            onValueChange={setSelectedSkill}
-            containerStyle={styles.filterDropdown}
-            compact={false}
-            label="skill"
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={0}
+        enabled={false}
+      >
+        <View style={styles.container}>
+          {/* Search and Filters Header */}
+          <View style={[
+            styles.filterHeaderContainer,
+            isRTL && styles.filterHeaderContainerRTL
+          ]}>
+            {/* Search */}
+            <InputField
+              placeholder={i18n.t('availableWorkers.search')}
+              iconName="search"
+              textAlign={isRTL ? 'right' : 'left'}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              containerStyle={styles.searchInput}
             />
-        </View>
 
-        {/* Results Count */}
-        <View style={[
-          styles.resultsHeader,
-          isRTL && styles.resultsHeaderRTL
-        ]}>
-          <ThemedText style={[styles.resultsTitle, {
-            textAlign: isRTL ? 'right' : 'left'
-          }]}>
-            {i18n.t('availableWorkers.availableWorkers')}
-          </ThemedText>
-          <View style={[styles.counterBadge, { backgroundColor: theme.colors.primary + '20' }]}>
-            <ThemedText style={[styles.counterText, { color: theme.colors.primary }]}>
-              {filteredWorkers.length}
-            </ThemedText>
-          </View>
-        </View>
-
-        {/* Worker List */}
-        {filteredWorkers.length === 0 ? (
-          <ThemedView style={styles.emptyState}>
-            <EmptyStateIllustration />
-            <ThemedText style={styles.emptyStateTitle}>
-              {i18n.t('availableWorkers.noWorkersFound')}
-            </ThemedText>
-            <ThemedText style={styles.emptyStateText}>
-              {i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill || '' })}
-            </ThemedText>
-            <Button
-              title={i18n.t('refresh')}
-              variant="outline"
-              icon="refresh"
-              onPress={handleRefresh}
-              fullWidth={false}
-            />
-          </ThemedView>
-        ) : (
-          <FlatList
-            data={filteredWorkers}
-            renderItem={renderWorkerCard}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.workersList}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                colors={[theme.colors.primary]}
-                tintColor={theme.colors.primary}
+            {/* Filter Dropdown */}
+            <Dropdown 
+              placeholder={i18n.t('availableWorkers.filterBySkill')}
+              items={skills}
+              value={selectedSkill ? i18n.t("skills." + selectedSkill) : undefined}
+              onValueChange={setSelectedSkill}
+              containerStyle={styles.filterDropdown}
+              compact={false}
+              label="skill"
               />
-            }
-          />
-        )}
-      </View>
+          </View>
+
+          {/* Results Count */}
+          <View style={[
+            styles.resultsHeader,
+            isRTL && styles.resultsHeaderRTL
+          ]}>
+            <ThemedText style={[styles.resultsTitle, {
+              textAlign: isRTL ? 'right' : 'left'
+            }]}>
+              {i18n.t('availableWorkers.availableWorkers')}
+            </ThemedText>
+            <View style={[styles.counterBadge, { backgroundColor: theme.colors.primary + '20' }]}>
+              <ThemedText style={[styles.counterText, { color: theme.colors.primary }]}>
+                {filteredWorkers.length}
+              </ThemedText>
+            </View>
+          </View>
+
+          {/* Worker List */}
+          {filteredWorkers.length === 0 ? (
+            <ScrollView 
+              contentContainerStyle={styles.emptyState}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={[styles.emptyStateIconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
+                <Ionicons name="people-outline" size={40} color={theme.colors.primary} />
+              </View>
+              <ThemedText style={styles.emptyStateTitle}>
+                {i18n.t('availableWorkers.noWorkersFound')}
+              </ThemedText>
+              <ThemedText style={styles.emptyStateText}>
+                {i18n.t('availableWorkers.noWorkersSkill', { skill: selectedSkill || '' })}
+              </ThemedText>
+              <Button
+                title={i18n.t('refresh')}
+                variant="outline"
+                icon="refresh"
+                onPress={handleRefresh}
+                fullWidth={false}
+              />
+            </ScrollView>
+          ) : (
+            <FlatList
+              data={filteredWorkers}
+              renderItem={renderWorkerCard}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.workersList}
+              keyboardShouldPersistTaps="handled"
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={handleRefresh}
+                  colors={[theme.colors.primary]}
+                  tintColor={theme.colors.primary}
+                />
+              }
+            />
+          )}
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -492,12 +506,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    marginBottom: 80
+    marginBottom: 0
+  },
+  emptyStateIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   emptyStateTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginTop: 16,
     marginBottom: 8,
   },
   emptyStateText: {
