@@ -53,16 +53,8 @@ export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ childr
     
     // If RTL setting would change
     if (isNewLangRTL !== isRTL) {
-      // Configure RTL for the app
-      if (Platform.OS !== 'web') {
-        try {
-          // I18nManager.forceRTL only works on native platforms
-          I18nManager.forceRTL(isNewLangRTL);
-        } catch (error) {
-          console.warn('Could not change RTL setting:', error);
-        }
-      }
       setIsRTL(isNewLangRTL);
+      I18nManager.forceRTL(isNewLangRTL);
     }
     
     // Set the locale in i18n
