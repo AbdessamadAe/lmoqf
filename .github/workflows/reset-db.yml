@@ -1,0 +1,17 @@
+name: Daily Supabase Reset
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # Runs every day at 8:00 PM UTC (9:00 PM GMT+1)
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Supabase Edge Function
+        run: |
+          curl -L -X POST 'https://tpgqirsvgyjzehmnoynf.supabase.co/functions/v1/reset-availability' \
+            -H 'Authorization: Bearer ${{ secrets.SUPABASE_RESET_TOKEN }}' \
+            -H 'Content-Type: application/json' \
+            --data '{"name":"Functions"}'
