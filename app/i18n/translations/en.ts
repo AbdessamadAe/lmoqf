@@ -199,5 +199,9 @@ export const en = {
     Oujda: 'Oujda',
     Kenitra: 'Kenitra',
     Tetouan: 'Tetouan'
-  }
+  },
+  notification: {
+    reminderTitle: "Reminder",
+    reminder: "Don't forget to mark yourself available for tomorrow inshaAllah!"
+  },
 };

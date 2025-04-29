@@ -206,5 +206,10 @@ export const ar = {
     Oujda: "وجدة",
     Kenitra: "القنيطرة",
     Tetouan: "تطوان"
-  }
+  },
+  // Notifications
+  notification: {
+    reminderTitle: "تذكير",
+    reminder: "لا تنسى أن تحدد نفسك متاحًا للعمل غدًا إن شاء الله!",
+  },
 };
