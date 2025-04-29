@@ -2,7 +2,8 @@ name: Daily Supabase Reset
 
 on:
   schedule:
-    - cron: '0 20 * * *' # Runs every day at 8:00 PM UTC (9:00 PM GMT+1)
+    - cron: '0 20 * * *' # 9 PM GMT+1 (8 PM UTC)
+  workflow_dispatch:     # 👈 Add this line for manual trigger support
 
 jobs:
   reset:
