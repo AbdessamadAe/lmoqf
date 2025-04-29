@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, ScrollView, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
 import { router, useNavigation } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -7,10 +7,11 @@ import { useTheme } from '@/app/theme/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingIllustration } from '@/components/illustrations/OnboardingIllustration';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveHirerLocation } from '../services/hirerService';
 import i18n from '../i18n/i18n';
 import { useUserRole } from '../context/UserRoleContext';
+import { Dropdown } from '../components/Dropdown';
+import { locations } from '@/constants/locations';
 
 export default function HirerLocationScreen() {
   const [location, setLocation] = useState('');
@@ -19,7 +20,6 @@ export default function HirerLocationScreen() {
   const { setUserRole } = useUserRole();
 
   const theme = useTheme();
-  const inputBackground = theme.colors.inputBackground;
   const primaryColor = theme.colors.secondary; // Using secondary color for hirer screens
 
   // Ensure header is properly configured
@@ -69,22 +69,25 @@ export default function HirerLocationScreen() {
         >
           <View style={styles.header}>
             <OnboardingIllustration />
-            <ThemedText style={styles.title}>{i18n.t('setHirerLocation.title')}</ThemedText>
-            <ThemedText style={styles.subtitle}>{i18n.t('setHirerLocation.subtitle')}</ThemedText>
+            <ThemedText style={[styles.title, { textAlign: theme.textAlign }]}>{i18n.t('setHirerLocation.title')}</ThemedText>
+            <ThemedText style={[styles.subtitle, { textAlign: theme.textAlign }]}>{i18n.t('setHirerLocation.subtitle')}</ThemedText>
           </View>
 
           <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
             <View style={styles.inputContainer}>
-              <View style={styles.labelContainer}>
-              <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-              <ThemedText style={styles.label}>{i18n.t('setHirerLocation.location')}</ThemedText>
+              <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="location-outline" size={18} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                <ThemedText style={styles.label}>{i18n.t('setHirerLocation.location')}</ThemedText>
               </View>
-              <TextInput
-              style={[styles.input, { backgroundColor: inputBackground, textAlign: 'center' }]}
-              value={location}
-              onChangeText={setLocation}
-              placeholder={`${i18n.t('setHirerLocation.locationPlaceholder')}`}
-              placeholderTextColor={theme.colors.textSecondary}
+              
+              <Dropdown
+                placeholder={i18n.t('setHirerLocation.locationPlaceholder')}
+                items={locations}
+                value={location ? i18n.t('locations.' + location) : ''}
+                onValueChange={setLocation}
+                textAlign={theme.textAlign}
+                dropdownStyle={styles.dropdownStyle}
+                label='location'
               />
             </View>
           </View>
@@ -103,7 +106,12 @@ export default function HirerLocationScreen() {
             ) : (
               <>
                 <ThemedText style={[styles.submitText, { color: theme.colors.background }]}>{i18n.t('setHirerLocation.continue')}</ThemedText>
-                <Ionicons name="arrow-forward" size={20} color={theme.colors.background} style={styles.submitIcon} />
+                <Ionicons 
+                  name={theme.direction === 'rtl' ? "arrow-back" : "arrow-forward"} 
+                  size={20} 
+                  color={theme.colors.background} 
+                  style={styles.submitIcon} 
+                />
               </>
             )}
           </TouchableOpacity>
@@ -225,5 +233,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
     opacity: 0.7,
     textDecorationLine: 'underline',
+  },
+  dropdownStyle: {
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
   },
 });

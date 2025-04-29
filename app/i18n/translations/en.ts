@@ -12,6 +12,7 @@ export const en = {
   welcome: "Welcome",
   success: "Success",
   Back: "Back",
+  Select_Option: "Select Option",
   
   // Navigation
   home: "Home",
@@ -182,5 +183,18 @@ export const en = {
     Firma: "Firma",
     Cleaning: "Cleaning",
     Driving: "Driving"
+  },
+  locations: {
+    Massa: "Massa",
+    Casablanca: 'Casablanca',
+    Rabat: 'Rabat',
+    Mattakech: 'Marrakech',
+    Fes: 'Fes',
+    Tangier: 'Tangier',
+    Agadir: 'Agadir',
+    Meknes: 'Meknes',
+    Oujda: 'Oujda',
+    Kenitra: 'Kenitra',
+    Tetouan: 'Tetouan'
   }
 };

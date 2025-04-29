@@ -80,7 +80,7 @@ export function Dropdown({
           paddingLeft: isRTL ? 0 : 4,
           paddingRight: isRTL ? 4 : 0
         }}>
-          {value || placeholder}
+          { value || placeholder}
         </ThemedText>
         <View style={[
           styles.iconContainer,
@@ -136,7 +136,7 @@ export function Dropdown({
                 fontSize: theme.fontSizes.lg, 
                 fontWeight: theme.fontWeights.semiBold 
               }}>
-                {label || 'Select Option'}
+                {i18n.t('Select_Option')}
               </ThemedText>
               <TouchableOpacity onPress={toggleModal}>
                 <Ionicons name="close" size={24} color={theme.colors.textSecondary} />
@@ -164,7 +164,7 @@ export function Dropdown({
                     textAlign: effectiveTextAlign,
                     flex: 1,
                   }, itemTextStyle]}>
-                    {i18n.t(`skills.${item}`)}
+                    {i18n.t(`${label}s.${item}`)}
                   </ThemedText>
                   {value === item && (
                     <Ionicons name="checkmark" size={20} color={theme.colors.primary} />

@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../types';
 import i18n from '@/app/i18n/i18n';
 import { useUserRole } from '../context/UserRoleContext';
+import { locations } from '@/constants/locations';
+import { Dropdown } from '../components/Dropdown';
 
 export default function WorkerRegistrationScreen() {
   const [name, setName] = useState('');
@@ -138,16 +140,18 @@ return (
           </View>
 
           <View style={styles.inputContainer}>
-            <View style={styles.labelContainer}>
-              <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
+            <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="location-outline" size={18} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
               <ThemedText style={styles.label}>{i18n.t('workerRegistration.location')}</ThemedText>
             </View>
-            <TextInput
-              style={[styles.input, { backgroundColor: inputBackground }]}
-              value={location}
-              onChangeText={setLocation}
+            <Dropdown
               placeholder={i18n.t('workerRegistration.locationPlaceholder')}
-              placeholderTextColor={theme.colors.textSecondary}
+              items={locations}
+              value={location ? i18n.t('locations.' + location) : ''}
+              onValueChange={setLocation}
+              textAlign={theme.textAlign}
+              dropdownStyle={styles.dropdownStyle}
+              label="location"
             />
           </View>
 
@@ -367,5 +371,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  dropdownStyle: {
+    padding: 16,
+    borderRadius: 12,
+    fontSize: 16,
   },
 });

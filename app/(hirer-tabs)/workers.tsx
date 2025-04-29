@@ -281,7 +281,7 @@ export default function WorkersScreen() {
             onValueChange={setSelectedSkill}
             containerStyle={styles.filterDropdown}
             compact={false}
-            label={i18n.t('availableWorkers.filterBySkill')}
+            label="skill"
             />
         </View>
 
@@ -492,6 +492,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    marginBottom: 80
   },
   emptyStateTitle: {
     fontSize: 18,

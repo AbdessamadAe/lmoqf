@@ -1,3 +1,4 @@
+
 export const ar = {
   // Common
   appName: "لموقف",
@@ -12,6 +13,7 @@ export const ar = {
   welcome: "مرحبًا بك",
   success: "نجاح",
   Back: "رجوع",
+  Select_Option: "اختر خيارًا",
   
   // Navigation
   home: "الرئيسية",
@@ -188,5 +190,18 @@ export const ar = {
     Firma: "فيرما",
     Cleaning: "التنظيف",
     Driving: "القيادة",
+  },
+  locations: {
+    Massa: "ماسة",
+    Casablanca: "الدار البيضاء",
+    Rabat: "الرباط",
+    Marrakech: "مراكش",
+    Fes: "فاس",
+    Tangier: "طنجة",
+    Agadir: "أكادير",
+    Meknes: "مكناس",
+    Oujda: "وجدة",
+    Kenitra: "القنيطرة",
+    Tetouan: "تطوان"
   }
 };
