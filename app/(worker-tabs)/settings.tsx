@@ -124,15 +124,15 @@ export default function SettingsScreen() {
   };
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:support@lmoqf.com?subject=Support%20Request');
+    Linking.openURL('mailto:support@Lmouqf.com?subject=Support%20Request');
   };
 
   const handlePrivacyPolicy = () => {
-    Linking.openURL('https://lmoqf.com/privacy');
+    Linking.openURL('https://Lmouqf.com/privacy');
   };
 
   const handleTermsOfService = () => {
-    Linking.openURL('https://lmoqf.com/terms');
+    Linking.openURL('https://Lmouqf.com/terms');
   };
 
   const getAppVersion = () => {
@@ -228,7 +228,7 @@ export default function SettingsScreen() {
         {/* Version */}
         <View style={styles.versionContainer}>
           <ThemedText style={[styles.versionText, { color: theme.colors.textSecondary }]}>
-            Lmoqf v{getAppVersion()}
+            Lmouqf v{getAppVersion()}
           </ThemedText>
         </View>
       </ScrollView>

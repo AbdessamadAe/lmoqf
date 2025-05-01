@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Worker } from '../../types';
 import i18n from '@/app/i18n/i18n';
 import { useTheme } from '@/app/theme/useTheme';
-
+import { Dropdown } from '@/app/components/Dropdown';
 export default function EditProfileScreen() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -143,18 +143,22 @@ export default function EditProfileScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <View style={styles.labelContainer}>
-                <Ionicons name="location-outline" size={18} color={primaryColor} style={styles.labelIcon} />
-                <ThemedText style={styles.label}>{i18n.t('editProfile.location')}</ThemedText>
+                <View style={[styles.labelContainer, { flexDirection: theme.direction === 'rtl' ? 'row-reverse' : 'row' }]}>
+                  <Ionicons name="location" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
+                  <ThemedText style={styles.label}>{i18n.t('workerRegistration.location')}</ThemedText>
+                </View>
+                <View style={[styles.dropdownWrapper]}>
+                  <Dropdown
+                    placeholder={i18n.t('workerRegistration.locationPlaceholder')}
+                    items={locations}
+                    value={location ? i18n.t('locations.' + location) : ''}
+                    onValueChange={setLocation}
+                    textAlign={theme.textAlign}
+                    dropdownStyle={styles.dropdownStyle}
+                    label="location"
+                  />
+                </View>
               </View>
-              <TextInput
-                style={[styles.input, { backgroundColor: inputBackground }]}
-                value={location}
-                onChangeText={setLocation}
-                placeholder={i18n.t('editProfile.locationPlaceholder')}
-                placeholderTextColor="#999"
-              />
-            </View>
 
             <View style={styles.inputContainer}>
               <View style={styles.labelContainer}>

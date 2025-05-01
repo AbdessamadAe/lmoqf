@@ -143,7 +143,7 @@ export default function WorkerRegistrationScreen() {
                   <Ionicons name="location" size={16} color={primaryColor} style={[styles.labelIcon, { marginRight: theme.direction === 'rtl' ? 0 : 6, marginLeft: theme.direction === 'rtl' ? 6 : 0 }]} />
                   <ThemedText style={styles.label}>{i18n.t('workerRegistration.location')}</ThemedText>
                 </View>
-                <View style={[styles.dropdownWrapper, { backgroundColor: inputBackground }]}>
+                <View style={[styles.dropdownWrapper]}>
                   <Dropdown
                     placeholder={i18n.t('workerRegistration.locationPlaceholder')}
                     items={locations}

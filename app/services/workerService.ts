@@ -19,8 +19,8 @@ export type WorkerAvailability = {
 };
 
 // Constants for availability reset check
-const AVAILABILITY_LAST_CHECKED = 'lmoqf@:availabilityLastChecked';
-const AVAILABILITY_RESET_DETECTED = 'lmoqf@:availabilityResetDetected';
+const AVAILABILITY_LAST_CHECKED = 'Lmouqf@:availabilityLastChecked';
+const AVAILABILITY_RESET_DETECTED = 'Lmouqf@:availabilityResetDetected';
 
 export const getCalledWorkers = async (): Promise<Worker[]> => {
   try {

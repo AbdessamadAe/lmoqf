@@ -1,6 +1,6 @@
 export const fr = {
   // Common
-  appName: "Lmoqf",
+  appName: "Lmouqf",
   submit: "Soumettre",
   cancel: "Annuler",
   next: "Suivant",
@@ -52,7 +52,7 @@ export const fr = {
 
   // Worker Waiting
   workerWaiting: {
-    statusText: "Vous êtes disponible pour travailler",
+    statusText: "Vous êtes disponible",
     title: "En attente d'appels",
     subtitle: "Les employeurs peuvent voir votre profil et pourront vous appeler bientôt",
     waitingTime: "Temps d'attente",
@@ -135,7 +135,7 @@ export const fr = {
     makeAvailable: "Me rendre disponible",
     noLongerAvailable: "Je ne suis plus disponible",
     shareProfile: "Partager le profil",
-    shareProfileMessage: "Découvrez mon profil de travailleur sur Lmoqf: {{name}} - {{skill}} - Contact: {{phone}}",
+    shareProfileMessage: "Découvrez mon profil de travailleur sur Lmouqf: {{name}} - {{skill}} - Contact: {{phone}}",
     statusChangeTitle: "Confirmer le changement de statut",
     statusChangeMessage: "Êtes-vous sûr de vouloir vous rendre indisponible pour le travail ?"
   },
@@ -163,7 +163,7 @@ export const fr = {
     findWorkers: "Trouver des travailleurs",
     workersAvailable: "travailleurs disponibles",
     browse: "Trouver des travailleurs",
-    whyUseLmoqf: "Pourquoi utiliser Lmoqf ?",
+    whyUseLmouqf: "Pourquoi utiliser Lmouqf ?",
     findSkilledWorkers: "Trouver des travailleurs qualifiés",
     findSkilledWorkersDescription: "Accédez à un groupe de travailleurs locaux qualifiés",
     quickHiring: "Embauche rapide",

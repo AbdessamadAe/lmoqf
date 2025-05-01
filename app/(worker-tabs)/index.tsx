@@ -22,6 +22,7 @@ export default function WorkerWaitingScreen() {
   // Mock data for waiting workers count - to be replaced with actual API call later
   const [waitingWorkersCount, setWaitingWorkersCount] = useState<number>(22);
   const [timeWaiting, setTimeWaiting] = useState<string>("00:00:00");
+    const [isAvailable, setIsAvailable] = useState<boolean>(false);
   
   const theme = useTheme();
   const { isRTL } = useLanguage();
@@ -83,17 +84,38 @@ export default function WorkerWaitingScreen() {
 
   // Become unavailable and go back to profile
   const handleFinishWaiting = async () => {
-    try {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      await setWorkerUnavailable();
-      router.replace('/(worker-tabs)/profile');
-    } catch (error) {
-      Alert.alert(
-        i18n.t('cancel'), 
-        i18n.t('workerProfile.statusChangeMessage')
-      );
-    }
-  };
+      if (isAvailable) {
+        // If currently available, ask for confirmation to become unavailable
+        Alert.alert(
+          i18n.t('workerProfile.statusChangeTitle'),
+          i18n.t('workerProfile.statusChangeMessage'),
+          [
+            { text: i18n.t('cancel'), style: "cancel" },
+            {
+              text: i18n.t('submit'), 
+              onPress: async () => {
+                try {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  await setWorkerUnavailable();
+                  setIsAvailable(false);
+                } catch (error) {
+                  Alert.alert(i18n.t('cancel'), i18n.t('workerProfile.availabilityError', 'Could not update availability status'));
+                }
+              }
+            }
+          ]
+        );
+      } else {
+        // If currently unavailable, set them as available
+        try {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          await setWorkerAvailable(profile.phone);
+          setIsAvailable(true);
+        } catch (error) {
+          Alert.alert(i18n.t('cancel'), i18n.t('workerProfile.availabilityError', 'Could not update availability status'));
+        }
+      }
+    };
 
   if (isLoading) {
     return (
@@ -263,6 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 24,
+    marginTop: 20,
   },
   statusWrapper: {
     flexDirection: 'row',

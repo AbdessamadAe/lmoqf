@@ -1,5 +1,5 @@
 /**
- * Navigation types for the LMOQF app.
+ * Navigation types for the Lmouqf app.
  * Provides type safety for route names and params.
  */
 

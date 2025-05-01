@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "lmoqf",
-    "slug": "lmoqf",
+    "name": "Lmouqf",
+    "slug": "Lmouqf",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.abdessamad_a.lmoqf"
+      "package": "com.abdessamad_a.Lmouqf"
     },
     "web": {
       "bundler": "metro",

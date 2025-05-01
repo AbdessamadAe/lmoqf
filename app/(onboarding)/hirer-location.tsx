@@ -87,7 +87,7 @@ export default function HirerLocationScreen() {
                 <ThemedText style={styles.label}>{i18n.t('setHirerLocation.location')}</ThemedText>
               </View>
               
-              <View style={[styles.dropdownWrapper, { backgroundColor: theme.colors.card }]}>
+              <View style={[styles.dropdownWrapper]}>
                 <Dropdown
                   placeholder={i18n.t('setHirerLocation.locationPlaceholder')}
                   items={locations}

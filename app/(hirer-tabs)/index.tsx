@@ -131,7 +131,7 @@ export default function HomeScreen() {
             fontWeight: theme.fontWeights.semiBold,
             marginBottom: theme.spacing.md
           }]}>
-            {i18n.t('hirerHome.whyUseLmoqf')}
+            {i18n.t('hirerHome.whyUseLmouqf')}
           </ThemedText>
           <Card style={styles.benefitCard} variant="outlined">
             <View style={styles.benefitItem}>

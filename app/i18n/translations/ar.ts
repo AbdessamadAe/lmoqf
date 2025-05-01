@@ -171,7 +171,7 @@ export const ar = {
     findWorkers: "ابحث عن العمال",
     workersAvailable: "عمال متاحون",
     browse: "ابحث",
-    whyUseLmoqf: "لماذا تستخدم لموقف؟",
+    whyUseLmouqf: "لماذا تستخدم لموقف؟",
     findSkilledWorkers: "ابحث عن عمال مهرة",
     findSkilledWorkersDescription: "الوصول إلى مجموعة من العمال المؤهلين المحليين",
     quickHiring: "توظيف سريع",

@@ -1,6 +1,6 @@
 export const en = {
   // Common
-  appName: "Lmoqf",
+  appName: "Lmouqf",
   submit: "Submit",
   cancel: "Cancel",
   next: "Next",
@@ -135,7 +135,7 @@ export const en = {
     makeAvailable: "Make Me Available",
     noLongerAvailable: "I'm No Longer Available",
     shareProfile: "Share Profile",
-    shareProfileMessage: "Check out my worker profile on Lmoqf: {{name}} - {{skill}} - Contact: {{phone}}",
+    shareProfileMessage: "Check out my worker profile on Lmouqf: {{name}} - {{skill}} - Contact: {{phone}}",
     statusChangeTitle: "Confirm Status Change",
     statusChangeMessage: "Are you sure you want to make yourself unavailable for work?"
   },
@@ -163,7 +163,7 @@ export const en = {
     findWorkers: "Find Workers",
     workersAvailable: "workers available",
     browse: "Find Workers",
-    whyUseLmoqf: "Why Use Lmoqf?",
+    whyUseLmouqf: "Why Use Lmouqf?",
     findSkilledWorkers: "Find Skilled Workers",
     findSkilledWorkersDescription: "Access a pool of qualified local workers",
     quickHiring: "Quick Hiring",
