@@ -91,7 +91,9 @@ export default function WorkerRegistrationScreen() {
       }
     } catch (error) {
       console.error('Error during registration:', error);
-      Alert.alert(i18n.t('editProfile.registrationError'));
+    } finally {
+      // Always reset the submitting state, regardless of success or failure
+      setIsSubmitting(false);
     }
   };
 

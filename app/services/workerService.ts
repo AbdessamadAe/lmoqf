@@ -177,7 +177,7 @@ export const isWorkerAvailable = async (): Promise<boolean> => {
  */
 export const logoutWorker = async (): Promise<void> => {
   try {
-    // Before clearing data, delete worker
+    // Before clearing data, delete worker from supabase
     try {
       const phoneNumber = await AsyncStorage.getItem(WORKER_PHONE_KEY);
       if (phoneNumber) {
@@ -185,15 +185,12 @@ export const logoutWorker = async (): Promise<void> => {
       }
     } catch (error) {
       console.error('Error deleting worker during logout:', error);
-      // Continue with logout process even if this fails
+      throw error;
     }
     
-    // Clear all AsyncStorage data
-    await AsyncStorage.deleteItem(WORKER_PHONE_KEY);
-    
+    // Clear phone number from AsyncStorage
+    await AsyncStorage.removeItem(WORKER_PHONE_KEY);
 
-    
-    console.log('Worker logged out successfully, all local storage cleared');
   } catch (error) {
     console.error('Error during logout:', error);
     throw error;

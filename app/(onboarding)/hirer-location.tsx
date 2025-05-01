@@ -52,7 +52,6 @@ export default function HirerLocationScreen() {
       // Navigate to the hirer tabs
       router.replace('/(hirer-tabs)');
     } catch (error) {
-      console.error('Error saving location:', error);
       Alert.alert('Error', 'Failed to save your location. Please try again.');
     } finally {
       setIsSubmitting(false);
