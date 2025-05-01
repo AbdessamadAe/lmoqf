@@ -16,6 +16,8 @@ import * as Application from 'expo-application';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { getHirerLocation, logoutHirer, saveHirerLocation } from '../services/hirerService';
+import { Dropdown } from '../components/Dropdown';
+import { locations } from '@/constants/locations';
 
 // Settings item component
 const SettingsItem = ({ 
@@ -110,36 +112,18 @@ export default function SettingsScreen() {
     }
   };
 
-  const updateLocation = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    Alert.prompt(
-      i18n.t('settings.updateLocation') || 'Update Location',
-      i18n.t('settings.enterNewLocation') || 'Enter your new location',
-      [
-        {
-          text: i18n.t('cancel'),
-          style: "cancel"
-        },
-        {
-          text: i18n.t('save'),
-          onPress: async (newLocation) => {
-            if (newLocation && newLocation.trim() !== '') {
-              try {
-                await saveHirerLocation(newLocation.trim());
-                setLocation(newLocation.trim());
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              } catch (error) {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                Alert.alert('Error', 'Failed to update location. Please try again.');
-              }
-            }
-          }
-        }
-      ],
-      'plain-text',
-      location
-    );
+  const handleLocationChange = async (newLocation: string) => {
+    if (newLocation && newLocation !== location) {
+      try {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        await saveHirerLocation(newLocation);
+        setLocation(newLocation);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch (error) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert('Error', 'Failed to update location. Please try again.');
+      }
+    }
   };
 
   const handleLogout = () => {
@@ -204,14 +188,22 @@ export default function SettingsScreen() {
           </ThemedText>
           
           <Card style={styles.card} variant="elevated">
-            <SettingsItem 
-              icon="location"
-              title={i18n.t('settings.yourLocation') || 'Your Location'}
-              description={location || i18n.t('settings.noLocation') || 'No location set'}
-              onPress={updateLocation}
-              iconColor="#EC4899"
-              isLast={true}
-            />
+            <View style={[styles.settingsItem, { borderBottomWidth: 0 }]}>
+              <View style={[styles.iconContainer, { backgroundColor: "#EC4899" + '15' }]}>
+                <Ionicons name="location" size={22} color="#EC4899" />
+              </View>
+              <View style={styles.dropdownContainer}>
+                <Dropdown
+                  placeholder={i18n.t('setHirerLocation.locationPlaceholder')}
+                  items={locations}
+                  value={location ? i18n.t('locations.' + location) : ''}
+                  onValueChange={handleLocationChange}
+                  textAlign={theme.textAlign}
+                  dropdownStyle={styles.dropdownStyle}
+                  label='location'
+                />
+              </View>
+            </View>
           </Card>
         </View>
 
@@ -345,5 +337,15 @@ const styles = StyleSheet.create({
   },
   versionText: {
     fontSize: 12,
+  },
+  dropdownContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    marginLeft: 8,
+  },
+  dropdownStyle: {
+    borderRadius: 8,
+    fontSize: 16,
   },
 });
